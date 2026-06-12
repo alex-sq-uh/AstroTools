@@ -1,0 +1,30 @@
+/* ============================================================
+   Reskin de AstroSavings → identidad navy + dorado de la suite.
+   Estrategia low-touch: remapea las variables propias de Savings
+   (--sky*, --fd, --fb) sin reescribir su markup. Reversible.
+   ============================================================ */
+:root{
+  --sky:#4a6dd1;
+  --sky-light:#eef1fb;
+  --sky-mid:#a9b8e6;
+  --sky-dark:#1a2b5e;
+  --sky-deep:#0f1d44;
+  --cream:#f8fafd;
+  --border:#dde3ea;
+  --sh:0 2px 12px rgba(26,60,94,.08);
+  --shm:0 4px 20px rgba(26,60,94,.12);
+  --shl:0 8px 36px rgba(26,60,94,.16);
+  /* tipografía de la suite (adiós Fraunces/Jakarta) */
+  --fd:'Segoe UI',system-ui,sans-serif;
+  --fb:'Segoe UI',system-ui,sans-serif;
+}
+body{background:#f4f6fb !important;font-family:'Segoe UI',system-ui,sans-serif !important}
+/* deja sitio a la barra de la suite (38px) y re-tematiza el fondo */
+#app{
+  background:linear-gradient(155deg,#f4f6fb 0%,#eef1fb 60%,#f4f6fb 100%) !important;
+  height:calc(100dvh - 38px) !important;
+}
+#app::before{background:linear-gradient(90deg,#1a2b5e,#4a6dd1,#1a2b5e) !important}
+/* logo: de serif itálico a Segoe con acento dorado, como el resto */
+.logo{font-family:'Segoe UI',system-ui,sans-serif !important;font-style:normal !important;color:var(--sky-dark) !important}
+.logo span{color:#f5c84b !important}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstroTools · Tu suite de calculadoras</title>
+<meta name="description" content="AstroTools — suite de herramientas: nómina e IRPF, vivienda y ahorro. Calcula, planifica y decide mejor.">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/base.css">
+<script src="shared/brand.js"></script>
+<script src="shared/nav.js" defer></script>
+<script src="shared/analytics.js" defer></script>
+<style>
+  .hero{text-align:center;padding:1rem 0 2rem}
+  .hero h1{font-size:2.2rem;margin:.2rem 0;color:var(--primary)}
+  .hero h1 .dot{color:var(--accent)}
+  .hero p{color:var(--text-muted);font-size:1.05rem;margin:.4rem auto;max-width:560px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem;margin-top:1.5rem}
+  .card h2{margin:.1rem 0 .35rem;font-size:1.15rem;color:var(--primary)}
+  .card .tag{color:var(--text-muted);font-size:.92rem}
+  .card .go{display:inline-block;margin-top:.9rem;font-weight:600;color:var(--secondary)}
+  footer{text-align:center;color:var(--text-muted);font-size:.85rem;margin-top:2.5rem}
+</style>
+</head>
+<body>
+<astro-nav></astro-nav>
+<div class="wrap">
+  <div class="hero">
+    <h1>AstroTools<span class="dot">.</span></h1>
+    <p>Una suite de calculadoras para tomar mejores decisiones con tu dinero.</p>
+  </div>
+  <div class="grid" id="apps"></div>
+  <footer>Una suite de <strong>AstroTools</strong> · una creación de AstroCosas · <span id="year"></span></footer>
+</div>
+<script>
+  var cfg = window.ASTROTOOLS;
+  document.getElementById("apps").innerHTML = cfg.apps.map(function (a) {
+    return '<a class="card" href="' + a.href + '">' +
+             '<h2>' + a.name + '</h2>' +
+             '<div class="tag">' + a.tagline + '</div>' +
+             '<span class="go">Abrir →</span>' +
+           '</a>';
+  }).join("");
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstroHome · ¿A qué casa puedes aspirar?</title>
+<style>
+  :root{
+    --primary:#1a2b5e;
+    --secondary:#4a6dd1;
+    --accent:#f5c84b;
+    --bg:#f4f6fb;
+    --surface:#ffffff;
+    --surface2:#f8fafd;
+    --border:#dde3ea;
+    --text:#1a2733;
+    --text-muted:#5a6a7a;
+    --danger:#e74c3c;
+    --danger-bg:#fdf0ee;
+    --success:#27ae60;
+    --success-bg:#edfaf2;
+    --warning:#e67e22;
+    --warning-bg:#fef6ee;
+    --radius:10px;
+    --radius-lg:14px;
+    --shadow:0 2px 12px rgba(26,60,94,0.08);
+    --shadow-lg:0 4px 24px rgba(26,60,94,0.13);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;overflow-x:hidden}
+
+  /* ---------- Topbar ---------- */
+  .topbar{background:linear-gradient(120deg,#0f1d44 0%,#1a2b5e 55%,#2a3f80 100%);color:#fff;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.25);flex-wrap:wrap}
+  .topbar-brand{font-weight:700;font-size:1.05rem;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+  .topbar-brand .logo{width:34px;height:34px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3))}
+  .topbar-brand .brand-text{display:flex;flex-direction:column;line-height:1.15}
+  .topbar-brand .brand-text .name{font-weight:800;letter-spacing:.02em}
+  .topbar-brand .brand-text .name .accent{color:var(--accent)}
+  .topbar-brand .brand-text .ver{font-size:.7rem;opacity:.75;font-weight:500;letter-spacing:.05em}
+  .nav-links{display:flex;gap:4px}
+  .nav-btn{background:none;border:none;color:rgba(255,255,255,0.75);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.875rem;transition:all .15s;font-family:inherit}
+  .nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,0.15);color:#fff}
+  .topbar-right{display:flex;align-items:center;gap:10px}
+  .lang-sel{display:flex;gap:4px}
+  .lang-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:.8rem;transition:all .15s;font-family:inherit}
+  .lang-btn.active{background:rgba(255,255,255,0.25);color:#fff;border-color:rgba(255,255,255,0.4)}
+
+  /* ---------- Page ---------- */
+  .page{display:none;max-width:820px;margin:0 auto;padding:2rem 1.5rem 4rem}
+  .page.active{display:block}
+  .page-head{margin-bottom:1.5rem;padding-top:.5rem}
+  .page-head h1{font-size:1.4rem;font-weight:700;color:var(--primary);margin:0 0 4px}
+  .page-head p{color:var(--text-muted);font-size:.88rem;margin:0}
+
+  /* ---------- Cards ---------- */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem 1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow)}
+  .card-title{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+  .card-title .icon{width:28px;height:28px;background:var(--bg);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+  .card-title .sub{font-weight:500;color:var(--text-muted);font-size:.8rem;margin-left:auto}
+  .collapsible .card-title{cursor:pointer;margin-bottom:0;user-select:none}
+  .collapsible .card-title .chev{color:var(--secondary);font-weight:800;transition:transform .2s;margin-left:8px}
+  .collapsible.open .card-title{margin-bottom:1rem}
+  .collapsible.open .card-title .chev{transform:rotate(90deg)}
+  .terms-body{display:none}
+  .collapsible.open .terms-body{display:block}
+
+  /* ---------- Palancas "piso más caro" ---------- */
+  .more-intro{color:var(--text-muted);font-size:.86rem;margin:0 0 1.1rem}
+  .lever{border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:.9rem;background:var(--surface2)}
+  .lever:last-child{margin-bottom:0}
+  .lever-h{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--primary);font-size:.95rem;margin-bottom:.5rem}
+  .lever-ic{width:26px;height:26px;border-radius:7px;background:#eaf0fb;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+  .lever > p{font-size:.86rem;margin:0 0 .7rem;color:var(--text)}
+  .lever-list{margin:.2rem 0 .7rem;padding-left:1.1rem;font-size:.85rem}
+  .lever-list li{margin-bottom:.35rem}
+  .lever-warn{font-size:.8rem;color:#7a4e00;background:var(--warning-bg);border:1px solid #f0c987;border-radius:8px;padding:.5rem .7rem;margin:.3rem 0 0}
+  .lever-out{font-size:.87rem;font-weight:600;color:var(--primary);background:#eef4fc;border:1px solid #cfe0f5;border-radius:8px;padding:.6rem .8rem;margin-top:.3rem}
+  .lever-out.muted{color:var(--text-muted);font-weight:500;background:var(--bg);border-color:var(--border)}
+  .lever-out.ok{color:#114b2a;background:var(--success-bg);border-color:#a7d8bd}
+
+  /* ---------- Fields ---------- */
+  .field{margin-bottom:1rem}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-weight:600;font-size:.86rem;margin-bottom:5px}
+  .input-wrap{position:relative}
+  .input-wrap input{width:100%;padding:9px 34px 9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;font-family:inherit;font-weight:600}
+  .input-wrap input:focus{border-color:var(--secondary)}
+  .input-wrap .unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem;pointer-events:none}
+  .hint{font-size:.78rem;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;gap:6px}
+  .ext-link{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:.8rem;color:var(--secondary);text-decoration:none;font-weight:600}
+  .ext-link:hover{text-decoration:underline}
+  .ext-link svg{width:13px;height:13px;flex-shrink:0}
+  .permonth{font-size:.8rem;color:var(--secondary);font-weight:700;margin-top:6px}
+  .permonth:empty{display:none}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem}
+  .grid2 .field{margin-bottom:0}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+
+  /* ---------- Tooltip ---------- */
+  .info-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--text-muted);color:#fff;font-size:.65rem;font-weight:700;cursor:help;flex-shrink:0;position:relative;font-style:normal}
+  .tooltip-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:.75rem;line-height:1.4;padding:8px 12px;border-radius:8px;width:220px;z-index:200;margin-bottom:6px;font-weight:400;white-space:normal;box-shadow:var(--shadow-lg);text-align:left}
+  .info-icon:hover .tooltip-box,.info-icon.show .tooltip-box{display:block}
+
+  /* ---------- Toggle ---------- */
+  .toggle-row{display:flex;align-items:center;gap:12px;margin:1rem 0 0}
+  .toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+  .toggle input{opacity:0;width:0;height:0;position:absolute}
+  .toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:24px;cursor:pointer;transition:background .2s}
+  .toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+  .toggle input:checked + .toggle-slider{background:var(--secondary)}
+  .toggle input:checked + .toggle-slider:before{transform:translateX(18px)}
+  .toggle-row .lab{font-weight:600;font-size:.88rem}
+  .toggle-row .lab small{display:block;font-weight:400;color:var(--text-muted);font-size:.76rem}
+
+  /* ---------- Result hero ---------- */
+  .result-hero{background:linear-gradient(135deg,var(--primary) 0%,#2563a8 100%);color:#fff;border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1.25rem;box-shadow:var(--shadow)}
+  .result-hero .eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;opacity:.82;margin:0 0 6px}
+  .result-hero .big{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;margin:0}
+  .result-hero p.t{margin:.6rem 0 0;font-size:.92rem;opacity:.94}
+
+  /* ---------- KPIs ---------- */
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+  @media(max-width:560px){.kpis{grid-template-columns:1fr}}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;box-shadow:var(--shadow)}
+  .kpi .lab{display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:.8rem;font-weight:600;margin-bottom:4px}
+  .kpi .val{font-size:1.4rem;font-weight:800;color:var(--primary)}
+  .kpi .note{font-size:.76rem;color:var(--text-muted);margin-top:2px}
+
+  /* ---------- Notice / alert ---------- */
+  .notice{border-radius:var(--radius);padding:.9rem 1.1rem;margin-bottom:1.25rem;border:1px solid;display:flex;gap:11px;align-items:flex-start}
+  .notice .ic{font-size:1.15rem;line-height:1.2;flex-shrink:0}
+  .notice h3{margin:0 0 3px;font-size:.92rem}
+  .notice p{margin:0;font-size:.85rem}
+  .notice.ok{background:var(--success-bg);border-color:#a7d8bd;color:#114b2a}
+  .notice.warn{background:var(--warning-bg);border-color:#f0c987;color:#7a4e00}
+  .notice.bad{background:var(--danger-bg);border-color:#f3c4be;color:#8f261e}
+
+  /* ---------- Compare ---------- */
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media(max-width:560px){.opts{grid-template-columns:1fr}}
+  .opt{border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;background:var(--surface2)}
+  .opt.reco{border-color:var(--secondary);background:#eef4fc}
+  .opt-h{font-weight:800;font-size:.92rem;color:var(--primary);margin-bottom:.7rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge-reco{font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;background:var(--secondary);color:#fff;padding:2px 8px;border-radius:20px;font-weight:800}
+  .opt .orow{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;padding:4px 0;color:var(--text-muted)}
+  .opt .orow b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+  .opt-foot{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.83rem;font-weight:600}
+  .opt-foot.good{color:var(--success)}
+  .opt-foot.calm{color:var(--secondary)}
+
+  /* ---------- Flow table ---------- */
+  .blocktitle{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--secondary);font-weight:800;margin:0 0 .3rem}
+  .miniflow{margin-bottom:1.4rem}
+  .miniflow:last-of-type{margin-bottom:0}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:9px 2px;border-bottom:1px dashed var(--border);font-size:.9rem}
+  .row .l{display:flex;align-items:center;gap:7px}
+  .row .l .tag{font-size:.7rem;font-weight:800;width:19px;height:19px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center}
+  .tag.plus{background:var(--success-bg);color:var(--success)}
+  .tag.minus{background:var(--danger-bg);color:var(--danger)}
+  .tag.eq{background:#eaf0fb;color:var(--secondary)}
+  .row .pct{color:var(--text-muted);font-size:.76rem}
+  .row .v{font-weight:700;font-variant-numeric:tabular-nums}
+  .row .v.pos{color:var(--success)}.row .v.neg{color:var(--danger)}
+  .row.total{border-bottom:none;border-top:2px solid var(--primary);margin-top:5px;padding-top:12px;font-size:1rem}
+  .row.total .l{font-weight:800;color:var(--primary)}
+  .row.total .v{font-weight:800;font-size:1.1rem}
+  .flow-note{color:var(--text-muted);font-size:.8rem;margin:1rem 0 0}
+
+  /* ---------- Disclaimer ---------- */
+  .disclaimer{background:#fff8e7;border:1px solid #f0d070;border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1.5rem;font-size:.82rem;color:#6b5300}
+
+  /* ---------- How page ---------- */
+  .edu-item{margin-bottom:.75rem}
+  .edu-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.95rem 1.2rem;cursor:pointer;font-weight:700;font-size:.93rem;color:var(--primary);transition:background .15s;box-shadow:var(--shadow)}
+  .edu-trigger:hover{background:var(--surface2)}
+  .edu-trigger .chev{transition:transform .2s;color:var(--secondary);font-weight:800}
+  .edu-item.open .edu-trigger{border-radius:var(--radius) var(--radius) 0 0}
+  .edu-item.open .edu-trigger .chev{transform:rotate(90deg)}
+  .edu-body{display:none;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:1.1rem 1.2rem;font-size:.88rem;line-height:1.7;color:var(--text)}
+  .edu-item.open .edu-body{display:block}
+  .edu-body p{margin:0 0 .6rem}
+  .edu-body p:last-child{margin-bottom:0}
+  .edu-body .ex{background:var(--bg);border-left:3px solid var(--secondary);border-radius:6px;padding:.7rem .9rem;margin-top:.6rem;font-size:.83rem;color:var(--text-muted)}
+
+  /* ---------- Footer ---------- */
+  .site-footer{margin-top:3rem;padding:1.75rem 1rem 2rem;text-align:center;font-size:.82rem;color:var(--text-muted);border-top:1px solid var(--border);background:var(--surface)}
+  .site-footer .foot-brand{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--primary);margin-bottom:4px}
+  .site-footer .foot-brand svg{width:22px;height:22px}
+  .site-footer a{text-decoration:none;color:var(--secondary);font-weight:600}
+  .site-footer a:hover{text-decoration:underline}
+  .site-footer .ver-tag{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:1px 9px;font-size:.72rem;color:var(--text-muted);margin-left:6px}
+
+  @media(max-width:600px){
+    .topbar{padding:0 .9rem;height:auto;min-height:56px;padding-top:8px;padding-bottom:8px}
+    .nav-links{order:3;flex-basis:100%;width:100%;justify-content:space-between;margin-top:8px;gap:4px}
+    .nav-btn{flex:1;padding:6px 4px;font-size:.8rem}
+    .topbar-brand .brand-text .ver{display:none}
+    .page{padding:1rem .8rem 3rem}
+    .result-hero .big{font-size:1.7rem}
+  }
+  .hidden{display:none!important}
+</style>
+<script src="../shared/brand.js"></script>
+<script src="../shared/nav.js" defer></script>
+<script src="../shared/analytics.js" defer></script>
+</head>
+<body>
+<astro-nav current="casa"></astro-nav>
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="ahOrbit" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/>
+        </linearGradient>
+        <radialGradient id="ahPlanet" cx="0.35" cy="0.3" r="0.85">
+          <stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#ahOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+      <circle cx="32" cy="30" r="14" fill="url(#ahPlanet)"/>
+      <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+      <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/>
+      <circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+    </svg>
+    <div class="brand-text">
+      <span class="name">Astro<span class="accent">Home</span></span>
+      <span class="ver">v1.1</span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
+    <button class="nav-btn" id="nav-how" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
+  </div>
+  <div class="topbar-right">
+    <div class="lang-sel">
+      <button class="lang-btn active" data-lang="es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CALCULATOR ================= -->
+<div class="page active" id="page-calc">
+  <div class="page-head">
+    <h1 data-i18n="calc_title">¿A qué casa puedes aspirar?</h1>
+    <p data-i18n="calc_subtitle">Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar.</p>
+  </div>
+
+  <!-- Datos -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🧾</div> <span data-i18n="card_data">Tus datos</span></div>
+
+    <div class="field">
+      <label data-i18n="lbl_salary">Tu sueldo neto al año</label>
+      <div class="input-wrap"><input id="salary" type="text" inputmode="numeric" value="35.000"><span class="unit">€</span></div>
+      <div class="permonth" id="salaryMonthly"></div>
+      <div class="hint"><span class="info-icon">i<span class="tooltip-box" data-i18n="tip_salary">Lo que cobras limpio en un año, después de impuestos y Seguridad Social, sumando todas las pagas.</span></span><span data-i18n="hint_salary">Lo que cobras limpio al año, todas las pagas incluidas</span></div>
+      <a class="ext-link" href="../nomina/"><span data-i18n="salary_link">¿No sabes tu sueldo neto? Calcúlalo en AstroPayroll</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+    </div>
+
+    <div class="toggle-row">
+      <label class="toggle"><input type="checkbox" id="couple"><span class="toggle-slider"></span></label>
+      <div class="lab"><span data-i18n="toggle_couple">Compramos en pareja</span><small data-i18n="toggle_couple_sub">Sumamos los dos sueldos netos</small></div>
+    </div>
+
+    <div id="partnerWrap" class="hidden" style="margin-top:1rem">
+      <div class="field">
+        <label data-i18n="lbl_salary2">Sueldo neto al año de la otra persona</label>
+        <div class="input-wrap"><input id="salary2" type="text" inputmode="numeric" value="28.000"><span class="unit">€</span></div>
+        <div class="permonth" id="salary2Monthly"></div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:1rem">
+      <label data-i18n="lbl_savings">Ahorros que tienes</label>
+      <div class="input-wrap"><input id="savings" type="text" inputmode="numeric" value="120.000"><span class="unit">€</span></div>
+      <div class="hint"><span class="info-icon">i<span class="tooltip-box" data-i18n="tip_savings">Con tus ahorros pagas la entrada y los impuestos y gastos de comprar. El banco no presta el 100%. Lo que sobre puede ir a la reforma.</span></span><span data-i18n="hint_savings">Para la entrada, los gastos y, si sobra, la reforma</span></div>
+    </div>
+  </div>
+
+  <!-- Condiciones (plegado por defecto) -->
+  <div class="card collapsible" id="termsCard">
+    <div class="card-title" id="termsToggle" role="button" tabindex="0">
+      <div class="icon">⚙️</div> <span data-i18n="card_terms">Condiciones del préstamo y gastos</span>
+      <span class="sub" data-i18n="card_terms_sub">opcional · toca para ajustar</span>
+      <span class="chev">›</span>
+    </div>
+    <div id="termsBody" class="terms-body">
+    <div class="grid2">
+      <div class="field">
+        <label><span data-i18n="lbl_tae">Interés del préstamo</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_tae">Lo que cobra el banco por prestarte, al año. Cuanto más alto, mayor es la cuota mensual.</span></span></label>
+        <div class="input-wrap"><input id="tae" type="text" inputmode="decimal" value="2,2"><span class="unit">%</span></div>
+      </div>
+      <div class="field">
+        <label><span data-i18n="lbl_years">Años para devolverlo</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_years">En cuántos años terminas de pagar. Más años = cuota más baja cada mes, pero pagas más tiempo.</span></span></label>
+        <div class="input-wrap"><input id="years" type="text" inputmode="numeric" value="30"><span class="unit" data-i18n="u_years">años</span></div>
+      </div>
+      <div class="field">
+        <label><span data-i18n="lbl_ltv">Financia el banco</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_ltv">La parte del precio que pone el banco. Lo habitual es el 80%: el 20% restante (la entrada) lo pones tú.</span></span></label>
+        <div class="input-wrap"><input id="ltv" type="text" inputmode="numeric" value="80"><span class="unit">%</span></div>
+      </div>
+      <div class="field">
+        <label><span data-i18n="lbl_dti">Cuota máx. del sueldo</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_dti">El banco no deja que la cuota se coma todo tu sueldo: como mucho un 30%–35% de lo que cobras al mes.</span></span></label>
+        <div class="input-wrap"><input id="dti" type="text" inputmode="numeric" value="30"><span class="unit">%</span></div>
+      </div>
+      <div class="field">
+        <label><span data-i18n="lbl_itp">Impuesto de compra</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_itp">Impuesto al comprar vivienda usada (ITP). Cambia según la comunidad autónoma, normalmente entre el 6% y el 10%. En obra nueva se paga el 10% de IVA.</span></span></label>
+        <div class="input-wrap"><input id="itp" type="text" inputmode="decimal" value="10"><span class="unit">%</span></div>
+      </div>
+      <div class="field">
+        <label><span data-i18n="lbl_otros">Otros gastos</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_otros">Notaría, registro, gestoría y tasación. Suele rondar el 1%–2% del precio.</span></span></label>
+        <div class="input-wrap"><input id="otros" type="text" inputmode="decimal" value="2"><span class="unit">%</span></div>
+      </div>
+    </div>
+
+    <div class="toggle-row" style="border-top:1px solid var(--border);padding-top:1rem;margin-top:1.2rem">
+      <label class="toggle"><input type="checkbox" id="reformChk"><span class="toggle-slider"></span></label>
+      <div class="lab"><span data-i18n="toggle_reform">El piso necesita reforma</span><small data-i18n="toggle_reform_sub">La pagas con el dinero que te sobra</small></div>
+    </div>
+    <div id="reformWrap" class="hidden" style="margin-top:1rem">
+      <div class="field" style="max-width:260px">
+        <label data-i18n="lbl_reform">¿Cuánto costaría la reforma?</label>
+        <div class="input-wrap"><input id="reform" type="text" inputmode="numeric" value="20.000"><span class="unit">€</span></div>
+      </div>
+    </div>
+    </div><!-- /termsBody -->
+  </div>
+
+  <!-- Resultado -->
+  <div class="result-hero">
+    <p class="eyebrow" data-i18n="hero_eyebrow">Con tu sueldo puedes aspirar a un piso de</p>
+    <p class="big" id="sumPrice">—</p>
+    <p class="t" id="sumText"></p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="lab"><span data-i18n="kpi_bank">Te presta el banco</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_bank">El máximo que te daría el banco según tu sueldo. Es el 80% del precio del piso.</span></span></div>
+      <div class="val" id="kHip">—</div>
+      <div class="note" id="kHipNote"></div>
+    </div>
+    <div class="kpi">
+      <div class="lab"><span data-i18n="kpi_month">Pagarías al mes</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_month">Lo que devuelves al banco cada mes: una parte del préstamo más los intereses.</span></span></div>
+      <div class="val" id="kCuota">—</div>
+      <div class="note" id="kCuotaNote"></div>
+    </div>
+  </div>
+
+  <div class="notice ok" id="notice">
+    <div class="ic" id="noticeIc">👋</div>
+    <div><h3 id="noticeTitle">—</h3><p id="noticeText">—</p></div>
+  </div>
+
+  <!-- Comparativa (solo si hay sobrante) -->
+  <div class="card hidden" id="compareCard">
+    <div class="card-title"><div class="icon">⚖️</div> <span data-i18n="compare_title">¿Cómo usar tus ahorros?</span></div>
+    <p style="color:var(--text-muted);font-size:.85rem;margin:-.5rem 0 1rem" data-i18n="compare_sub">Tu sueldo fija el préstamo máximo. Tú decides cuánto poner de tu bolsillo.</p>
+    <div class="opts">
+      <div class="opt reco">
+        <div class="opt-h"><span data-i18n="opt_a_title">Pon solo lo justo</span> <span class="badge-reco" data-i18n="badge_reco">recomendado</span></div>
+        <div class="orow"><span data-i18n="opt_in_min">Pones tú (entrada + gastos)</span><b id="oa_in">—</b></div>
+        <div class="orow"><span data-i18n="opt_hip">Te presta el banco</span><b id="oa_hip">—</b></div>
+        <div class="orow"><span data-i18n="opt_pay">Pagas al mes</span><b id="oa_cuota">—</b></div>
+        <div class="opt-foot good" id="oa_foot">—</div>
+      </div>
+      <div class="opt">
+        <div class="opt-h"><span data-i18n="opt_b_title">Pon todos tus ahorros</span></div>
+        <div class="orow"><span data-i18n="opt_in">Pones tú</span><b id="ob_in">—</b></div>
+        <div class="orow"><span data-i18n="opt_hip">Te presta el banco</span><b id="ob_hip">—</b></div>
+        <div class="orow"><span data-i18n="opt_pay">Pagas al mes</span><b id="ob_cuota">—</b></div>
+        <div class="opt-foot calm" id="ob_foot">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flujo -->
+  <div class="card">
+    <div class="card-title"><div class="icon">💸</div> <span data-i18n="flow_title">Las cuentas de la compra</span></div>
+    <div class="miniflow">
+      <p class="blocktitle" data-i18n="flow_b1">El piso y quién lo paga</p>
+      <div class="row"><span class="l"><span class="tag eq">=</span> <span data-i18n="flow_price">Precio del piso</span></span><span class="v" id="f_price">—</span></div>
+      <div class="row"><span class="l"><span class="tag plus">+</span> <span data-i18n="flow_bank">Lo pone el banco</span> <span class="pct" id="f_bank_pct"></span></span><span class="v pos" id="f_bank">—</span></div>
+      <div class="row"><span class="l"><span class="tag plus">+</span> <span data-i18n="flow_down">Lo pones tú (entrada)</span> <span class="pct" id="f_down_pct"></span></span><span class="v pos" id="f_down">—</span></div>
+    </div>
+    <div class="miniflow">
+      <p class="blocktitle"><span data-i18n="flow_b2">A dónde va tu dinero · ahorros:</span> <span id="f_sav_h">—</span></p>
+      <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_down2">Entrada del piso</span></span><span class="v neg" id="f_down2">—</span></div>
+      <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_itp">Impuesto de compra</span> <span class="pct" id="f_itp_pct"></span></span><span class="v neg" id="f_itp">—</span></div>
+      <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_otros">Otros gastos</span> <span class="pct" id="f_otros_pct"></span></span><span class="v neg" id="f_otros">—</span></div>
+      <div class="row hidden" id="f_reform_row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_reform">Reforma</span></span><span class="v neg" id="f_reform">—</span></div>
+      <div class="row total"><span class="l" id="f_saldo_lab">—</span><span class="v" id="f_saldo">—</span></div>
+    </div>
+    <p class="flow-note" id="saldoExpl"></p>
+  </div>
+
+  <!-- Quiero un piso más caro -->
+  <div class="card collapsible" id="moreCard">
+    <div class="card-title" id="moreToggle" role="button" tabindex="0">
+      <div class="icon">🚀</div> <span data-i18n="more_title">Quiero un piso más caro</span>
+      <span class="sub" data-i18n="more_sub">opciones para subir de nivel</span>
+      <span class="chev">›</span>
+    </div>
+    <div id="moreBody" class="terms-body">
+      <p class="more-intro" data-i18n="more_intro">¿Te has quedado corto? Estas son las formas reales de llegar a un piso más caro, con sus pros y sus contras.</p>
+
+      <!-- Palanca 1: ahorrar más tiempo -->
+      <div class="lever">
+        <div class="lever-h"><span class="lever-ic">⏳</span> <span data-i18n="m1_t">Ahorrar durante más tiempo</span></div>
+        <p data-i18n="m1_p">Para un piso más caro necesitas más ahorros (la entrada y los gastos). Dinos cuánto ahorras al año y a qué piso aspiras.</p>
+        <div class="grid2">
+          <div class="field"><label data-i18n="m1_save">¿Cuánto puedes ahorrar al año?</label><div class="input-wrap"><input id="saveYear" type="text" inputmode="numeric" value="12.000"><span class="unit">€</span></div></div>
+          <div class="field"><label data-i18n="m1_target">Precio del piso que te gusta</label><div class="input-wrap"><input id="targetPrice" type="text" inputmode="numeric" value="350.000"><span class="unit">€</span></div></div>
+        </div>
+        <div class="lever-out" id="m1_out"></div>
+      </div>
+
+      <!-- Palanca 2: alargar el plazo -->
+      <div class="lever">
+        <div class="lever-h"><span class="lever-ic">📅</span> <span data-i18n="m3_t">Alargar el plazo de la hipoteca</span></div>
+        <p data-i18n="m3_p">Con más años, la cuota mensual baja, así que el banco te presta más y puedes aspirar a un piso más caro sin ahorrar más.</p>
+        <div class="field" style="max-width:200px"><label data-i18n="m3_years">Si lo amplías a</label><div class="input-wrap"><input id="moreYears" type="text" inputmode="numeric" value="35"><span class="unit" data-i18n="u_years">años</span></div></div>
+        <div class="lever-out" id="m3_out" style="margin-bottom:.6rem"></div>
+        <p class="lever-warn" data-i18n="m3_warn">Ojo: pagas durante más tiempo y más intereses en total, y los bancos suelen limitar la edad al terminar (sobre 75–80 años).</p>
+      </div>
+
+      <!-- Palanca: mejores condiciones (interés más bajo) -->
+      <div class="lever">
+        <div class="lever-h"><span class="lever-ic">📉</span> <span data-i18n="m5_t">Conseguir una hipoteca con mejores condiciones</span></div>
+        <p data-i18n="m5_p">Si negocias un interés más bajo (por ejemplo, 0,2% o 0,4% menos), la cuota baja y el banco puede prestarte algo más.</p>
+        <div class="field" style="max-width:220px"><label data-i18n="m5_rate">Si consigues un interés de</label><div class="input-wrap"><input id="betterRate" type="text" inputmode="decimal" value="1,8"><span class="unit">%</span></div></div>
+        <div class="lever-out" id="m5_out"></div>
+      </div>
+
+      <!-- Palanca 3: hipoteca > 80% -->
+      <div class="lever">
+        <div class="lever-h"><span class="lever-ic">🏦</span> <span data-i18n="m2_t">Conseguir más del 80%</span></div>
+        <p data-i18n="m2_p">A veces el banco financia por encima del 80%. Suele pasar cuando:</p>
+        <ul class="lever-list">
+          <li data-i18n="m2_b1">La tasación es mayor que el precio: el banco presta el 80% del valor tasado, que si compras barato puede cubrir casi todo el precio.</li>
+          <li data-i18n="m2_b2">El Estado avala parte del préstamo (línea ICO para jóvenes y primera vivienda), de modo que el banco puede financiarte hasta el 100% del precio.</li>
+          <li data-i18n="m2_b3">Es una promoción del banco o un piso de su propiedad (hipotecas del 90–100%).</li>
+          <li data-i18n="m2_b4">Completas con un préstamo personal la parte que falta (más caro y a menos años).</li>
+        </ul>
+        <p class="lever-warn" data-i18n="m2_warn">Aunque consigas el 100%, sigues necesitando tener ahorrado el dinero de los impuestos y gastos (alrededor del 12% del precio): eso no se financia nunca. Además, la cuota sube y tiene que caber en tu sueldo.</p>
+      </div>
+
+      <!-- Palanca 4: sumar titular/avalista -->
+      <div class="lever">
+        <div class="lever-h"><span class="lever-ic">👥</span> <span data-i18n="m4_t">Sumar otra persona o un avalista</span></div>
+        <p data-i18n="m4_p1">Si compráis dos, el banco suma los dos sueldos y os presta más. Activa arriba «Compramos en pareja» para verlo.</p>
+        <p style="margin-bottom:0" data-i18n="m4_p2">Un avalista (por ejemplo, tus padres) respalda el préstamo con su patrimonio, lo que da más tranquilidad al banco; pero asume la deuda si tú no puedes pagar.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer" data-i18n="disclaimer">AstroHome es una herramienta orientativa para entender cómo funciona la compra de una vivienda. No es asesoramiento financiero ni fiscal: las condiciones reales dependen de cada banco, de tu comunidad autónoma y de tu situación.</div>
+</div>
+
+<!-- ================= HOW IT WORKS ================= -->
+<div class="page" id="page-how">
+  <div class="page-head">
+    <h1 data-i18n="how_title">¿Cómo funciona?</h1>
+    <p data-i18n="how_subtitle">La compra de una vivienda en pasos sencillos. Toca cada apartado para ampliar.</p>
+  </div>
+
+  <div class="edu-item open" data-edu>
+    <div class="edu-trigger"><span data-i18n="how1_t">1 · Tu sueldo decide cuánto te presta el banco</span><span class="chev">›</span></div>
+    <div class="edu-body">
+      <p data-i18n="how1_p1">El banco mira lo que cobras y calcula una cuota máxima al mes: como mucho dedica un 30% de tu sueldo neto a pagar la hipoteca, para que puedas vivir con el resto.</p>
+      <p data-i18n="how1_p2">A partir de esa cuota, del interés y de los años para devolverlo, sale el dinero máximo que te puede prestar.</p>
+      <div class="ex" data-i18n="how1_ex">Ejemplo: con 35.000 € netos al año, la cuota máxima ronda los 875 € al mes. A 30 años, eso equivale a un préstamo de unos 230.000 €.</div>
+    </div>
+  </div>
+
+  <div class="edu-item" data-edu>
+    <div class="edu-trigger"><span data-i18n="how2_t">2 · El banco pone el 80%, tú pones el 20%</span><span class="chev">›</span></div>
+    <div class="edu-body">
+      <p data-i18n="how2_p1">Lo normal es que el banco financie el 80% del precio del piso. El 20% restante, la "entrada", lo pones tú con tus ahorros.</p>
+      <p data-i18n="how2_p2">Por eso, el precio del piso al que puedes aspirar es el préstamo del banco dividido entre 0,80.</p>
+      <div class="ex" data-i18n="how2_ex">Ejemplo: si el banco te presta 230.000 € (el 80%), el piso puede costar unos 288.000 €, y la entrada serían unos 58.000 €.</div>
+    </div>
+  </div>
+
+  <div class="edu-item" data-edu>
+    <div class="edu-trigger"><span data-i18n="how3_t">3 · Los impuestos y gastos los pones tú aparte</span><span class="chev">›</span></div>
+    <div class="edu-body">
+      <p data-i18n="how3_p1">Al comprar pagas un impuesto (el ITP en vivienda usada, normalmente 10%) más notaría, registro, gestoría y tasación (otro 1%–2%). El banco no financia esto: sale de tus ahorros.</p>
+      <p data-i18n="how3_p2">En total, prepara alrededor de un 12% del precio solo en impuestos y gastos, además de la entrada.</p>
+      <div class="ex" data-i18n="how3_ex">Ejemplo: en un piso de 288.000 €, los impuestos y gastos rondan los 35.000 €.</div>
+    </div>
+  </div>
+
+  <div class="edu-item" data-edu>
+    <div class="edu-trigger"><span data-i18n="how4_t">4 · Poner lo justo o poner todo</span><span class="chev">›</span></div>
+    <div class="edu-body">
+      <p data-i18n="how4_p1">Si pones solo la entrada mínima (el 20% + los gastos), pides la hipoteca más grande y te queda dinero para la reforma u otros imprevistos.</p>
+      <p data-i18n="how4_p2">Si pones todos tus ahorros, pides menos dinero al banco y pagas menos cada mes, pero te quedas sin colchón para reformar.</p>
+      <div class="ex" data-i18n="how4_ex">No hay una opción "correcta": depende de si prefieres pagar menos al mes o conservar dinero disponible.</div>
+    </div>
+  </div>
+
+  <div class="edu-item" data-edu>
+    <div class="edu-trigger"><span data-i18n="how5_t">5 · La cuota mensual</span><span class="chev">›</span></div>
+    <div class="edu-body">
+      <p data-i18n="how5_p1">Cada mes devuelves al banco una parte del dinero prestado más los intereses. Esa es tu cuota.</p>
+      <p data-i18n="how5_p2">A más años, la cuota baja (pagas durante más tiempo); a más interés, la cuota sube. La calculadora usa el sistema habitual en España (cuota fija todos los meses).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="foot-brand">
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="#4a6dd1" stroke-width="3" transform="rotate(-22 32 34)"/>
+      <circle cx="32" cy="30" r="13" fill="#f5c84b"/>
+      <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+    </svg>
+    <span>AstroHome</span><span class="ver-tag">v1.1</span>
+  </div>
+  <div><span data-i18n="footer_astrocosas">Una app de AstroCosas</span></div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== i18n ===================== */
+  var T = {
+    es:{
+      nav_calc:'Calculadora', nav_how:'¿Cómo funciona?',
+      calc_title:'¿A qué casa puedes aspirar?',
+      calc_subtitle:'Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar.',
+      card_data:'Tus datos',
+      lbl_salary:'Tu sueldo neto al año', hint_salary:'Lo que cobras limpio al año, todas las pagas incluidas',
+      salary_link:'¿No sabes tu sueldo neto? Calcúlalo en AstroPayroll',
+      tip_salary:'Lo que cobras limpio en un año, después de impuestos y Seguridad Social, sumando todas las pagas.',
+      toggle_couple:'Compramos en pareja', toggle_couple_sub:'Sumamos los dos sueldos netos',
+      lbl_salary2:'Sueldo neto al año de la otra persona',
+      lbl_savings:'Ahorros que tienes', hint_savings:'Para la entrada, los gastos y, si sobra, la reforma',
+      tip_savings:'Con tus ahorros pagas la entrada y los impuestos y gastos de comprar. El banco no presta el 100%. Lo que sobre puede ir a la reforma.',
+      card_terms:'Condiciones del préstamo y gastos', card_terms_sub:'opcional · toca para ajustar',
+      lbl_tae:'Interés del préstamo', tip_tae:'Lo que cobra el banco por prestarte, al año. Cuanto más alto, mayor es la cuota mensual.',
+      lbl_years:'Años para devolverlo', u_years:'años', tip_years:'En cuántos años terminas de pagar. Más años = cuota más baja cada mes, pero pagas más tiempo.',
+      lbl_ltv:'Financia el banco', tip_ltv:'La parte del precio que pone el banco. Lo habitual es el 80%: el 20% restante (la entrada) lo pones tú.',
+      lbl_dti:'Cuota máx. del sueldo', tip_dti:'El banco no deja que la cuota se coma todo tu sueldo: como mucho un 30%–35% de lo que cobras al mes.',
+      lbl_itp:'Impuesto de compra', tip_itp:'Impuesto al comprar vivienda usada (ITP). Cambia según la comunidad autónoma, normalmente entre el 6% y el 10%. En obra nueva se paga el 10% de IVA.',
+      lbl_otros:'Otros gastos', tip_otros:'Notaría, registro, gestoría y tasación. Suele rondar el 1%–2% del precio.',
+      toggle_reform:'El piso necesita reforma', toggle_reform_sub:'La pagas con el dinero que te sobra',
+      lbl_reform:'¿Cuánto costaría la reforma?',
+      hero_eyebrow:'Con tu sueldo puedes aspirar a un piso de',
+      kpi_bank:'Te presta el banco', tip_bank:'El máximo que te daría el banco según tu sueldo. Es el 80% del precio del piso.',
+      kpi_month:'Pagarías al mes', tip_month:'Lo que devuelves al banco cada mes: una parte del préstamo más los intereses.',
+      compare_title:'¿Cómo usar tus ahorros?', compare_sub:'Tu sueldo fija el préstamo máximo. Tú decides cuánto poner de tu bolsillo.',
+      opt_a_title:'Pon solo lo justo', badge_reco:'recomendado',
+      opt_in_min:'Pones tú (entrada + gastos)', opt_hip:'Te presta el banco', opt_pay:'Pagas al mes',
+      opt_b_title:'Pon todos tus ahorros', opt_in:'Pones tú',
+      flow_title:'Las cuentas de la compra',
+      flow_b1:'El piso y quién lo paga', flow_price:'Precio del piso', flow_bank:'Lo pone el banco', flow_down:'Lo pones tú (entrada)',
+      flow_b2:'A dónde va tu dinero · ahorros:', flow_down2:'Entrada del piso', flow_itp:'Impuesto de compra', flow_otros:'Otros gastos', flow_reform:'Reforma',
+      disclaimer:'AstroHome es una herramienta orientativa para entender cómo funciona la compra de una vivienda. No es asesoramiento financiero ni fiscal: las condiciones reales dependen de cada banco, de tu comunidad autónoma y de tu situación.',
+      footer_astrocosas:'Una app de AstroCosas',
+      how_title:'¿Cómo funciona?', how_subtitle:'La compra de una vivienda en pasos sencillos. Toca cada apartado para ampliar.',
+      how1_t:'1 · Tu sueldo decide cuánto te presta el banco',
+      how1_p1:'El banco mira lo que cobras y calcula una cuota máxima al mes: como mucho dedica un 30% de tu sueldo neto a pagar la hipoteca, para que puedas vivir con el resto.',
+      how1_p2:'A partir de esa cuota, del interés y de los años para devolverlo, sale el dinero máximo que te puede prestar.',
+      how1_ex:'Ejemplo: con 35.000 € netos al año, la cuota máxima ronda los 875 € al mes. A 30 años, eso equivale a un préstamo de unos 230.000 €.',
+      how2_t:'2 · El banco pone el 80%, tú pones el 20%',
+      how2_p1:'Lo normal es que el banco financie el 80% del precio del piso. El 20% restante, la "entrada", lo pones tú con tus ahorros.',
+      how2_p2:'Por eso, el precio del piso al que puedes aspirar es el préstamo del banco dividido entre 0,80.',
+      how2_ex:'Ejemplo: si el banco te presta 230.000 € (el 80%), el piso puede costar unos 288.000 €, y la entrada serían unos 58.000 €.',
+      how3_t:'3 · Los impuestos y gastos los pones tú aparte',
+      how3_p1:'Al comprar pagas un impuesto (el ITP en vivienda usada, normalmente 10%) más notaría, registro, gestoría y tasación (otro 1%–2%). El banco no financia esto: sale de tus ahorros.',
+      how3_p2:'En total, prepara alrededor de un 12% del precio solo en impuestos y gastos, además de la entrada.',
+      how3_ex:'Ejemplo: en un piso de 288.000 €, los impuestos y gastos rondan los 35.000 €.',
+      how4_t:'4 · Poner lo justo o poner todo',
+      how4_p1:'Si pones solo la entrada mínima (el 20% + los gastos), pides la hipoteca más grande y te queda dinero para la reforma u otros imprevistos.',
+      how4_p2:'Si pones todos tus ahorros, pides menos dinero al banco y pagas menos cada mes, pero te quedas sin colchón para reformar.',
+      how4_ex:'No hay una opción "correcta": depende de si prefieres pagar menos al mes o conservar dinero disponible.',
+      how5_t:'5 · La cuota mensual',
+      how5_p1:'Cada mes devuelves al banco una parte del dinero prestado más los intereses. Esa es tu cuota.',
+      how5_p2:'A más años, la cuota baja (pagas durante más tiempo); a más interés, la cuota sube. La calculadora usa el sistema habitual en España (cuota fija todos los meses).',
+      // dinámicos
+      months:function(n){return 'durante '+n+' años';},
+      permonth:function(m){return '≈ '+m+' al mes';},
+      bankNote:function(p){return 'el '+p+'% del piso';},
+      sumSalary:function(f){return 'Es el piso que permite tu sueldo con una hipoteca del '+f+'%. Pones la entrada y guardas el resto.';},
+      sumShort:function(f){return 'Es lo que alcanzan tus ahorros con una hipoteca del '+f+'%; tu sueldo daría para más.';},
+      saldoLabKeep:'Te queda para la reforma', saldoLabAfter:'Te queda tras la reforma',
+      okTitle:'Vas bien de ahorros',
+      okText:function(H,price,f,minimum,rest,reformOn){return 'Con tu sueldo, el banco te presta hasta '+H+' (el '+f+'% de un piso de '+price+'). Poniendo solo la entrada mínima ('+minimum+') te quedan '+rest+(reformOn?' después de la reforma.':' para la reforma u otros gastos.');},
+      okExpl:'Si prefieres pagar menos cada mes, mira la opción de la derecha: aportando más ahorros, baja tu hipoteca y tu cuota.',
+      reformTitle:'La reforma no cabe en lo que te sobra',
+      reformText:function(left,R,gap){return 'Poniendo la entrada mínima te quedan '+left+' para reformar, pero has puesto una reforma de '+R+'. Te faltarían '+gap+': tendrías que aportar más ahorros (y rebajar la hipoteca) o elegir un piso algo más barato.';},
+      reformExpl:'El número de arriba en rojo es lo que te falta para cubrir esa reforma.',
+      shortTitle:'Tu sueldo daría para más, pero te faltan ahorros',
+      shortText:function(H,priceSal,minimum,S,price,f,faltan,reformOn){return 'Por sueldo, el banco te prestaría hasta '+H+' (un piso de '+priceSal+'). Pero para eso necesitarías '+minimum+' de entrada y gastos, y tienes '+S+'. Con tus ahorros de ahora puedes aspirar a un piso de '+price+' manteniendo el '+f+'%'+(reformOn?' (ya descontada la reforma).':'.')+' Te faltarían unos '+faltan+' para llegar al máximo de tu sueldo.';},
+      shortExpl:'Aquí usas todos tus ahorros en la entrada y los gastos, por eso no sobra nada.',
+      footMin:function(left){return '💰 Te sobran '+left+' para la reforma u otros gastos';},
+      footAll:function(diff){return 'Pagas '+diff+' menos al mes, pero sin dinero para reforma';},
+      more_title:'Quiero un piso más caro', more_sub:'opciones para subir de nivel',
+      more_intro:'¿Te has quedado corto? Estas son las formas reales de llegar a un piso más caro, con sus pros y sus contras.',
+      m1_t:'Ahorrar durante más tiempo',
+      m1_p:'Para un piso más caro necesitas más ahorros (la entrada y los gastos). Dinos cuánto ahorras al año y a qué piso aspiras.',
+      m1_save:'¿Cuánto puedes ahorrar al año?', m1_target:'Precio del piso que te gusta',
+      m3_t:'Alargar el plazo de la hipoteca',
+      m3_p:'Con más años, la cuota mensual baja, así que el banco te presta más y puedes aspirar a un piso más caro sin ahorrar más.',
+      m3_years:'Si lo amplías a',
+      m3_warn:'Ojo: pagas durante más tiempo y más intereses en total, y los bancos suelen limitar la edad al terminar (sobre 75–80 años).',
+      m2_t:'Conseguir más del 80%', m2_p:'A veces el banco financia por encima del 80%. Suele pasar cuando:',
+      m2_b1:'La tasación es mayor que el precio: el banco presta el 80% del valor tasado, que si compras barato puede cubrir casi todo el precio.',
+      m2_b2:'El Estado avala parte del préstamo (línea ICO para jóvenes y primera vivienda), de modo que el banco puede financiarte hasta el 100% del precio.',
+      m2_b3:'Es una promoción del banco o un piso de su propiedad (hipotecas del 90–100%).',
+      m2_b4:'Completas con un préstamo personal la parte que falta (más caro y a menos años).',
+      m2_warn:'Aunque consigas el 100%, sigues necesitando tener ahorrado el dinero de los impuestos y gastos (alrededor del 12% del precio): eso no se financia nunca. Además, la cuota sube y tiene que caber en tu sueldo.',
+      m5_t:'Conseguir una hipoteca con mejores condiciones',
+      m5_p:'Si negocias un interés más bajo (por ejemplo, 0,2% o 0,4% menos), la cuota baja y el banco puede prestarte algo más.',
+      m5_rate:'Si consigues un interés de',
+      m5_result:function(rate,price2,priceNow){return 'Con un interés del '+rate+' podrías aspirar a un piso de '+price2+', en lugar de '+priceNow+'.';},
+      m5_fill:'Indica el interés que crees que puedes conseguir.',
+      m4_t:'Sumar otra persona o un avalista',
+      m4_p1:'Si compráis dos, el banco suma los dos sueldos y os presta más. Activa arriba «Compramos en pareja» para verlo.',
+      m4_p2:'Un avalista (por ejemplo, tus padres) respalda el préstamo con su patrimonio, lo que da más tranquilidad al banco; pero asume la deuda si tú no puedes pagar.',
+      m1_fill:'Rellena tu ahorro anual y el precio del piso para calcular el tiempo.',
+      m1_already:function(n){return 'Ya tienes ahorros de sobra para ese piso (harían falta unos '+n+').';},
+      m1_result:function(needed,gap,dur){return 'Para ese piso necesitas unos '+needed+' en ahorros. Te faltan '+gap+', así que a tu ritmo tardarías '+dur+'.';},
+      m1_overcap:' Aviso: ese piso supera lo que tu sueldo cubre con el 80%, así que estarías poniendo más del 20% de entrada; la cuota igualmente cabe porque el préstamo no pasa de tu máximo.',
+      m3_result:function(y,price2,priceNow){return 'Con '+y+' años podrías aspirar a un piso de '+price2+', en lugar de '+priceNow+', con la misma cuota máxima.';},
+      dur:function(y,m){var p=[];if(y>0)p.push(y+(y===1?' año':' años'));if(m>0)p.push(m+(m===1?' mes':' meses'));return p.length?p.join(' y '):'menos de un mes';},
+      emptyTitle:'Empecemos', emptyText:'Rellena tu sueldo neto anual y tus ahorros arriba.',
+      emptySum:'Introduce tu sueldo para ver a qué piso puedes aspirar.'
+    },
+    ca:{
+      nav_calc:'Calculadora', nav_how:'Com funciona?',
+      calc_title:'A quin pis pots aspirar?',
+      calc_subtitle:'Amb el teu sou i els teus estalvis t’expliquem, en llenguatge clar, quin pis pots comprar.',
+      card_data:'Les teves dades',
+      lbl_salary:'El teu sou net a l’any', hint_salary:'El que cobres net a l’any, totes les pagues incloses',
+      salary_link:'No saps el teu sou net? Calcula’l a AstroPayroll',
+      tip_salary:'El que cobres net en un any, després d’impostos i Seguretat Social, sumant totes les pagues.',
+      toggle_couple:'Comprem en parella', toggle_couple_sub:'Sumem els dos sous nets',
+      lbl_salary2:'Sou net a l’any de l’altra persona',
+      lbl_savings:'Estalvis que tens', hint_savings:'Per a l’entrada, les despeses i, si en sobra, la reforma',
+      tip_savings:'Amb els estalvis pagues l’entrada i els impostos i despeses de comprar. El banc no presta el 100%. El que sobri pot anar a la reforma.',
+      card_terms:'Condicions del préstec i despeses', card_terms_sub:'opcional · toca per ajustar',
+      lbl_tae:'Interès del préstec', tip_tae:'El que cobra el banc per prestar-te, a l’any. Com més alt, més gran és la quota mensual.',
+      lbl_years:'Anys per tornar-lo', u_years:'anys', tip_years:'En quants anys acabes de pagar. Més anys = quota més baixa cada mes, però pagues més temps.',
+      lbl_ltv:'Finança el banc', tip_ltv:'La part del preu que posa el banc. L’habitual és el 80%: el 20% restant (l’entrada) el poses tu.',
+      lbl_dti:'Quota màx. del sou', tip_dti:'El banc no deixa que la quota es mengi tot el sou: com a molt un 30%–35% del que cobres al mes.',
+      lbl_itp:'Impost de compra', tip_itp:'Impost en comprar habitatge usat (ITP). Canvia segons la comunitat autònoma, normalment entre el 6% i el 10%. En obra nova es paga el 10% d’IVA.',
+      lbl_otros:'Altres despeses', tip_otros:'Notaria, registre, gestoria i taxació. Sol rondar l’1%–2% del preu.',
+      toggle_reform:'El pis necessita reforma', toggle_reform_sub:'La pagues amb els diners que et sobren',
+      lbl_reform:'Quant costaria la reforma?',
+      hero_eyebrow:'Amb el teu sou pots aspirar a un pis de',
+      kpi_bank:'Et presta el banc', tip_bank:'El màxim que et donaria el banc segons el sou. És el 80% del preu del pis.',
+      kpi_month:'Pagaries al mes', tip_month:'El que tornes al banc cada mes: una part del préstec més els interessos.',
+      compare_title:'Com fer servir els estalvis?', compare_sub:'El teu sou fixa el préstec màxim. Tu decideixes quant poses de la teva butxaca.',
+      opt_a_title:'Posa només el just', badge_reco:'recomanat',
+      opt_in_min:'Poses tu (entrada + despeses)', opt_hip:'Et presta el banc', opt_pay:'Pagues al mes',
+      opt_b_title:'Posa tots els estalvis', opt_in:'Poses tu',
+      flow_title:'Els comptes de la compra',
+      flow_b1:'El pis i qui el paga', flow_price:'Preu del pis', flow_bank:'Ho posa el banc', flow_down:'Ho poses tu (entrada)',
+      flow_b2:'On van els teus diners · estalvis:', flow_down2:'Entrada del pis', flow_itp:'Impost de compra', flow_otros:'Altres despeses', flow_reform:'Reforma',
+      disclaimer:'AstroHome és una eina orientativa per entendre com funciona la compra d’un habitatge. No és assessorament financer ni fiscal: les condicions reals depenen de cada banc, de la teva comunitat autònoma i de la teva situació.',
+      footer_astrocosas:'Una app d’AstroCosas',
+      how_title:'Com funciona?', how_subtitle:'La compra d’un habitatge en passos senzills. Toca cada apartat per ampliar.',
+      how1_t:'1 · El teu sou decideix quant et presta el banc',
+      how1_p1:'El banc mira el que cobres i calcula una quota màxima al mes: com a molt dedica un 30% del sou net a pagar la hipoteca, perquè puguis viure amb la resta.',
+      how1_p2:'A partir d’aquesta quota, de l’interès i dels anys per tornar-lo, surt el màxim que et pot prestar.',
+      how1_ex:'Exemple: amb 35.000 € nets a l’any, la quota màxima ronda els 875 € al mes. A 30 anys, equival a un préstec d’uns 230.000 €.',
+      how2_t:'2 · El banc posa el 80%, tu poses el 20%',
+      how2_p1:'El normal és que el banc financi el 80% del preu del pis. El 20% restant, l’"entrada", el poses tu amb els estalvis.',
+      how2_p2:'Per això, el preu del pis a què pots aspirar és el préstec del banc dividit entre 0,80.',
+      how2_ex:'Exemple: si el banc et presta 230.000 € (el 80%), el pis pot costar uns 288.000 €, i l’entrada serien uns 58.000 €.',
+      how3_t:'3 · Els impostos i despeses els poses tu a part',
+      how3_p1:'En comprar pagues un impost (l’ITP en habitatge usat, normalment 10%) més notaria, registre, gestoria i taxació (un altre 1%–2%). El banc no finança això: surt dels estalvis.',
+      how3_p2:'En total, prepara al voltant d’un 12% del preu només en impostos i despeses, a més de l’entrada.',
+      how3_ex:'Exemple: en un pis de 288.000 €, els impostos i despeses ronden els 35.000 €.',
+      how4_t:'4 · Posar el just o posar-ho tot',
+      how4_p1:'Si poses només l’entrada mínima (el 20% + les despeses), demanes la hipoteca més gran i et queden diners per a la reforma o imprevistos.',
+      how4_p2:'Si poses tots els estalvis, demanes menys diners al banc i pagues menys cada mes, però et quedes sense coixí per reformar.',
+      how4_ex:'No hi ha una opció "correcta": depèn de si prefereixes pagar menys al mes o conservar diners disponibles.',
+      how5_t:'5 · La quota mensual',
+      how5_p1:'Cada mes tornes al banc una part dels diners prestats més els interessos. Aquesta és la teva quota.',
+      how5_p2:'A més anys, la quota baixa (pagues més temps); a més interès, la quota puja. La calculadora fa servir el sistema habitual a Espanya (quota fixa cada mes).',
+      months:function(n){return 'durant '+n+' anys';},
+      permonth:function(m){return '≈ '+m+' al mes';},
+      bankNote:function(p){return 'el '+p+'% del pis';},
+      sumSalary:function(f){return 'És el pis que permet el teu sou amb una hipoteca del '+f+'%. Poses l’entrada i guardes la resta.';},
+      sumShort:function(f){return 'És el que arriben a cobrir els estalvis amb una hipoteca del '+f+'%; el teu sou donaria per a més.';},
+      saldoLabKeep:'Et queda per a la reforma', saldoLabAfter:'Et queda després de la reforma',
+      okTitle:'Vas bé d’estalvis',
+      okText:function(H,price,f,minimum,rest,reformOn){return 'Amb el teu sou, el banc et presta fins a '+H+' (el '+f+'% d’un pis de '+price+'). Posant només l’entrada mínima ('+minimum+') et queden '+rest+(reformOn?' després de la reforma.':' per a la reforma o altres despeses.');},
+      okExpl:'Si prefereixes pagar menys cada mes, mira l’opció de la dreta: aportant més estalvis, baixa la teva hipoteca i la quota.',
+      reformTitle:'La reforma no cap en el que et sobra',
+      reformText:function(left,R,gap){return 'Posant l’entrada mínima et queden '+left+' per reformar, però has posat una reforma de '+R+'. Et faltarien '+gap+': hauries d’aportar més estalvis (i rebaixar la hipoteca) o triar un pis una mica més barat.';},
+      reformExpl:'El número de dalt en vermell és el que et falta per cobrir aquesta reforma.',
+      shortTitle:'El teu sou donaria per a més, però et falten estalvis',
+      shortText:function(H,priceSal,minimum,S,price,f,faltan,reformOn){return 'Per sou, el banc et prestaria fins a '+H+' (un pis de '+priceSal+'). Però per a això necessitaries '+minimum+' d’entrada i despeses, i tens '+S+'. Amb els estalvis d’ara pots aspirar a un pis de '+price+' mantenint el '+f+'%'+(reformOn?' (ja descomptada la reforma).':'.')+' Et faltarien uns '+faltan+' per arribar al màxim del teu sou.';},
+      shortExpl:'Aquí fas servir tots els estalvis en l’entrada i les despeses, per això no en sobra res.',
+      footMin:function(left){return '💰 Et sobren '+left+' per a la reforma o altres despeses';},
+      footAll:function(diff){return 'Pagues '+diff+' menys al mes, però sense diners per a reforma';},
+      more_title:'Vull un pis més car', more_sub:'opcions per pujar de nivell',
+      more_intro:'T’has quedat curt? Aquestes són les maneres reals d’arribar a un pis més car, amb els seus pros i contres.',
+      m1_t:'Estalviar durant més temps',
+      m1_p:'Per a un pis més car necessites més estalvis (l’entrada i les despeses). Digues quant estalvies a l’any i a quin pis aspires.',
+      m1_save:'Quant pots estalviar a l’any?', m1_target:'Preu del pis que t’agrada',
+      m3_t:'Allargar el termini de la hipoteca',
+      m3_p:'Amb més anys, la quota mensual baixa, així que el banc et presta més i pots aspirar a un pis més car sense estalviar més.',
+      m3_years:'Si l’amplies a',
+      m3_warn:'Compte: pagues més temps i més interessos en total, i els bancs solen limitar l’edat en acabar (cap als 75–80 anys).',
+      m2_t:'Aconseguir més del 80%', m2_p:'De vegades el banc finança per sobre del 80%. Sol passar quan:',
+      m2_b1:'La taxació és més alta que el preu: el banc presta el 80% del valor taxat, que si compres barat pot cobrir gairebé tot el preu.',
+      m2_b2:'L’Estat avala part del préstec (línia ICO per a joves i primer habitatge), de manera que el banc pot finançar-te fins al 100% del preu.',
+      m2_b3:'És una promoció del banc o un pis de la seva propietat (hipoteques del 90–100%).',
+      m2_b4:'Completes amb un préstec personal la part que falta (més car i a menys anys).',
+      m2_warn:'Encara que aconsegueixis el 100%, segueixes necessitant tenir estalviats els diners dels impostos i despeses (al voltant del 12% del preu): això no es finança mai. A més, la quota puja i ha de cabre en el teu sou.',
+      m5_t:'Aconseguir una hipoteca amb millors condicions',
+      m5_p:'Si negocies un interès més baix (per exemple, 0,2% o 0,4% menys), la quota baixa i el banc pot prestar-te una mica més.',
+      m5_rate:'Si aconsegueixes un interès de',
+      m5_result:function(rate,price2,priceNow){return 'Amb un interès del '+rate+' podries aspirar a un pis de '+price2+', en lloc de '+priceNow+'.';},
+      m5_fill:'Indica l’interès que creus que pots aconseguir.',
+      m4_t:'Sumar una altra persona o un avalador',
+      m4_p1:'Si compreu dos, el banc suma els dos sous i us presta més. Activa a dalt «Comprem en parella» per veure-ho.',
+      m4_p2:'Un avalador (per exemple, els teus pares) respatlla el préstec amb el seu patrimoni, cosa que dona més tranquil·litat al banc; però assumeix el deute si tu no pots pagar.',
+      m1_fill:'Omple el teu estalvi anual i el preu del pis per calcular el temps.',
+      m1_already:function(n){return 'Ja tens estalvis de sobra per a aquest pis (en caldrien uns '+n+').';},
+      m1_result:function(needed,gap,dur){return 'Per a aquest pis necessites uns '+needed+' en estalvis. Et falten '+gap+', així que al teu ritme trigaries '+dur+'.';},
+      m1_overcap:' Avís: aquest pis supera el que el teu sou cobreix amb el 80%, així que posaries més del 20% d’entrada; la quota igualment hi cap perquè el préstec no passa del teu màxim.',
+      m3_result:function(y,price2,priceNow){return 'Amb '+y+' anys podries aspirar a un pis de '+price2+', en lloc de '+priceNow+', amb la mateixa quota màxima.';},
+      dur:function(y,m){var p=[];if(y>0)p.push(y+(y===1?' any':' anys'));if(m>0)p.push(m+(m===1?' mes':' mesos'));return p.length?p.join(' i '):'menys d’un mes';},
+      emptyTitle:'Comencem', emptyText:'Omple el teu sou net anual i els estalvis a dalt.',
+      emptySum:'Introdueix el teu sou per veure a quin pis pots aspirar.'
+    },
+    en:{
+      nav_calc:'Calculator', nav_how:'How it works',
+      calc_title:'What home can you afford?',
+      calc_subtitle:'With your salary and savings, we explain in plain language which home you can buy.',
+      card_data:'Your details',
+      lbl_salary:'Your net salary per year', hint_salary:'Your take-home pay over a year',
+      salary_link:'Don’t know your net salary? Work it out in AstroPayroll',
+      tip_salary:'What you earn after tax and social security over a full year.',
+      toggle_couple:'Buying as a couple', toggle_couple_sub:'We add both net salaries',
+      lbl_salary2:'Net yearly salary of the other person',
+      lbl_savings:'Savings you have', hint_savings:'For the deposit, the costs and, if any is left, the renovation',
+      tip_savings:'Your savings pay the deposit plus the purchase taxes and costs. The bank does not lend 100%. Whatever is left can go to the renovation.',
+      card_terms:'Loan terms and costs', card_terms_sub:'optional · tap to adjust',
+      lbl_tae:'Loan interest', tip_tae:'What the bank charges per year to lend to you. The higher it is, the higher the monthly payment.',
+      lbl_years:'Years to repay', u_years:'years', tip_years:'How many years to finish paying. More years = lower monthly payment, but you pay for longer.',
+      lbl_ltv:'Bank finances', tip_ltv:'The share of the price the bank puts in. Usually 80%: the other 20% (the deposit) is yours.',
+      lbl_dti:'Max. payment of salary', tip_dti:'The bank won’t let the payment eat your whole salary: at most 30%–35% of your monthly pay.',
+      lbl_itp:'Purchase tax', tip_itp:'Tax on buying a second-hand home (ITP). It varies by region, usually 6%–10%. New builds pay 10% VAT instead.',
+      lbl_otros:'Other costs', tip_otros:'Notary, land registry, agency and valuation. Usually around 1%–2% of the price.',
+      toggle_reform:'The home needs renovation', toggle_reform_sub:'Paid with the money left over',
+      lbl_reform:'How much would the renovation cost?',
+      hero_eyebrow:'With your salary you can afford a home of',
+      kpi_bank:'The bank lends you', tip_bank:'The most the bank would lend based on your salary. It’s 80% of the home price.',
+      kpi_month:'You’d pay per month', tip_month:'What you repay the bank each month: part of the loan plus interest.',
+      compare_title:'How to use your savings?', compare_sub:'Your salary sets the maximum loan. You decide how much to put in.',
+      opt_a_title:'Put in just the minimum', badge_reco:'recommended',
+      opt_in_min:'You put in (deposit + costs)', opt_hip:'The bank lends', opt_pay:'You pay per month',
+      opt_b_title:'Put in all your savings', opt_in:'You put in',
+      flow_title:'The numbers of the purchase',
+      flow_b1:'The home and who pays for it', flow_price:'Home price', flow_bank:'The bank puts in', flow_down:'You put in (deposit)',
+      flow_b2:'Where your money goes · savings:', flow_down2:'Home deposit', flow_itp:'Purchase tax', flow_otros:'Other costs', flow_reform:'Renovation',
+      disclaimer:'AstroHome is a guidance tool to understand how buying a home works. It is not financial or tax advice: the real terms depend on each bank, your region and your situation.',
+      footer_astrocosas:'An AstroCosas app',
+      how_title:'How it works', how_subtitle:'Buying a home in simple steps. Tap each section to expand.',
+      how1_t:'1 · Your salary decides how much the bank lends',
+      how1_p1:'The bank looks at what you earn and sets a maximum monthly payment: at most 30% of your net salary goes to the mortgage, so you can live on the rest.',
+      how1_p2:'From that payment, the interest and the years to repay, comes the maximum it can lend you.',
+      how1_ex:'Example: on €35,000 net a year, the max payment is around €875 a month. Over 30 years that’s a loan of about €230,000.',
+      how2_t:'2 · The bank puts in 80%, you put in 20%',
+      how2_p1:'Normally the bank finances 80% of the home price. The other 20%, the "deposit", is yours from savings.',
+      how2_p2:'So the home you can afford is the bank loan divided by 0.80.',
+      how2_ex:'Example: if the bank lends €230,000 (the 80%), the home can cost about €288,000, and the deposit would be about €58,000.',
+      how3_t:'3 · Taxes and costs are on you, separately',
+      how3_p1:'When buying you pay a tax (ITP on second-hand homes, usually 10%) plus notary, registry, agency and valuation (another 1%–2%). The bank doesn’t finance this: it comes from savings.',
+      how3_p2:'In total, set aside around 12% of the price just for taxes and costs, on top of the deposit.',
+      how3_ex:'Example: on a €288,000 home, taxes and costs are around €35,000.',
+      how4_t:'4 · Put in the minimum or put in everything',
+      how4_p1:'If you put in only the minimum deposit (20% + costs), you take the biggest mortgage and keep money for the renovation or surprises.',
+      how4_p2:'If you put in all your savings, you borrow less and pay less each month, but you’re left with no cushion to renovate.',
+      how4_ex:'There’s no "right" option: it depends on whether you prefer a lower monthly payment or keeping cash available.',
+      how5_t:'5 · The monthly payment',
+      how5_p1:'Each month you repay the bank part of the borrowed money plus interest. That’s your payment.',
+      how5_p2:'More years, lower payment (you pay longer); more interest, higher payment. The calculator uses the standard system in Spain (the same payment every month).',
+      months:function(n){return 'for '+n+' years';},
+      permonth:function(m){return '≈ '+m+' per month';},
+      bankNote:function(p){return p+'% of the home';},
+      sumSalary:function(f){return 'This is the home your salary allows with an '+f+'% mortgage. You put in the deposit and keep the rest.';},
+      sumShort:function(f){return 'This is what your savings reach with an '+f+'% mortgage; your salary would allow more.';},
+      saldoLabKeep:'Left for the renovation', saldoLabAfter:'Left after the renovation',
+      okTitle:'You’re in good shape on savings',
+      okText:function(H,price,f,minimum,rest,reformOn){return 'With your salary, the bank lends up to '+H+' (the '+f+'% of a '+price+' home). Putting in only the minimum deposit ('+minimum+') you have '+rest+(reformOn?' left after the renovation.':' left for the renovation or other costs.');},
+      okExpl:'If you’d rather pay less each month, see the option on the right: putting in more savings lowers your mortgage and payment.',
+      reformTitle:'The renovation doesn’t fit in what’s left',
+      reformText:function(left,R,gap){return 'Putting in the minimum deposit you have '+left+' for the renovation, but you set a renovation of '+R+'. You’d be short '+gap+': you’d need more savings (and a smaller mortgage) or a slightly cheaper home.';},
+      reformExpl:'The red number above is what you’re short to cover that renovation.',
+      shortTitle:'Your salary would allow more, but you’re short on savings',
+      shortText:function(H,priceSal,minimum,S,price,f,faltan,reformOn){return 'By salary, the bank would lend up to '+H+' (a '+priceSal+' home). But for that you’d need '+minimum+' in deposit and costs, and you have '+S+'. With your current savings you can afford a '+price+' home keeping the '+f+'%'+(reformOn?' (renovation already deducted).':'.')+' You’d be about '+faltan+' short to reach your salary’s maximum.';},
+      shortExpl:'Here you use all your savings on the deposit and costs, so nothing is left over.',
+      footMin:function(left){return '💰 You have '+left+' left for the renovation or other costs';},
+      footAll:function(diff){return 'You pay '+diff+' less per month, but no money for renovation';},
+      more_title:'I want a pricier home', more_sub:'ways to level up',
+      more_intro:'Fell short? These are the real ways to reach a pricier home, with their pros and cons.',
+      m1_t:'Save for longer',
+      m1_p:'A pricier home needs more savings (deposit and costs). Tell us how much you save per year and which home you’re after.',
+      m1_save:'How much can you save per year?', m1_target:'Price of the home you like',
+      m3_t:'Extend the mortgage term',
+      m3_p:'With more years, the monthly payment drops, so the bank lends more and you can afford a pricier home without saving more.',
+      m3_years:'If you extend it to',
+      m3_warn:'Careful: you pay for longer and more interest overall, and banks usually cap your age at the end (around 75–80).',
+      m2_t:'Getting more than 80%', m2_p:'Sometimes the bank finances above 80%. This usually happens when:',
+      m2_b1:'The valuation is higher than the price: the bank lends 80% of the appraised value, which can cover almost the whole price if you buy cheap.',
+      m2_b2:'The state guarantees part of the loan (ICO line for young and first-time buyers), so the bank can finance up to 100% of the price.',
+      m2_b3:'It’s a bank promotion or a bank-owned home (90–100% mortgages).',
+      m2_b4:'You top up the missing part with a personal loan (pricier and over fewer years).',
+      m2_warn:'Even with 100%, you still need savings for the purchase taxes and costs (around 12% of the price): that is never financed. Also, the payment goes up and must fit within your salary.',
+      m5_t:'Getting a mortgage with better terms',
+      m5_p:'If you negotiate a lower interest rate (say 0.2% or 0.4% less), the payment drops and the bank can lend you a bit more.',
+      m5_rate:'If you get an interest rate of',
+      m5_result:function(rate,price2,priceNow){return 'With an interest rate of '+rate+' you could afford a '+price2+' home, instead of '+priceNow+'.';},
+      m5_fill:'Enter the interest rate you think you can get.',
+      m4_t:'Add another person or a guarantor',
+      m4_p1:'If two of you buy, the bank adds both salaries and lends more. Turn on “Buying as a couple” above to see it.',
+      m4_p2:'A guarantor (your parents, say) backs the loan with their assets, reassuring the bank; but they take on the debt if you can’t pay.',
+      m1_fill:'Fill in your yearly savings and the home price to work out the time.',
+      m1_already:function(n){return 'Good news: you’d already have enough savings for that home (about '+n+' needed).';},
+      m1_result:function(needed,gap,dur){return 'For that home you need about '+needed+' in savings. You’re '+gap+' short, so at your pace it would take '+dur+'.';},
+      m1_overcap:' Note: that home is above what your salary covers at 80%, so you’d be putting in more than a 20% deposit; the payment still fits because the loan doesn’t exceed your maximum.',
+      m3_result:function(y,price2,priceNow){return 'With '+y+' years you could afford a '+price2+' home, instead of '+priceNow+', with the same maximum payment.';},
+      dur:function(y,m){var p=[];if(y>0)p.push(y+(y===1?' year':' years'));if(m>0)p.push(m+(m===1?' month':' months'));return p.length?p.join(' and '):'less than a month';},
+      emptyTitle:'Let’s start', emptyText:'Fill in your net yearly salary and savings above.',
+      emptySum:'Enter your salary to see what home you can afford.'
+    }
+  };
+
+  var LOCALE={es:'es-ES',ca:'ca-ES',en:'en-IE'};
+  var currentLang='es';
+  function L(){ return T[currentLang]; }
+
+  function eur0(){ return new Intl.NumberFormat(LOCALE[currentLang],{style:'currency',currency:'EUR',maximumFractionDigits:0,useGrouping:'always'}); }
+  function eur2(){ return new Intl.NumberFormat(LOCALE[currentLang],{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:'always'}); }
+  function round1k(x){ if(x>=100000)return Math.round(x/1000)*1000; if(x>=10000)return Math.round(x/100)*100; return Math.round(x); }
+  function e0(x){ return eur0().format(round1k(Math.max(0,x))); }
+  function e2(x){ return eur2().format(Math.max(0,x)); }
+
+  function parseNum(str){
+    if(str==null) return 0;
+    var s=(''+str).replace(/[^0-9.,\-]/g,'');
+    if(s.indexOf(',')>=0){ s=s.replace(/\./g,'').replace(',','.'); }
+    else { var parts=s.split('.'); if(parts.length>2 || (parts.length===2 && parts[1].length===3)) s=s.replace(/\./g,''); }
+    var n=parseFloat(s); return isFinite(n)?n:0;
+  }
+  function groupThousands(s){ return s.replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+
+  var $=function(id){return document.getElementById(id);};
+
+  /* ===================== Navegación / idioma ===================== */
+  window.showPage=function(p){
+    document.querySelectorAll('.page').forEach(function(el){el.classList.remove('active');});
+    $('page-'+p).classList.add('active');
+    $('nav-calc').classList.toggle('active',p==='calc');
+    $('nav-how').classList.toggle('active',p==='how');
+    window.scrollTo(0,0);
+  };
+  window.setLang=function(l){
+    currentLang=l; document.documentElement.lang=l;
+    document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l);});
+    applyStatic(); calc();
+  };
+  function applyStatic(){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var v=L()[el.getAttribute('data-i18n')];
+      if(typeof v==='string') el.textContent=v;
+    });
+  }
+
+  /* ===================== Acordeón "Cómo funciona" ===================== */
+  document.querySelectorAll('[data-edu] .edu-trigger').forEach(function(tr){
+    tr.addEventListener('click',function(){ tr.parentElement.classList.toggle('open'); });
+  });
+
+  /* ===================== Tarjetas plegables ===================== */
+  document.querySelectorAll('.collapsible > .card-title').forEach(function(tog){
+    var card=tog.parentElement;
+    function toggle(){ card.classList.toggle('open'); }
+    tog.addEventListener('click',toggle);
+    tog.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+  });
+
+  /* ===================== Tooltips (tap en móvil) ===================== */
+  document.querySelectorAll('.info-icon').forEach(function(ic){
+    ic.addEventListener('click',function(e){
+      e.stopPropagation();
+      var open=ic.classList.contains('show');
+      document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');});
+      if(!open) ic.classList.add('show');
+    });
+  });
+  document.addEventListener('click',function(){ document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');}); });
+
+  /* ===================== Inputs ===================== */
+  var ids=['salary','salary2','savings','tae','years','ltv','dti','itp','otros','reform','saveYear','targetPrice','moreYears','betterRate'];
+  ids.forEach(function(id){ $(id).addEventListener('input',calc); });
+  ['salary','salary2','savings','reform','saveYear','targetPrice'].forEach(function(id){
+    var el=$(id);
+    el.addEventListener('blur',function(){ var n=Math.round(parseNum(el.value)); el.value=n?groupThousands(''+n):''; calc(); });
+  });
+  $('couple').addEventListener('change',function(){ $('partnerWrap').classList.toggle('hidden',!this.checked); calc(); });
+  $('reformChk').addEventListener('change',function(){ $('reformWrap').classList.toggle('hidden',!this.checked); calc(); });
+
+  /* ===================== Cálculo ===================== */
+  var I=0,N=360;
+  function cuotaFor(M){ return I>0 ? M*I/(1-Math.pow(1+I,-N)) : M/N; }
+
+  function updateMonthly(){
+    var s1=parseNum($('salary').value);
+    $('salaryMonthly').textContent = s1>0 ? L().permonth(e0(s1/12)) : '';
+    var s2=parseNum($('salary2').value);
+    $('salary2Monthly').textContent = ($('couple').checked && s2>0) ? L().permonth(e0(s2/12)) : '';
+  }
+
+  function calc(){
+    updateMonthly();
+    var S=parseNum($('savings').value);
+    var sal=parseNum($('salary').value)+($('couple').checked?parseNum($('salary2').value):0);
+    var R=$('reformChk').checked?parseNum($('reform').value):0;
+
+    var yrs=Math.max(1,Math.round(parseNum($('years').value)));
+    var f=parseNum($('ltv').value)/100;
+    var dtiPct=parseNum($('dti').value)/100;
+    var itpPct=parseNum($('itp').value)/100;
+    var otrPct=parseNum($('otros').value)/100;
+    var c=itpPct+otrPct;
+    N=yrs*12; I=(parseNum($('tae').value)/100)/12;
+
+    if(!(sal>0 && f>0 && f<1)){ showEmpty(); return; }
+
+    var cuotaMax=dtiPct*(sal/12);
+    var H=I>0 ? cuotaMax*(1-Math.pow(1+I,-N))/I : cuotaMax*N;
+
+    var priceSalary=H/f;
+    var minimum=(1-f+c)*priceSalary;
+    var leftover=S-minimum;
+
+    var price,mortgage,salaryLimited;
+    if(leftover>=0){ salaryLimited=true; price=priceSalary; mortgage=H; }
+    else { salaryLimited=false; var buy=Math.max(0,S-R); price=buy/(1-f+c); mortgage=f*price; }
+
+    var downMin=price-mortgage, itpAmt=itpPct*price, otrosAmt=otrPct*price;
+    var cuota=cuotaFor(mortgage);
+    var saldo=S-downMin-itpAmt-otrosAmt-R;
+    var bankPct=Math.round(mortgage/price*100);
+
+    // Resumen + KPIs
+    $('sumPrice').textContent=e0(price);
+    $('sumText').textContent=salaryLimited?L().sumSalary(Math.round(f*100)):L().sumShort(Math.round(f*100));
+    $('kHip').textContent=e0(mortgage);
+    $('kHipNote').textContent=L().bankNote(bankPct);
+    $('kCuota').textContent=e2(cuota);
+    $('kCuotaNote').textContent=L().months(yrs);
+
+    // Flujo A
+    $('f_price').textContent=e0(price);
+    $('f_bank').textContent='+ '+e0(mortgage);
+    $('f_down').textContent='+ '+e0(downMin);
+    $('f_bank_pct').textContent='('+bankPct+'%)';
+    $('f_down_pct').textContent='('+Math.round(downMin/price*100)+'%)';
+    // Flujo B
+    $('f_sav_h').textContent=e0(S);
+    $('f_down2').textContent='− '+e0(downMin);
+    $('f_itp').textContent='− '+e0(itpAmt);
+    $('f_otros').textContent='− '+e0(otrosAmt);
+    $('f_itp_pct').textContent='('+(Math.round(itpPct*1000)/10)+'%)';
+    $('f_otros_pct').textContent='('+(Math.round(otrPct*1000)/10)+'%)';
+    if(R>0){ $('f_reform_row').classList.remove('hidden'); $('f_reform').textContent='− '+e0(R); }
+    else $('f_reform_row').classList.add('hidden');
+    var saldoEl=$('f_saldo');
+    saldoEl.textContent=(saldo<-0.5?'− ':'')+e0(Math.abs(saldo));
+    saldoEl.className='v '+(saldo<-0.5?'neg':(saldo>0.5?'pos':''));
+    $('f_saldo_lab').textContent=R>0?L().saldoLabAfter:L().saldoLabKeep;
+
+    // Comparativa
+    if(salaryLimited){
+      $('compareCard').classList.remove('hidden');
+      $('oa_in').textContent=e0(minimum);
+      $('oa_hip').textContent=e0(H);
+      $('oa_cuota').textContent=e2(cuotaMax);
+      $('oa_foot').textContent=L().footMin(e0(leftover));
+      var mortgageAll=Math.max(0,(price+itpAmt+otrosAmt)-S);
+      var cuotaAll=cuotaFor(mortgageAll);
+      $('ob_in').textContent=e0(S);
+      $('ob_hip').textContent=e0(mortgageAll);
+      $('ob_cuota').textContent=e2(cuotaAll);
+      $('ob_foot').textContent=L().footAll(eur0().format(round1k(Math.max(0,cuotaMax-cuotaAll))));
+    } else $('compareCard').classList.add('hidden');
+
+    // Aviso
+    var cls,ic,title,text,expl;
+    if(salaryLimited){
+      if(R>0 && R>leftover+0.5){
+        cls='warn'; ic='⚠️'; title=L().reformTitle;
+        text=L().reformText(e0(leftover),e0(R),e0(R-leftover)); expl=L().reformExpl;
+      } else {
+        cls='ok'; ic='✅'; title=L().okTitle;
+        text=L().okText(e0(H),e0(price),Math.round(f*100),e0(minimum),e0(R>0?leftover-R:leftover),R>0); expl=L().okExpl;
+      }
+    } else {
+      cls='warn'; ic='⚠️'; title=L().shortTitle;
+      text=L().shortText(e0(H),e0(priceSalary),e0(minimum),e0(S),e0(price),Math.round(f*100),e0(minimum-S),R>0);
+      expl=L().shortExpl;
+    }
+    $('notice').className='notice '+cls;
+    $('noticeIc').textContent=ic; $('noticeTitle').textContent=title; $('noticeText').textContent=text; $('saldoExpl').textContent=expl;
+
+    computeMore(f,c,S,cuotaMax,H);
+  }
+
+  function computeMore(f,c,S,cuotaMax,H){
+    // Palanca 1: ahorrar más tiempo
+    var P=parseNum($('targetPrice').value), sy=parseNum($('saveYear').value);
+    var o1=$('m1_out');
+    if(P>0 && sy>0){
+      var mortgageUsed=Math.min(H,f*P);
+      var needed=P*(1+c)-mortgageUsed;     // ahorro necesario (entrada extra + gastos)
+      var gap=needed-S;
+      if(gap<=0.5){ o1.className='lever-out ok'; o1.textContent=L().m1_already(e0(needed)); }
+      else{
+        var tm=Math.ceil(gap/sy*12), yy=Math.floor(tm/12), mm=tm%12;
+        var txt=L().m1_result(e0(needed),e0(gap),L().dur(yy,mm));
+        if(f*P>H+0.5) txt+=L().m1_overcap;
+        o1.className='lever-out'; o1.textContent=txt;
+      }
+    } else { o1.className='lever-out muted'; o1.textContent=L().m1_fill; }
+
+    // Palanca: alargar el plazo
+    var y2=Math.max(1,Math.round(parseNum($('moreYears').value)));
+    var N2=y2*12;
+    var H2=I>0 ? cuotaMax*(1-Math.pow(1+I,-N2))/I : cuotaMax*N2;
+    $('m3_out').textContent=L().m3_result(y2,e0(H2/f),e0(H/f));
+
+    // Palanca: mejores condiciones (interés más bajo)
+    var br=parseNum($('betterRate').value)/100, o5=$('m5_out');
+    if(br>0){
+      var Ib=br/12;
+      var Hb=Ib>0 ? cuotaMax*(1-Math.pow(1+Ib,-N))/Ib : cuotaMax*N;
+      o5.className='lever-out'; o5.textContent=L().m5_result(pctStr(br*100),e0(Hb/f),e0(H/f));
+    } else { o5.className='lever-out muted'; o5.textContent=L().m5_fill; }
+  }
+  function pctStr(x){ var s=(Math.round(x*100)/100).toString(); return (currentLang==='en'?s:s.replace('.',','))+'%'; }
+
+  function showEmpty(){
+    $('sumPrice').textContent='—';
+    $('sumText').textContent=L().emptySum;
+    $('notice').className='notice ok';
+    $('noticeIc').textContent='👋'; $('noticeTitle').textContent=L().emptyTitle; $('noticeText').textContent=L().emptyText;
+    $('compareCard').classList.add('hidden');
+    ['kHip','kCuota','f_price','f_bank','f_down','f_down2','f_itp','f_otros','f_saldo','f_sav_h'].forEach(function(id){$(id).textContent='—';});
+    $('kHipNote').textContent=''; $('kCuotaNote').textContent=''; $('saldoExpl').textContent='';
+    $('f_saldo_lab').textContent=L().saldoLabKeep;
+    $('m1_out').className='lever-out muted'; $('m1_out').textContent=L().m1_fill; $('m3_out').textContent='';
+    $('m5_out').className='lever-out muted'; $('m5_out').textContent=L().m5_fill;
+  }
+
+  applyStatic();
+  calc();
+})();
+</script>
+</body>
+</html>

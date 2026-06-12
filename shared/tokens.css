@@ -1,0 +1,29 @@
+/* ============================================================
+   AstroTools · design tokens (navy + dorado)
+   Fuente única de la identidad visual de la suite.
+   Extraído de AstroHome / AstroPayroll.
+   ============================================================ */
+:root{
+  --primary:#1a2b5e;
+  --primary-deep:#0f1d44;
+  --secondary:#4a6dd1;
+  --accent:#f5c84b;
+  --bg:#f4f6fb;
+  --surface:#ffffff;
+  --surface2:#f8fafd;
+  --border:#dde3ea;
+  --text:#1a2733;
+  --text-muted:#5a6a7a;
+  --danger:#e74c3c;
+  --danger-bg:#fdf0ee;
+  --success:#27ae60;
+  --success-bg:#edfaf2;
+  --warning:#e67e22;
+  --warning-bg:#fef6ee;
+  --radius:10px;
+  --radius-lg:14px;
+  --shadow:0 2px 12px rgba(26,60,94,0.08);
+  --shadow-lg:0 4px 24px rgba(26,60,94,0.13);
+  --topbar-gradient:linear-gradient(120deg,#0f1d44 0%,#1a2b5e 55%,#2a3f80 100%);
+  --font:'Segoe UI',system-ui,sans-serif;
+}
