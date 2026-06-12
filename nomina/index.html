@@ -118,6 +118,10 @@
   #results { display: none; margin-top: 2rem; }
   .result-hero { background: linear-gradient(135deg, var(--primary) 0%, #2563a8 100%); color: #fff; border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 1.25rem; }
   .result-hero h2 { font-size: 1rem; opacity: 0.8; margin-bottom: 1rem; }
+  .suite-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 0.2rem; color: var(--secondary); text-decoration: none; font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+  .suite-link:last-child { border-bottom: none; }
+  .suite-link:hover { color: var(--primary); }
+  .suite-link .arr { margin-left: auto; font-weight: 800; }
   .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
   .hero-stat { text-align: center; }
   .hero-stat .val { font-size: 1.6rem; font-weight: 700; }
@@ -802,6 +806,13 @@
       </div>
     </div>
 
+    <!-- Sinergia con la suite -->
+    <div class="card">
+      <div class="card-title"><div class="icon">🧭</div> <span data-i18n="suite_title">¿Y ahora qué?</span></div>
+      <a class="suite-link" href="../casa/"><span data-i18n="suite_home">¿A qué piso puedes aspirar con este sueldo? · AstroHome</span><span class="arr">→</span></a>
+      <a class="suite-link" href="../ahorro/"><span data-i18n="suite_savings">Haz que tus ahorros trabajen para ti · AstroSavings</span><span class="arr">→</span></a>
+    </div>
+
     <!-- VALORACIÓN DE BENEFICIOS -->
     <div class="card">
       <div class="card-title"><div class="icon">🎁</div> <span data-i18n="res_valuation">Valoración de salario y beneficios</span></div>
@@ -854,7 +865,7 @@
   </div>
   <div class="privacy-note">
     <strong data-i18n="privacy_title">🔒 Privacidad.</strong>
-    <span data-i18n="privacy_body"> AstroPayroll no almacena ni envía a ningún servidor tus datos personales o financieros. Todos los cálculos se ejecutan localmente en tu navegador y desaparecen al cerrar la pestaña. No usamos cookies, ni analítica, ni rastreadores de terceros.</span>
+    <span data-i18n="privacy_body"> AstroPayroll no almacena ni envía tus datos personales o financieros a ningún servidor. Todos los cálculos se ejecutan localmente en tu navegador. Usamos Umami Analytics (sin cookies, sin identificadores personales) únicamente para contar visitas y acciones básicas de navegación — nunca se guardan datos de salarios, tipos impositivos ni ningún dato financiero.</span>
   </div>
   <div class="llm-note">
     <strong data-i18n="llm_title">💡 ¿Tienes dudas?</strong>
@@ -1058,7 +1069,7 @@
     <span>AstroPayroll</span>
     <span class="ver-tag">v2.15</span>
   </div>
-  <div data-i18n="footer_astrocosas">Una app de <a href="#" target="_blank" rel="noopener">AstroCosas</a> · Datos fiscales 2026</div>
+  <div data-i18n="footer_astrocosas">Una app de AstroCosas · Datos fiscales 2026</div>
 </footer>
 
 <script>
@@ -1117,6 +1128,7 @@ let lastResult = null;
 const T = {
   es:{
     brand:'AstroPayroll', nav_calc:'Calculadora', nav_how:'¿Cómo funciona?', nav_tramos:'Tramos IRPF',
+    suite_title:'¿Y ahora qué?', suite_home:'¿A qué piso puedes aspirar con este sueldo? · AstroHome', suite_savings:'Haz que tus ahorros trabajen para ti · AstroSavings',
     footer_astrocosas:'Una app de AstroCosas · Datos fiscales 2026',
     calc_title:'¿Cuánto me queda neto?', calc_subtitle:'Introduce tu salario y te calculamos el desglose real mes a mes.',
     blk_salary:'Salario base', lbl_salary_base:'Salario base bruto anual', tip_salary:'Es el sueldo que aparece en tu contrato antes de que te descuenten nada. No incluye bonus ni extras.', tip_salary_short:'El sueldo de tu contrato antes de descuentos',
@@ -1248,6 +1260,7 @@ const T = {
   },
   ca:{
     brand:'AstroPayroll', nav_calc:'Calculadora', nav_how:'Com funciona?', nav_tramos:'Trams IRPF',
+    suite_title:'I ara què?', suite_home:'A quin pis pots aspirar amb aquest sou? · AstroHome', suite_savings:'Fes que els teus estalvis treballin per tu · AstroSavings',
     footer_astrocosas:'Una app d\'AstroCosas · Dades fiscals 2026',
     calc_title:'Quant em queda net?', calc_subtitle:'Introdueix el teu salari i calculem el desglossament real mes a mes.',
     blk_salary:'Salari base', lbl_salary_base:'Salari base brut anual', tip_salary:'És el sou que apareix al teu contracte abans de cap descompte.', tip_salary_short:'El sou del teu contracte abans de descomptes',
@@ -1379,6 +1392,7 @@ const T = {
   },
   en:{
     brand:'AstroPayroll', nav_calc:'Calculator', nav_how:'How does it work?', nav_tramos:'Tax Brackets',
+    suite_title:'What now?', suite_home:'What home can you afford on this salary? · AstroHome', suite_savings:'Put your savings to work · AstroSavings',
     footer_astrocosas:'An app by AstroCosas · 2026 tax data',
     calc_title:'How much do I take home?', calc_subtitle:'Enter your salary and we calculate your real monthly breakdown.',
     blk_salary:'Base salary', lbl_salary_base:'Annual gross base salary', tip_salary:'The salary stated in your contract before any deductions. Does not include bonuses or extras.', tip_salary_short:'Your contract salary before deductions',
