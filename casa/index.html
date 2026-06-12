@@ -210,6 +210,11 @@
   .mode-btn .mic{width:30px;height:30px;border-radius:8px;background:#eaf0fb;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
   .mode-btn .md{display:block;color:var(--text-muted);font-size:.83rem;margin-top:.45rem;line-height:1.4}
 
+  /* sub-filas del desglose (modo "ya sé el piso") */
+  .knsub .l{padding-left:1.5rem;color:var(--text-muted)}
+  .knsub .l::before{content:'';width:6px;height:1px;background:var(--border);margin-right:-.8rem}
+  .knsub .v{color:var(--text-muted);font-weight:600}
+
   .hidden{display:none!important}
 </style>
 <script src="../shared/brand.js"></script>
@@ -522,18 +527,19 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><div class="icon">🧮</div> <span data-i18n="kn_flow_title">Desglose: cuánto necesitas para la operación</span></div>
+      <div class="card-title"><div class="icon">🧮</div> <span data-i18n="kn_flow_title">Desglose de la compra</span></div>
       <div class="miniflow">
-        <p class="blocktitle" data-i18n="kn_b1">El piso y la hipoteca</p>
-        <div class="row"><span class="l"><span class="tag eq">=</span> <span data-i18n="kn_price">Precio del piso</span></span><span class="v" id="kf_price">—</span></div>
-        <div class="row"><span class="l"><span class="tag plus">+</span> <span data-i18n="kn_bank">Lo pone el banco (hipoteca)</span> <span class="pct" id="kf_bank_pct"></span></span><span class="v pos" id="kf_bank">—</span></div>
+        <p class="blocktitle" data-i18n="kn_b1">El precio, ¿quién lo paga?</p>
+        <div class="row"><span class="l"><span data-i18n="kn_price">Precio del piso</span></span><span class="v" id="kf_price">—</span></div>
+        <div class="row knsub"><span class="l"><span data-i18n="kn_bank">Hipoteca · la pone el banco</span> <span class="pct" id="kf_bank_pct"></span></span><span class="v" id="kf_bank">—</span></div>
+        <div class="row knsub"><span class="l"><span data-i18n="kn_down">Entrada · la pones tú</span> <span class="pct" id="kf_down_pct"></span></span><span class="v" id="kf_down">—</span></div>
       </div>
       <div class="miniflow">
-        <p class="blocktitle" data-i18n="kn_b2">Lo que tienes que poner tú</p>
-        <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="kn_down">Entrada</span> <span class="pct" id="kf_down_pct"></span></span><span class="v neg" id="kf_down">—</span></div>
-        <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="kn_itp">Impuesto de compra</span> <span class="pct" id="kf_itp_pct"></span></span><span class="v neg" id="kf_itp">—</span></div>
-        <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="kn_otros">Otros gastos</span> <span class="pct" id="kf_otros_pct"></span></span><span class="v neg" id="kf_otros">—</span></div>
-        <div class="row hidden" id="kf_reform_row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_reform">Reforma</span></span><span class="v neg" id="kf_reform">—</span></div>
+        <p class="blocktitle" data-i18n="kn_b2">Lo que necesitas tener ahorrado</p>
+        <div class="row"><span class="l"><span data-i18n="kn_down2">Entrada</span></span><span class="v" id="kf_down2">—</span></div>
+        <div class="row"><span class="l"><span data-i18n="kn_itp">Impuesto de compra</span> <span class="pct" id="kf_itp_pct"></span></span><span class="v" id="kf_itp">—</span></div>
+        <div class="row"><span class="l"><span data-i18n="kn_otros">Otros gastos</span> <span class="pct" id="kf_otros_pct"></span></span><span class="v" id="kf_otros">—</span></div>
+        <div class="row hidden" id="kf_reform_row"><span class="l"><span data-i18n="flow_reform">Reforma</span></span><span class="v" id="kf_reform">—</span></div>
         <div class="row total"><span class="l" data-i18n="kn_total">Total que necesitas ahorrado</span><span class="v" id="kf_total">—</span></div>
       </div>
       <p class="flow-note" id="knExpl"></p>
@@ -726,10 +732,11 @@
       kn_hero_eyebrow:'Para comprar este piso necesitas tener ahorrado',
       kn_hero_t:function(mort,f){return 'El banco te presta '+mort+' (el '+f+'%); el resto lo pones tú.';},
       kn_empty:'Introduce el precio del piso para ver cuánto necesitas.',
-      kn_flow_title:'Desglose: cuánto necesitas para la operación',
-      kn_b1:'El piso y la hipoteca', kn_b2:'Lo que tienes que poner tú',
-      kn_price:'Precio del piso', kn_bank:'Lo pone el banco (hipoteca)',
-      kn_down:'Entrada', kn_itp:'Impuesto de compra', kn_otros:'Otros gastos',
+      kn_flow_title:'Desglose de la compra',
+      kn_b1:'El precio, ¿quién lo paga?', kn_b2:'Lo que necesitas tener ahorrado',
+      kn_price:'Precio del piso', kn_bank:'Hipoteca · la pone el banco',
+      kn_down:'Entrada · la pones tú', kn_down2:'Entrada',
+      kn_itp:'Impuesto de compra', kn_otros:'Otros gastos',
       kn_total:'Total que necesitas ahorrado',
       knOkTitle:'Te llega con tus ahorros',
       knOkText:function(total,S,left){return 'Para esta compra necesitas '+total+'. Tienes '+S+' ahorrados, así que te sobrarían '+left+'.';},
@@ -851,10 +858,11 @@
       kn_hero_eyebrow:'Per comprar aquest pis necessites tenir estalviat',
       kn_hero_t:function(mort,f){return 'El banc et presta '+mort+' (el '+f+'%); la resta la poses tu.';},
       kn_empty:'Introdueix el preu del pis per veure quant necessites.',
-      kn_flow_title:'Desglossament: quant necessites per a l’operació',
-      kn_b1:'El pis i la hipoteca', kn_b2:'El que has de posar tu',
-      kn_price:'Preu del pis', kn_bank:'Ho posa el banc (hipoteca)',
-      kn_down:'Entrada', kn_itp:'Impost de compra', kn_otros:'Altres despeses',
+      kn_flow_title:'Desglossament de la compra',
+      kn_b1:'El preu, qui el paga?', kn_b2:'El que necessites tenir estalviat',
+      kn_price:'Preu del pis', kn_bank:'Hipoteca · la posa el banc',
+      kn_down:'Entrada · la poses tu', kn_down2:'Entrada',
+      kn_itp:'Impost de compra', kn_otros:'Altres despeses',
       kn_total:'Total que necessites estalviat',
       knOkTitle:'T’arriba amb els estalvis',
       knOkText:function(total,S,left){return 'Per a aquesta compra necessites '+total+'. Tens '+S+' estalviats, així que et sobrarien '+left+'.';},
@@ -976,10 +984,11 @@
       kn_hero_eyebrow:'To buy this home you need to have saved',
       kn_hero_t:function(mort,f){return 'The bank lends you '+mort+' (the '+f+'%); you put in the rest.';},
       kn_empty:'Enter the home price to see how much you need.',
-      kn_flow_title:'Breakdown: how much you need for the purchase',
-      kn_b1:'The home and the mortgage', kn_b2:'What you have to put in',
-      kn_price:'Home price', kn_bank:'The bank puts in (mortgage)',
-      kn_down:'Deposit', kn_itp:'Purchase tax', kn_otros:'Other costs',
+      kn_flow_title:'Purchase breakdown',
+      kn_b1:'The price — who pays it?', kn_b2:'What you need to have saved',
+      kn_price:'Home price', kn_bank:'Mortgage · paid by the bank',
+      kn_down:'Deposit · paid by you', kn_down2:'Deposit',
+      kn_itp:'Purchase tax', kn_otros:'Other costs',
       kn_total:'Total you need saved',
       knOkTitle:'Your savings are enough',
       knOkText:function(total,S,left){return 'This purchase needs '+total+'. You have '+S+' saved, so you’d have '+left+' left over.';},
@@ -1220,15 +1229,16 @@
 
     // Desglose
     $('kf_price').textContent=e0(P);
-    $('kf_bank').textContent='+ '+e0(mortgage);
+    $('kf_bank').textContent=e0(mortgage);
     $('kf_bank_pct').textContent='('+bankPct+'%)';
-    $('kf_down').textContent='− '+e0(entrada);
+    $('kf_down').textContent=e0(entrada);
     $('kf_down_pct').textContent='('+Math.round(entrada/P*100)+'%)';
-    $('kf_itp').textContent='− '+e0(itpAmt);
+    $('kf_down2').textContent=e0(entrada);
+    $('kf_itp').textContent=e0(itpAmt);
     $('kf_itp_pct').textContent='('+(Math.round(itpPct*1000)/10)+'%)';
-    $('kf_otros').textContent='− '+e0(otrosAmt);
+    $('kf_otros').textContent=e0(otrosAmt);
     $('kf_otros_pct').textContent='('+(Math.round(otrPct*1000)/10)+'%)';
-    if(R>0){ $('kf_reform_row').classList.remove('hidden'); $('kf_reform').textContent='− '+e0(R); }
+    if(R>0){ $('kf_reform_row').classList.remove('hidden'); $('kf_reform').textContent=e0(R); }
     else $('kf_reform_row').classList.add('hidden');
     $('kf_total').textContent=e0(total);
 
@@ -1251,7 +1261,7 @@
   }
 
   function showEmptyKnown(){
-    ['knTotal','knBank','knCuota','kf_price','kf_bank','kf_down','kf_itp','kf_otros','kf_total'].forEach(function(id){$(id).textContent='—';});
+    ['knTotal','knBank','knCuota','kf_price','kf_bank','kf_down','kf_down2','kf_itp','kf_otros','kf_total'].forEach(function(id){$(id).textContent='—';});
     $('knHeroText').textContent=L().kn_empty;
     $('knBankNote').textContent=''; $('knCuotaNote').textContent='';
     ['kf_bank_pct','kf_down_pct','kf_itp_pct','kf_otros_pct'].forEach(function(id){$(id).textContent='';});
