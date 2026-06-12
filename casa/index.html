@@ -200,6 +200,16 @@
     .page{padding:1rem .8rem 3rem}
     .result-hero .big{font-size:1.7rem}
   }
+  /* ---------- Selector de modo ---------- */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.5rem}
+  @media(max-width:560px){.modes{grid-template-columns:1fr}}
+  .mode-btn{text-align:left;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.15rem;cursor:pointer;font-family:inherit;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
+  .mode-btn:hover{border-color:var(--secondary)}
+  .mode-btn.active{border-color:var(--secondary);background:#eef4fc;box-shadow:var(--shadow-lg)}
+  .mode-btn .mt{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--primary);font-size:.98rem}
+  .mode-btn .mic{width:30px;height:30px;border-radius:8px;background:#eaf0fb;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+  .mode-btn .md{display:block;color:var(--text-muted);font-size:.83rem;margin-top:.45rem;line-height:1.4}
+
   .hidden{display:none!important}
 </style>
 <script src="../shared/brand.js"></script>
@@ -252,6 +262,18 @@
     <p data-i18n="calc_subtitle">Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar.</p>
   </div>
 
+  <!-- Selector de modo -->
+  <div class="modes" id="modeSelector">
+    <button type="button" class="mode-btn active" id="mode-explore" onclick="setMode('explore')">
+      <span class="mt"><span class="mic">🔭</span> <span data-i18n="mode_explore_t">Aún no sé qué piso compraré</span></span>
+      <span class="md" data-i18n="mode_explore_d">Descubre a qué piso puedes aspirar con tu sueldo y tus ahorros.</span>
+    </button>
+    <button type="button" class="mode-btn" id="mode-known" onclick="setMode('known')">
+      <span class="mt"><span class="mic">🎯</span> <span data-i18n="mode_known_t">Ya sé el piso</span></span>
+      <span class="md" data-i18n="mode_known_d">Calcula cuánto dinero necesitas para comprarlo.</span>
+    </button>
+  </div>
+
   <!-- Datos -->
   <div class="card">
     <div class="card-title"><div class="icon">🧾</div> <span data-i18n="card_data">Tus datos</span></div>
@@ -281,6 +303,26 @@
       <label data-i18n="lbl_savings">Ahorros que tienes</label>
       <div class="input-wrap"><input id="savings" type="text" inputmode="numeric" value="120.000"><span class="unit">€</span></div>
       <div class="hint"><span class="info-icon">i<span class="tooltip-box" data-i18n="tip_savings">Con tus ahorros pagas la entrada y los impuestos y gastos de comprar. El banco no presta el 100%. Lo que sobre puede ir a la reforma.</span></span><span data-i18n="hint_savings">Para la entrada, los gastos y, si sobra, la reforma</span></div>
+    </div>
+  </div>
+
+  <!-- El piso que quieres (solo modo "ya sé el piso") -->
+  <div class="card hidden" id="knownCard">
+    <div class="card-title"><div class="icon">🏠</div> <span data-i18n="known_card">El piso que quieres</span></div>
+    <div class="field">
+      <label data-i18n="lbl_price_known">Precio del piso</label>
+      <div class="input-wrap"><input id="priceKnown" type="text" inputmode="numeric" value="250.000"><span class="unit">€</span></div>
+      <div class="hint"><span class="info-icon">i<span class="tooltip-box" data-i18n="tip_price_known">El precio que pide el vendedor. Sobre él se calculan la entrada, los impuestos y los gastos.</span></span><span data-i18n="hint_price_known">El precio que pide el vendedor</span></div>
+    </div>
+    <div class="toggle-row" style="border-top:1px solid var(--border);padding-top:1rem;margin-top:1.2rem">
+      <label class="toggle"><input type="checkbox" id="knownReformChk"><span class="toggle-slider"></span></label>
+      <div class="lab"><span data-i18n="toggle_reform">El piso necesita reforma</span><small data-i18n="toggle_reform_known_sub">Indica cuánto te quieres gastar</small></div>
+    </div>
+    <div id="knownReformWrap" class="hidden" style="margin-top:1rem">
+      <div class="field" style="max-width:260px">
+        <label data-i18n="lbl_reform">¿Cuánto costaría la reforma?</label>
+        <div class="input-wrap"><input id="knownReform" type="text" inputmode="numeric" value="20.000"><span class="unit">€</span></div>
+      </div>
     </div>
   </div>
 
@@ -319,19 +361,11 @@
       </div>
     </div>
 
-    <div class="toggle-row" style="border-top:1px solid var(--border);padding-top:1rem;margin-top:1.2rem">
-      <label class="toggle"><input type="checkbox" id="reformChk"><span class="toggle-slider"></span></label>
-      <div class="lab"><span data-i18n="toggle_reform">El piso necesita reforma</span><small data-i18n="toggle_reform_sub">La pagas con el dinero que te sobra</small></div>
-    </div>
-    <div id="reformWrap" class="hidden" style="margin-top:1rem">
-      <div class="field" style="max-width:260px">
-        <label data-i18n="lbl_reform">¿Cuánto costaría la reforma?</label>
-        <div class="input-wrap"><input id="reform" type="text" inputmode="numeric" value="20.000"><span class="unit">€</span></div>
-      </div>
-    </div>
     </div><!-- /termsBody -->
   </div>
 
+  <!-- ===== Vista: aún no sé qué piso ===== -->
+  <div id="viewExplore">
   <!-- Resultado -->
   <div class="result-hero">
     <p class="eyebrow" data-i18n="hero_eyebrow">Con tu sueldo puedes aspirar a un piso de</p>
@@ -456,6 +490,53 @@
         <p data-i18n="m4_p1">Si compráis dos, el banco suma los dos sueldos y os presta más. Activa arriba «Compramos en pareja» para verlo.</p>
         <p style="margin-bottom:0" data-i18n="m4_p2">Un avalista (por ejemplo, tus padres) respalda el préstamo con su patrimonio, lo que da más tranquilidad al banco; pero asume la deuda si tú no puedes pagar.</p>
       </div>
+    </div>
+  </div>
+
+  </div><!-- /viewExplore -->
+
+  <!-- ===== Vista: ya sé el piso ===== -->
+  <div id="viewKnown" class="hidden">
+    <div class="result-hero">
+      <p class="eyebrow" data-i18n="kn_hero_eyebrow">Para comprar este piso necesitas tener ahorrado</p>
+      <p class="big" id="knTotal">—</p>
+      <p class="t" id="knHeroText"></p>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lab"><span data-i18n="kpi_bank">Te presta el banco</span></div>
+        <div class="val" id="knBank">—</div>
+        <div class="note" id="knBankNote"></div>
+      </div>
+      <div class="kpi">
+        <div class="lab"><span data-i18n="kpi_month">Pagarías al mes</span></div>
+        <div class="val" id="knCuota">—</div>
+        <div class="note" id="knCuotaNote"></div>
+      </div>
+    </div>
+
+    <div class="notice ok" id="knNotice">
+      <div class="ic" id="knNoticeIc">💡</div>
+      <div><h3 id="knNoticeTitle">—</h3><p id="knNoticeText">—</p></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">🧮</div> <span data-i18n="kn_flow_title">Desglose: cuánto necesitas para la operación</span></div>
+      <div class="miniflow">
+        <p class="blocktitle" data-i18n="kn_b1">El piso y la hipoteca</p>
+        <div class="row"><span class="l"><span class="tag eq">=</span> <span data-i18n="kn_price">Precio del piso</span></span><span class="v" id="kf_price">—</span></div>
+        <div class="row"><span class="l"><span class="tag plus">+</span> <span data-i18n="kn_bank">Lo pone el banco (hipoteca)</span> <span class="pct" id="kf_bank_pct"></span></span><span class="v pos" id="kf_bank">—</span></div>
+      </div>
+      <div class="miniflow">
+        <p class="blocktitle" data-i18n="kn_b2">Lo que tienes que poner tú</p>
+        <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="kn_down">Entrada</span> <span class="pct" id="kf_down_pct"></span></span><span class="v neg" id="kf_down">—</span></div>
+        <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="kn_itp">Impuesto de compra</span> <span class="pct" id="kf_itp_pct"></span></span><span class="v neg" id="kf_itp">—</span></div>
+        <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="kn_otros">Otros gastos</span> <span class="pct" id="kf_otros_pct"></span></span><span class="v neg" id="kf_otros">—</span></div>
+        <div class="row hidden" id="kf_reform_row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_reform">Reforma</span></span><span class="v neg" id="kf_reform">—</span></div>
+        <div class="row total"><span class="l" data-i18n="kn_total">Total que necesitas ahorrado</span><span class="v" id="kf_total">—</span></div>
+      </div>
+      <p class="flow-note" id="knExpl"></p>
     </div>
   </div>
 
@@ -634,7 +715,30 @@
       m3_result:function(y,price2,priceNow){return 'Con '+y+' años podrías aspirar a un piso de '+price2+', en lugar de '+priceNow+', con la misma cuota máxima.';},
       dur:function(y,m){var p=[];if(y>0)p.push(y+(y===1?' año':' años'));if(m>0)p.push(m+(m===1?' mes':' meses'));return p.length?p.join(' y '):'menos de un mes';},
       emptyTitle:'Empecemos', emptyText:'Rellena tu sueldo neto anual y tus ahorros arriba.',
-      emptySum:'Introduce tu sueldo para ver a qué piso puedes aspirar.'
+      emptySum:'Introduce tu sueldo para ver a qué piso puedes aspirar.',
+      // ----- modo "ya sé el piso" -----
+      mode_explore_t:'Aún no sé qué piso compraré', mode_explore_d:'Descubre a qué piso puedes aspirar con tu sueldo y tus ahorros.',
+      mode_known_t:'Ya sé el piso', mode_known_d:'Calcula cuánto dinero necesitas para comprarlo.',
+      known_card:'El piso que quieres',
+      lbl_price_known:'Precio del piso', hint_price_known:'El precio que pide el vendedor',
+      tip_price_known:'El precio que pide el vendedor. Sobre él se calculan la entrada, los impuestos y los gastos.',
+      toggle_reform_known_sub:'Indica cuánto te quieres gastar',
+      kn_hero_eyebrow:'Para comprar este piso necesitas tener ahorrado',
+      kn_hero_t:function(mort,f){return 'El banco te presta '+mort+' (el '+f+'%); el resto lo pones tú.';},
+      kn_empty:'Introduce el precio del piso para ver cuánto necesitas.',
+      kn_flow_title:'Desglose: cuánto necesitas para la operación',
+      kn_b1:'El piso y la hipoteca', kn_b2:'Lo que tienes que poner tú',
+      kn_price:'Precio del piso', kn_bank:'Lo pone el banco (hipoteca)',
+      kn_down:'Entrada', kn_itp:'Impuesto de compra', kn_otros:'Otros gastos',
+      kn_total:'Total que necesitas ahorrado',
+      knOkTitle:'Te llega con tus ahorros',
+      knOkText:function(total,S,left){return 'Para esta compra necesitas '+total+'. Tienes '+S+' ahorrados, así que te sobrarían '+left+'.';},
+      knShortTitle:'Te faltan ahorros',
+      knShortText:function(total,S,gap){return 'Para esta compra necesitas '+total+' y tienes '+S+': te faltarían '+gap+'. Podrías ajustar la reforma, buscar algo más barato o ahorrar un poco más.';},
+      knNoSavTitle:'Esto es lo que necesitas',
+      knNoSavText:function(total){return 'Para completar la operación necesitas tener ahorrado unos '+total+'. Añade tus ahorros arriba y te digo si te llega.';},
+      knDtiBad:function(cuota,pct,cap){return '⚠️ La cuota ('+cuota+'/mes) supera el '+pct+'% de tu sueldo ('+cap+'/mes): el banco probablemente no aprobaría esta hipoteca. Alarga el plazo o busca un piso más barato.';},
+      knDtiOk:function(cuota,pct){return 'La cuota de '+cuota+'/mes encaja dentro del '+pct+'% de tu sueldo.';}
     },
     ca:{
       nav_calc:'Calculadora', nav_how:'Com funciona?',
@@ -736,7 +840,30 @@
       m3_result:function(y,price2,priceNow){return 'Amb '+y+' anys podries aspirar a un pis de '+price2+', en lloc de '+priceNow+', amb la mateixa quota màxima.';},
       dur:function(y,m){var p=[];if(y>0)p.push(y+(y===1?' any':' anys'));if(m>0)p.push(m+(m===1?' mes':' mesos'));return p.length?p.join(' i '):'menys d’un mes';},
       emptyTitle:'Comencem', emptyText:'Omple el teu sou net anual i els estalvis a dalt.',
-      emptySum:'Introdueix el teu sou per veure a quin pis pots aspirar.'
+      emptySum:'Introdueix el teu sou per veure a quin pis pots aspirar.',
+      // ----- mode "ja sé el pis" -----
+      mode_explore_t:'Encara no sé quin pis compraré', mode_explore_d:'Descobreix a quin pis pots aspirar amb el teu sou i els estalvis.',
+      mode_known_t:'Ja sé el pis', mode_known_d:'Calcula quants diners necessites per comprar-lo.',
+      known_card:'El pis que vols',
+      lbl_price_known:'Preu del pis', hint_price_known:'El preu que demana el venedor',
+      tip_price_known:'El preu que demana el venedor. Sobre aquest es calculen l’entrada, els impostos i les despeses.',
+      toggle_reform_known_sub:'Indica quant t’hi vols gastar',
+      kn_hero_eyebrow:'Per comprar aquest pis necessites tenir estalviat',
+      kn_hero_t:function(mort,f){return 'El banc et presta '+mort+' (el '+f+'%); la resta la poses tu.';},
+      kn_empty:'Introdueix el preu del pis per veure quant necessites.',
+      kn_flow_title:'Desglossament: quant necessites per a l’operació',
+      kn_b1:'El pis i la hipoteca', kn_b2:'El que has de posar tu',
+      kn_price:'Preu del pis', kn_bank:'Ho posa el banc (hipoteca)',
+      kn_down:'Entrada', kn_itp:'Impost de compra', kn_otros:'Altres despeses',
+      kn_total:'Total que necessites estalviat',
+      knOkTitle:'T’arriba amb els estalvis',
+      knOkText:function(total,S,left){return 'Per a aquesta compra necessites '+total+'. Tens '+S+' estalviats, així que et sobrarien '+left+'.';},
+      knShortTitle:'Et falten estalvis',
+      knShortText:function(total,S,gap){return 'Per a aquesta compra necessites '+total+' i tens '+S+': et faltarien '+gap+'. Pots ajustar la reforma, buscar alguna cosa més barata o estalviar una mica més.';},
+      knNoSavTitle:'Això és el que necessites',
+      knNoSavText:function(total){return 'Per completar l’operació necessites tenir estalviat uns '+total+'. Afegeix els teus estalvis a dalt i et dic si t’arriba.';},
+      knDtiBad:function(cuota,pct,cap){return '⚠️ La quota ('+cuota+'/mes) supera el '+pct+'% del teu sou ('+cap+'/mes): el banc probablement no aprovaria aquesta hipoteca. Allarga el termini o busca un pis més barat.';},
+      knDtiOk:function(cuota,pct){return 'La quota de '+cuota+'/mes encaixa dins del '+pct+'% del teu sou.';}
     },
     en:{
       nav_calc:'Calculator', nav_how:'How it works',
@@ -838,7 +965,30 @@
       m3_result:function(y,price2,priceNow){return 'With '+y+' years you could afford a '+price2+' home, instead of '+priceNow+', with the same maximum payment.';},
       dur:function(y,m){var p=[];if(y>0)p.push(y+(y===1?' year':' years'));if(m>0)p.push(m+(m===1?' month':' months'));return p.length?p.join(' and '):'less than a month';},
       emptyTitle:'Let’s start', emptyText:'Fill in your net yearly salary and savings above.',
-      emptySum:'Enter your salary to see what home you can afford.'
+      emptySum:'Enter your salary to see what home you can afford.',
+      // ----- mode "I know the home" -----
+      mode_explore_t:'I don’t know which home yet', mode_explore_d:'Find out what home you can afford with your salary and savings.',
+      mode_known_t:'I already know the home', mode_known_d:'Work out how much money you need to buy it.',
+      known_card:'The home you want',
+      lbl_price_known:'Home price', hint_price_known:'The price the seller is asking',
+      tip_price_known:'The price the seller is asking. The deposit, taxes and costs are calculated on it.',
+      toggle_reform_known_sub:'Tell us how much you want to spend',
+      kn_hero_eyebrow:'To buy this home you need to have saved',
+      kn_hero_t:function(mort,f){return 'The bank lends you '+mort+' (the '+f+'%); you put in the rest.';},
+      kn_empty:'Enter the home price to see how much you need.',
+      kn_flow_title:'Breakdown: how much you need for the purchase',
+      kn_b1:'The home and the mortgage', kn_b2:'What you have to put in',
+      kn_price:'Home price', kn_bank:'The bank puts in (mortgage)',
+      kn_down:'Deposit', kn_itp:'Purchase tax', kn_otros:'Other costs',
+      kn_total:'Total you need saved',
+      knOkTitle:'Your savings are enough',
+      knOkText:function(total,S,left){return 'This purchase needs '+total+'. You have '+S+' saved, so you’d have '+left+' left over.';},
+      knShortTitle:'You’re short on savings',
+      knShortText:function(total,S,gap){return 'This purchase needs '+total+' and you have '+S+': you’d be '+gap+' short. You could adjust the renovation, look for something cheaper or save a bit more.';},
+      knNoSavTitle:'This is what you need',
+      knNoSavText:function(total){return 'To complete the purchase you need to have saved about '+total+'. Add your savings above and I’ll tell you if it’s enough.';},
+      knDtiBad:function(cuota,pct,cap){return '⚠️ The payment ('+cuota+'/mo) exceeds '+pct+'% of your salary ('+cap+'/mo): the bank likely wouldn’t approve this mortgage. Extend the term or find a cheaper home.';},
+      knDtiOk:function(cuota,pct){return 'The '+cuota+'/mo payment fits within '+pct+'% of your salary.';}
     }
   };
 
@@ -876,6 +1026,19 @@
     document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l);});
     applyStatic(); calc();
   };
+
+  /* ===================== Modo (aún no sé / ya sé el piso) ===================== */
+  var mode='explore';
+  window.setMode=function(m){
+    mode=m;
+    $('mode-explore').classList.toggle('active',m==='explore');
+    $('mode-known').classList.toggle('active',m==='known');
+    $('knownCard').classList.toggle('hidden',m!=='known');
+    $('viewExplore').classList.toggle('hidden',m!=='explore');
+    $('viewKnown').classList.toggle('hidden',m!=='known');
+    window.scrollTo(0,0);
+    calc();
+  };
   function applyStatic(){
     document.querySelectorAll('[data-i18n]').forEach(function(el){
       var v=L()[el.getAttribute('data-i18n')];
@@ -908,14 +1071,14 @@
   document.addEventListener('click',function(){ document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');}); });
 
   /* ===================== Inputs ===================== */
-  var ids=['salary','salary2','savings','tae','years','ltv','dti','itp','otros','reform','saveYear','targetPrice','moreYears','betterRate'];
+  var ids=['salary','salary2','savings','tae','years','ltv','dti','itp','otros','priceKnown','knownReform','saveYear','targetPrice','moreYears','betterRate'];
   ids.forEach(function(id){ $(id).addEventListener('input',calc); });
-  ['salary','salary2','savings','reform','saveYear','targetPrice'].forEach(function(id){
+  ['salary','salary2','savings','priceKnown','knownReform','saveYear','targetPrice'].forEach(function(id){
     var el=$(id);
     el.addEventListener('blur',function(){ var n=Math.round(parseNum(el.value)); el.value=n?groupThousands(''+n):''; calc(); });
   });
   $('couple').addEventListener('change',function(){ $('partnerWrap').classList.toggle('hidden',!this.checked); calc(); });
-  $('reformChk').addEventListener('change',function(){ $('reformWrap').classList.toggle('hidden',!this.checked); calc(); });
+  $('knownReformChk').addEventListener('change',function(){ $('knownReformWrap').classList.toggle('hidden',!this.checked); calc(); });
 
   /* ===================== Cálculo ===================== */
   var I=0,N=360;
@@ -930,9 +1093,10 @@
 
   function calc(){
     updateMonthly();
+    if(mode==='known'){ calcKnown(); return; }
     var S=parseNum($('savings').value);
     var sal=parseNum($('salary').value)+($('couple').checked?parseNum($('salary2').value):0);
-    var R=$('reformChk').checked?parseNum($('reform').value):0;
+    var R=0;
 
     var yrs=Math.max(1,Math.round(parseNum($('years').value)));
     var f=parseNum($('ltv').value)/100;
@@ -1022,6 +1186,78 @@
     $('noticeIc').textContent=ic; $('noticeTitle').textContent=title; $('noticeText').textContent=text; $('saldoExpl').textContent=expl;
 
     computeMore(f,c,S,cuotaMax,H);
+  }
+
+  /* ===================== Cálculo · "ya sé el piso" ===================== */
+  function calcKnown(){
+    var P=parseNum($('priceKnown').value);
+    var R=$('knownReformChk').checked?parseNum($('knownReform').value):0;
+    var S=parseNum($('savings').value);
+    var sal=parseNum($('salary').value)+($('couple').checked?parseNum($('salary2').value):0);
+    var yrs=Math.max(1,Math.round(parseNum($('years').value)));
+    var f=parseNum($('ltv').value)/100;
+    var dtiPct=parseNum($('dti').value)/100;
+    var itpPct=parseNum($('itp').value)/100;
+    var otrPct=parseNum($('otros').value)/100;
+    N=yrs*12; I=(parseNum($('tae').value)/100)/12;
+
+    if(!(P>0 && f>0 && f<1)){ showEmptyKnown(); return; }
+
+    var mortgage=f*P;
+    var entrada=P-mortgage;
+    var itpAmt=itpPct*P, otrosAmt=otrPct*P;
+    var total=entrada+itpAmt+otrosAmt+R;
+    var cuota=cuotaFor(mortgage);
+    var bankPct=Math.round(mortgage/P*100);
+
+    // Hero + KPIs
+    $('knTotal').textContent=e0(total);
+    $('knHeroText').textContent=L().kn_hero_t(e0(mortgage),Math.round(f*100));
+    $('knBank').textContent=e0(mortgage);
+    $('knBankNote').textContent=L().bankNote(bankPct);
+    $('knCuota').textContent=e2(cuota);
+    $('knCuotaNote').textContent=L().months(yrs);
+
+    // Desglose
+    $('kf_price').textContent=e0(P);
+    $('kf_bank').textContent='+ '+e0(mortgage);
+    $('kf_bank_pct').textContent='('+bankPct+'%)';
+    $('kf_down').textContent='− '+e0(entrada);
+    $('kf_down_pct').textContent='('+Math.round(entrada/P*100)+'%)';
+    $('kf_itp').textContent='− '+e0(itpAmt);
+    $('kf_itp_pct').textContent='('+(Math.round(itpPct*1000)/10)+'%)';
+    $('kf_otros').textContent='− '+e0(otrosAmt);
+    $('kf_otros_pct').textContent='('+(Math.round(otrPct*1000)/10)+'%)';
+    if(R>0){ $('kf_reform_row').classList.remove('hidden'); $('kf_reform').textContent='− '+e0(R); }
+    else $('kf_reform_row').classList.add('hidden');
+    $('kf_total').textContent=e0(total);
+
+    // Aviso de viabilidad
+    var cls,ic,title,text,expl='';
+    if(S>0){
+      if(S+0.5>=total){ cls='ok'; ic='✅'; title=L().knOkTitle; text=L().knOkText(e0(total),e0(S),e0(S-total)); }
+      else { cls='warn'; ic='⚠️'; title=L().knShortTitle; text=L().knShortText(e0(total),e0(S),e0(total-S)); }
+    } else {
+      cls='ok'; ic='💡'; title=L().knNoSavTitle; text=L().knNoSavText(e0(total));
+    }
+    if(sal>0){
+      var cuotaMax=dtiPct*(sal/12);
+      if(cuota>cuotaMax+0.5){ expl=L().knDtiBad(e2(cuota),Math.round(dtiPct*100),e2(cuotaMax)); if(cls==='ok'){cls='warn';ic='⚠️';} }
+      else expl=L().knDtiOk(e2(cuota),Math.round(dtiPct*100));
+    }
+    $('knNotice').className='notice '+cls;
+    $('knNoticeIc').textContent=ic; $('knNoticeTitle').textContent=title; $('knNoticeText').textContent=text;
+    $('knExpl').textContent=expl;
+  }
+
+  function showEmptyKnown(){
+    ['knTotal','knBank','knCuota','kf_price','kf_bank','kf_down','kf_itp','kf_otros','kf_total'].forEach(function(id){$(id).textContent='—';});
+    $('knHeroText').textContent=L().kn_empty;
+    $('knBankNote').textContent=''; $('knCuotaNote').textContent='';
+    ['kf_bank_pct','kf_down_pct','kf_itp_pct','kf_otros_pct'].forEach(function(id){$(id).textContent='';});
+    $('knNotice').className='notice ok';
+    $('knNoticeIc').textContent='👋'; $('knNoticeTitle').textContent=L().emptyTitle; $('knNoticeText').textContent=L().kn_empty;
+    $('knExpl').textContent=''; $('kf_reform_row').classList.add('hidden');
   }
 
   function computeMore(f,c,S,cuotaMax,H){
