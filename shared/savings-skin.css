@@ -28,3 +28,5 @@ body{background:#f4f6fb !important;font-family:'Segoe UI',system-ui,sans-serif !
 /* logo: de serif itálico a Segoe con acento dorado, como el resto */
 .logo{font-family:'Segoe UI',system-ui,sans-serif !important;font-style:normal !important;color:var(--sky-dark) !important}
 .logo span{color:#f5c84b !important}
+/* selector de idioma: botón activo */
+.lang-btn.active{background:#1a2b5e !important;color:#fff !important;border-color:#1a2b5e !important}

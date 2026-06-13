@@ -211,6 +211,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 <script src="../shared/nav.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
 <script src="../shared/feedback.js" defer></script>
+<script defer src="i18n.js"></script>
 <link rel="stylesheet" href="../shared/savings-skin.css">
 </head>
 <body>
@@ -222,6 +223,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
     <div class="logo" onclick="restart()">Astro<span>Savings</span></div>
     <div class="topbar-right">
       <button class="back-btn hidden" id="back-btn" onclick="goBack()">← Volver</button>
+      <button class="lang-btn active" data-l="es" onclick="setLangSavings('es')">ES</button>
+      <button class="lang-btn" data-l="ca" onclick="setLangSavings('ca')">CA</button>
+      <button class="lang-btn" data-l="en" onclick="setLangSavings('en')">EN</button>
     </div>
   </div>
 
@@ -260,7 +264,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
       <div class="privacy-note">Está pensada para usarse junto a modelos de IA como ChatGPT o Claude, que pueden ayudarte a resolver dudas y aprender más a medida que avanzas.</div>
       <div class="privacy-note">Parte de <a href="../">AstroTools</a>: calcula tu sueldo neto en <a href="../nomina/">AstroPayroll</a> y a qué vivienda puedes aspirar en <a href="../casa/">AstroHome</a>.</div>
       <button class="btn-primary" onclick="goTo('s1')">Empezar →</button>
-      <div class="foot">Una app de AstroCosas · v4.6</div>
+      <div class="foot">Una app de AstroCosas · v5.0</div>
     </div>
 
     <!-- ====== S1: POR QUÉ INVERTIR ====== -->
