@@ -11,6 +11,10 @@
 <script src="shared/nav.js" defer></script>
 <script src="shared/analytics.js" defer></script>
 <style>
+  .lang-sel{display:flex;gap:6px;justify-content:flex-end;margin-bottom:.4rem}
+  .lang-sel button{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);font-family:inherit;font-size:.8rem;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
+  .lang-sel button:hover{border-color:var(--secondary);color:var(--secondary)}
+  .lang-sel button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
   .hero{text-align:center;padding:1rem 0 2rem}
   .hero h1{font-size:2.2rem;margin:.2rem 0;color:var(--primary)}
   .hero h1 .dot{color:var(--accent)}
@@ -25,22 +29,67 @@
 <body>
 <astro-nav></astro-nav>
 <div class="wrap">
+  <div class="lang-sel">
+    <button data-l="es" class="active" onclick="setLang('es')">ES</button>
+    <button data-l="ca" onclick="setLang('ca')">CA</button>
+    <button data-l="en" onclick="setLang('en')">EN</button>
+  </div>
   <div class="hero">
     <h1>AstroTools<span class="dot">.</span></h1>
-    <p>Una suite de calculadoras para tomar mejores decisiones con tu dinero.</p>
+    <p id="subtitle"></p>
   </div>
   <div class="grid" id="apps"></div>
-  <footer><strong>AstroTools</strong> es una app de AstroCosas</footer>
+  <footer id="foot"></footer>
 </div>
 <script>
   var cfg = window.ASTROTOOLS;
-  document.getElementById("apps").innerHTML = cfg.apps.map(function (a) {
-    return '<a class="card" href="' + a.href + '">' +
-             '<h2>' + a.name + '</h2>' +
-             '<div class="tag">' + a.tagline + '</div>' +
-             '<span class="go">Abrir →</span>' +
-           '</a>';
-  }).join("");
+  var T = {
+    es: {
+      title: "AstroTools · Tu suite de calculadoras",
+      subtitle: "Una suite de calculadoras para tomar mejores decisiones con tu dinero.",
+      open: "Abrir →",
+      foot: "<strong>AstroTools</strong> es una app de AstroCosas",
+      tag: { casa: "¿A qué casa puedes aspirar?", nomina: "Tu nómina e IRPF, mes a mes", ahorro: "Haz que tu dinero trabaje por ti" }
+    },
+    ca: {
+      title: "AstroTools · La teva suite de calculadores",
+      subtitle: "Una suite de calculadores per prendre millors decisions amb els teus diners.",
+      open: "Obrir →",
+      foot: "<strong>AstroTools</strong> és una app d'AstroCosas",
+      tag: { casa: "A quina casa pots aspirar?", nomina: "La teva nòmina i IRPF, mes a mes", ahorro: "Fes que els teus diners treballin per tu" }
+    },
+    en: {
+      title: "AstroTools · Your suite of calculators",
+      subtitle: "A suite of calculators to make better decisions with your money.",
+      open: "Open →",
+      foot: "<strong>AstroTools</strong> is an AstroCosas app",
+      tag: { casa: "What home can you afford?", nomina: "Your payslip and income tax, month by month", ahorro: "Make your money work for you" }
+    }
+  };
+
+  function render(l) {
+    var t = T[l] || T.es;
+    document.title = t.title;
+    document.getElementById("subtitle").textContent = t.subtitle;
+    document.getElementById("foot").innerHTML = t.foot;
+    document.getElementById("apps").innerHTML = cfg.apps.map(function (a) {
+      return '<a class="card" href="' + a.href + '">' +
+               '<h2>' + a.name + '</h2>' +
+               '<div class="tag">' + (t.tag[a.id] || a.tagline) + '</div>' +
+               '<span class="go">' + t.open + '</span>' +
+             '</a>';
+    }).join("");
+  }
+
+  window.setLang = function (l) {
+    if (!T[l]) l = "es";
+    document.documentElement.lang = l;
+    var btns = document.querySelectorAll(".lang-sel button");
+    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("active", btns[i].getAttribute("data-l") === l);
+    render(l);
+  };
+
+  render("es");
 </script>
 </body>
 </html>

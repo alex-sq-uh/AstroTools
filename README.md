@@ -1,41 +1,66 @@
-# AstroTools (nombre provisional)
+# AstroTools
 
-Suite que unifica **AstroHome** (`/casa`), **AstroPayroll** (`/nomina`) y **AstroSavings** (`/ahorro`)
-bajo una marca, un Umami y un menú de navegación común. Identidad: navy `#1a2b5e` + dorado `#f5c84b`.
+Suite que unifica tres calculadoras bajo una marca, un Umami y una navegación común:
 
-## Cómo arrancar
+| App | Ruta | Versión | Qué hace |
+|-----|------|---------|----------|
+| **AstroHome** | `/casa` | v1.3 | ¿A qué vivienda puedes aspirar? (+ "ya sé el piso") |
+| **AstroPayroll** | `/nomina` | v2.16 | Nómina e IRPF en España |
+| **AstroSavings** | `/ahorro` | v5.0 | Guía de inversión |
+
+Identidad visual: navy `#1a2b5e` + dorado `#f5c84b`, tipografía Segoe UI.
+**AstroTools** es el producto; **AstroCosas** queda solo como crédito en el footer.
+
+## En producción
+`https://alex-sq-uh.github.io/AstroTools/` (GitHub Pages, repo `AstroTools`).
+Flujo de cambios: editar → verificar → `git commit` + `git push` a `main` → Pages despliega en ~1 min.
+Todas las rutas internas son **relativas** (funcionan en la subcarpeta de Pages, en local y abriendo el archivo).
+
+## Cómo arrancar en local
 ```powershell
 cd C:\Users\alexe\Documents\AstroTools
 .\serve.ps1   # http://localhost:3000/
 ```
 
 ## Estructura
-- `shared/brand.js` — **única fuente del nombre** y lista de apps. Renombrar suite = 1 línea aquí.
-- `shared/nav.js` — `<astro-nav>` web component (Shadow DOM): barra cambiador de apps.
-- `shared/analytics.js` — carga Umami con UN solo website-id (pendiente, ver abajo).
-- `shared/tokens.css` / `base.css` — design system de la suite (usado por el hub).
-- `shared/savings-skin.css` — reskin de Savings al navy/gold (remapea sus variables, reversible).
+- `index.html` — hub/landing (trilingüe ES/CA/EN).
 - `casa/`, `nomina/`, `ahorro/` — las apps (1 `index.html` c/u).
-- `index.html` — hub/landing.
+- `ahorro/i18n.js` — motor de traducción específico de AstroSavings.
+- `shared/`
+  - `brand.js` — **única fuente del nombre** y lista de apps. Renombrar la suite = 1 línea aquí.
+  - `nav.js` — `<astro-nav>`: barra superior cambiador de apps (Shadow DOM, rutas relativas).
+  - `feedback.js` — `<astro-feedback>`: widget de feedback compartido (estrellas con 1 clic + pop-up).
+  - `analytics.js` — Umami con `data-tag` por app.
+  - `tokens.css` / `base.css` — design system de la suite (hub).
+  - `savings-skin.css` — reskin de AstroSavings al navy/gold (reversible).
 
-Originales intactos en `..\_archivo_originales\`.
+Originales pre-suite archivados en `..\_archivo_originales\`.
 
-## Despliegue (GitHub Pages)
-Repo `AstroTools` → la suite se sirve en `https://alex-sq-uh.github.io/AstroTools/`.
-Todas las rutas internas son **relativas**, así que funcionan igual en esa subcarpeta,
-en local (`serve.ps1`) y abriendo el HTML directamente. Sube el contenido de esta
-carpeta a la raíz del repo y activa Pages.
+## Idiomas
+- **Home, Payroll y hub**: ES/CA/EN con `data-i18n` + diccionario y selector.
+- **Savings**: ES/CA/EN vía `ahorro/i18n.js` (traduce por elemento; el ES es la base intacta).
+  - ⚠️ Pendiente: los **textos dinámicos generados por JS con cifras** (resultados de Jubilación e
+    Independencia, KPIs/nota de Piso, tablas de fondos y los tooltips) siguen en ES en CA/EN.
+    Requieren hacer "language-aware" las funciones que los generan.
 
 ## Umami
-Website único **AstroTools** (`662e04eb-…`), cargado vía `shared/analytics.js` en las 3 apps.
-Umami separa las apps por URL (`/casa`, `/nomina`, `/ahorro`). En local no registra
-(el dominio configurado es `alex-sq-uh.github.io`); empezará a contar al desplegar.
+Website único **AstroTools** (`662e04eb-…`) vía `shared/analytics.js`. Cada app añade `data-tag`
+(AstroHome / AstroPayroll / AstroSavings / Hub) para filtrar páginas y eventos por app.
+En local no registra (dominio configurado: `alex-sq-uh.github.io`).
 
-## Estado
-Hecho: scaffold, design system compartido, navegación entre apps, Umami unificado (ID real),
-reskin de Savings, hub, rutas relativas listas para GitHub Pages. Todo verificado (200 OK).
+## Feedback
+`<astro-feedback>` al final de cada app. Estrellas con 1 clic (envío directo) + botón que abre un
+pop-up para comentario. Envía a Formsubmit (mismo buzón, asunto por app). Eventos Umami
+`feedback_open` / `feedback_sent`.
 
-## PENDIENTE (usuario)
-1. **Subir a GitHub** (repo `AstroTools`) y activar Pages.
-2. **Nombre/dominio** definitivos (provisional: AstroTools; AstroCosas queda como crédito de footer).
-3. **Login + datos** (fase futura): elegir proveedor (recomendado Supabase).
+## Sinergias entre apps
+Home↔Payroll (sueldo neto), Home→Savings y Payroll→Home/Savings, Savings→Home/Payroll.
+
+## Redirecciones heredadas
+Los repos antiguos `AstroHome`, `AstroPayroll`, `astrosavings` redirigen a las rutas nuevas
+dentro de AstroTools (para los enlaces que ya tenían los usuarios).
+
+## Pendiente / ideas
+1. **Textos dinámicos de Savings** en CA/EN (ver sección Idiomas).
+2. **Login + datos personales** (fase futura; proveedor recomendado: Supabase).
+3. Apps candidatas: AstroAlquiler, AstroAutónomo, AstroRenta, AstroJubilación…
