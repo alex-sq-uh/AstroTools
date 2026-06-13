@@ -220,7 +220,23 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 
   <!-- ====== TOPBAR ====== -->
   <div class="topbar">
-    <div class="logo" onclick="restart()">Astro<span>Savings</span></div>
+    <div class="topbar-brand" onclick="restart()">
+      <svg class="brand-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="asOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>
+          <radialGradient id="asPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>
+        </defs>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#asOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#asPlanet)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">Astro<span class="accent">Savings</span></span>
+        <span class="brand-ver">v4.8</span>
+      </div>
+    </div>
     <div class="topbar-right">
       <button class="back-btn hidden" id="back-btn" onclick="goBack()">← Volver</button>
       <button class="lang-btn active" data-l="es" onclick="setLangSavings('es')">ES</button>
