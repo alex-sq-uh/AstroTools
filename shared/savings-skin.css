@@ -26,7 +26,27 @@ body{background:#f4f6fb !important;font-family:'Segoe UI',system-ui,sans-serif !
 }
 #app::before{background:linear-gradient(90deg,#1a2b5e,#4a6dd1,#1a2b5e) !important}
 /* logo: de serif itálico a Segoe con acento dorado, como el resto */
-.logo{font-family:'Segoe UI',system-ui,sans-serif !important;font-style:normal !important;color:var(--sky-dark) !important}
+/* ---- Homogeneizar con el look de Home/Payroll: cabecera navy + botones de la suite ---- */
+.topbar{
+  background:linear-gradient(120deg,#0f1d44 0%,#1a2b5e 55%,#2a3f80 100%) !important;
+  max-width:none !important; width:100% !important;
+  padding:0 1.25rem !important; height:56px !important;
+  box-shadow:0 2px 12px rgba(0,0,0,.22);
+}
+.logo{font-family:'Segoe UI',system-ui,sans-serif !important;font-style:normal !important;color:#fff !important;font-size:1.15rem !important;letter-spacing:.01em}
 .logo span{color:#f5c84b !important}
-/* selector de idioma: botón activo */
-.lang-btn.active{background:#1a2b5e !important;color:#fff !important;border-color:#1a2b5e !important}
+/* botones del header (volver / idioma) al estilo navy de la suite */
+.back-btn,.lang-btn{
+  background:rgba(255,255,255,.10) !important;
+  border:1px solid rgba(255,255,255,.25) !important;
+  color:rgba(255,255,255,.85) !important;
+  border-radius:6px !important; box-shadow:none !important;
+}
+.back-btn:hover,.lang-btn:hover{background:rgba(255,255,255,.20) !important;color:#fff !important;border-color:rgba(255,255,255,.40) !important}
+.lang-btn.active{background:rgba(255,255,255,.28) !important;color:#fff !important;border-color:rgba(255,255,255,.45) !important}
+/* contenido centrado bajo la cabecera (como las páginas de la suite) */
+.milestones{max-width:680px !important;padding-top:.7rem !important}
+/* botones de acción: del estilo píldora al rectangular redondeado de la suite */
+.btn-primary{border-radius:10px !important;box-shadow:0 3px 12px rgba(26,60,94,.25) !important}
+.btn-primary:hover{box-shadow:0 5px 18px rgba(26,60,94,.32) !important}
+.btn-ghost{border-radius:10px !important}

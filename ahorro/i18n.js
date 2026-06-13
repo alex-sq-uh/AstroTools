@@ -61,7 +61,7 @@
     "Está pensada para usarse junto a modelos de IA como ChatGPT o Claude, que pueden ayudarte a resolver dudas y aprender más a medida que avanzas.": { ca: "Està pensada per usar-se juntament amb models d'IA com ChatGPT o Claude, que poden ajudar-te a resoldre dubtes i aprendre més a mesura que avances.", en: "It's meant to be used alongside AI models like ChatGPT or Claude, which can help you answer questions and learn more as you go." },
     "Parte de AstroTools: calcula tu sueldo neto en AstroPayroll y a qué vivienda puedes aspirar en AstroHome.": { ca: 'Part d\'AstroTools: calcula el teu sou net a <a href="../nomina/">AstroPayroll</a> i a quin habitatge pots aspirar a <a href="../casa/">AstroHome</a>.', en: 'Part of AstroTools: work out your net salary in <a href="../nomina/">AstroPayroll</a> and what home you can afford in <a href="../casa/">AstroHome</a>.' },
     "Empezar →": { ca: "Començar →", en: "Start →" },
-    "Una app de AstroCosas · v4.7": { ca: "Una app d'AstroCosas · v4.7", en: "An AstroCosas app · v4.7" },
+    "Una app de AstroCosas · v4.8": { ca: "Una app d'AstroCosas · v4.8", en: "An AstroCosas app · v4.8" },
 
     // ---- S1: por qué invertir ----
     "Paso 1 · Por qué invertir": { ca: "Pas 1 · Per què invertir", en: "Step 1 · Why invest" },

@@ -6,7 +6,7 @@ Suite que unifica tres calculadoras bajo una marca, un Umami y una navegación c
 |-----|------|---------|----------|
 | **AstroHome** | `/casa` | v1.3 | ¿A qué vivienda puedes aspirar? (+ "ya sé el piso") |
 | **AstroPayroll** | `/nomina` | v2.16 | Nómina e IRPF en España |
-| **AstroSavings** | `/ahorro` | v4.7 | Guía de inversión |
+| **AstroSavings** | `/ahorro` | v4.8 | Guía de inversión |
 
 Identidad visual: navy `#1a2b5e` + dorado `#f5c84b`, tipografía Segoe UI.
 **AstroTools** es el producto; **AstroCosas** queda solo como crédito en el footer.
