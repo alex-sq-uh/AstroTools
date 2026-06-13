@@ -13,9 +13,18 @@
 
   if (WEBSITE_ID.indexOf("PEGA-AQUI") === 0) return; // sin ID real → no carga
 
+  // Etiqueta por app, para distinguir en Umami quién usa cada una.
+  // Umami separa por URL, pero el data-tag permite filtrar páginas Y eventos por app.
+  var p = location.pathname;
+  var tag = /\/casa\//.test(p)   ? "AstroHome"
+          : /\/nomina\//.test(p) ? "AstroPayroll"
+          : /\/ahorro\//.test(p) ? "AstroSavings"
+          : "Hub";
+
   var s = document.createElement("script");
   s.defer = true;
   s.src = "https://cloud.umami.is/script.js";
   s.setAttribute("data-website-id", WEBSITE_ID);
+  s.setAttribute("data-tag", tag);
   document.head.appendChild(s);
 })();
