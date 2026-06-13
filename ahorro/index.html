@@ -206,27 +206,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 .foot{font-size:.62rem;color:var(--text-dim);text-align:center;margin-top:.7rem}
 .disclaimer{font-size:.58rem;color:var(--text-dim);line-height:1.45;padding:8px 11px;background:var(--sky-light);border-radius:var(--rxs);border:1px solid var(--border);margin-top:.5rem}
 
-/* ====== FEEDBACK MODAL ====== */
-.fb-overlay{display:none;position:fixed;inset:0;background:rgba(15,30,50,.55);z-index:1000;align-items:center;justify-content:center;padding:1rem;animation:fbFade .2s ease}
-.fb-overlay.show{display:flex}
-@keyframes fbFade{from{opacity:0}to{opacity:1}}
-.fb-modal{background:var(--white);border-radius:var(--r);padding:1.4rem 1.2rem 1.2rem;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;animation:fbPop .25s ease}
-@keyframes fbPop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.fb-close{position:absolute;top:.5rem;right:.7rem;background:none;border:none;font-size:1.6rem;color:var(--text-dim);cursor:pointer;line-height:1;padding:4px 8px;border-radius:50%}
-.fb-close:hover{background:var(--sky-light);color:var(--text)}
-.fb-title{font-size:1.1rem;font-weight:800;color:var(--text);margin:0 0 .3rem;text-align:center}
-.fb-sub{font-size:.72rem;color:var(--text-sec);margin:0 0 1rem;text-align:center;line-height:1.5}
-.fb-label{font-size:.66rem;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
-.fb-stars{display:flex;gap:.3rem;justify-content:center}
-.fb-star{background:none;border:none;font-size:2rem;color:#e0e6ee;cursor:pointer;padding:2px 4px;line-height:1;transition:var(--tr)}
-.fb-star:hover,.fb-star.active{color:#f5b800;transform:scale(1.08)}
-.fb-textarea{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:9px 11px;font-family:inherit;font-size:.78rem;color:var(--text);resize:vertical;min-height:80px;background:var(--white);transition:var(--tr);box-sizing:border-box}
-.fb-textarea:focus{outline:none;border-color:var(--sky)}
-.fb-err{font-size:.66rem;color:var(--red);margin-top:.4rem;min-height:.9rem}
 </style>
 <script src="../shared/brand.js"></script>
 <script src="../shared/nav.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
+<script src="../shared/feedback.js" defer></script>
 <link rel="stylesheet" href="../shared/savings-skin.css">
 </head>
 <body>
@@ -276,7 +260,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
       <div class="privacy-note">Está pensada para usarse junto a modelos de IA como ChatGPT o Claude, que pueden ayudarte a resolver dudas y aprender más a medida que avanzas.</div>
       <div class="privacy-note">Parte de <a href="../">AstroTools</a>: calcula tu sueldo neto en <a href="../nomina/">AstroPayroll</a> y a qué vivienda puedes aspirar en <a href="../casa/">AstroHome</a>.</div>
       <button class="btn-primary" onclick="goTo('s1')">Empezar →</button>
-      <div class="foot">Una app de AstroCosas · v4.5</div>
+      <div class="foot">Una app de AstroCosas · v4.6</div>
     </div>
 
     <!-- ====== S1: POR QUÉ INVERTIR ====== -->
@@ -568,41 +552,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
       <div class="cta-row" style="justify-content:center">
         <button class="btn-ghost" onclick="restart()">Empezar de nuevo</button>
       </div>
-      <div class="cta-row" style="justify-content:center;margin-top:.4rem">
-        <button class="btn-ghost" onclick="openFeedback()">💬 Enviar feedback</button>
-      </div>
+      <astro-feedback></astro-feedback>
     </div>
 
-  <!-- ====== FEEDBACK MODAL ====== -->
-  <div class="fb-overlay" id="fb-overlay" onclick="if(event.target===this)closeFeedback()">
-    <div class="fb-modal" role="dialog" aria-modal="true" aria-labelledby="fb-title">
-      <button class="fb-close" onclick="closeFeedback()" aria-label="Cerrar">×</button>
-      <div id="fb-form-wrap">
-        <h2 class="fb-title" id="fb-title">¿Te ha sido útil?</h2>
-        <p class="fb-sub">Tu opinión nos ayuda a mejorar la guía.</p>
-        <form id="fb-form" onsubmit="submitFeedback(event)">
-          <div class="fb-label">Puntúa tu experiencia</div>
-          <div class="fb-stars" id="fb-stars">
-            <button type="button" class="fb-star" data-val="1" onclick="setRating(1)">★</button>
-            <button type="button" class="fb-star" data-val="2" onclick="setRating(2)">★</button>
-            <button type="button" class="fb-star" data-val="3" onclick="setRating(3)">★</button>
-            <button type="button" class="fb-star" data-val="4" onclick="setRating(4)">★</button>
-            <button type="button" class="fb-star" data-val="5" onclick="setRating(5)">★</button>
-          </div>
-          <div class="fb-label" style="margin-top:.6rem">Comentarios (opcional)</div>
-          <textarea id="fb-msg" class="fb-textarea" rows="4" placeholder="¿Qué te ha gustado? ¿Qué mejorarías?" maxlength="2000"></textarea>
-          <div class="fb-err" id="fb-err"></div>
-          <button type="submit" class="btn-primary" id="fb-submit" style="margin-top:.7rem;width:100%">Enviar feedback</button>
-        </form>
-      </div>
-      <div id="fb-success" style="display:none;text-align:center;padding:1rem 0">
-        <div style="font-size:2.5rem;margin-bottom:.5rem">✅</div>
-        <h2 class="fb-title">¡Gracias!</h2>
-        <p class="fb-sub">Tu feedback nos ayuda muchísimo.</p>
-        <button class="btn-primary" onclick="closeFeedback()" style="margin-top:.7rem">Cerrar</button>
-      </div>
-    </div>
-  </div>
 
     <!-- ====== OBJ: IMPREVISTOS ====== -->
     <div class="screen scroll" id="s_obj_imprevistos">
@@ -1066,65 +1018,6 @@ function chooseObjetivo(type) {
   goTo('s_obj_' + type);
 }
 
-// ====== FEEDBACK ======
-// Endpoint de Formsubmit (modo hash, sin exponer el email).
-// Sustituir __FORMSUBMIT_HASH__ por el hash recibido al activar el formulario.
-const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/31181a9b83dda38926ace2532e4a9aba';
-let fbRating = 0;
-function openFeedback() {
-  fbRating = 0;
-  document.querySelectorAll('.fb-star').forEach(s => s.classList.remove('active'));
-  document.getElementById('fb-msg').value = '';
-  document.getElementById('fb-err').textContent = '';
-  document.getElementById('fb-form-wrap').style.display = '';
-  document.getElementById('fb-success').style.display = 'none';
-  document.getElementById('fb-submit').disabled = false;
-  document.getElementById('fb-submit').textContent = 'Enviar feedback';
-  document.getElementById('fb-overlay').classList.add('show');
-  track('feedback_open');
-}
-function closeFeedback() { document.getElementById('fb-overlay').classList.remove('show'); }
-function setRating(n) {
-  fbRating = n;
-  document.querySelectorAll('.fb-star').forEach(s => {
-    s.classList.toggle('active', parseInt(s.dataset.val, 10) <= n);
-  });
-}
-async function submitFeedback(e) {
-  e.preventDefault();
-  const msg = document.getElementById('fb-msg').value.trim();
-  const err = document.getElementById('fb-err');
-  if (fbRating === 0 && !msg) {
-    err.textContent = 'Pon al menos una puntuación o un comentario.';
-    return;
-  }
-  err.textContent = '';
-  const btn = document.getElementById('fb-submit');
-  btn.disabled = true;
-  btn.textContent = 'Enviando…';
-  try {
-    const res = await fetch(FEEDBACK_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        _subject: `Feedback AstroSavings (${fbRating || '—'}/5)`,
-        _captcha: 'false',
-        rating: fbRating || 'sin puntuación',
-        mensaje: msg || '(sin comentario)',
-        url: window.location.href,
-        userAgent: navigator.userAgent
-      })
-    });
-    if (!res.ok) throw new Error('Respuesta no OK');
-    track('feedback_sent', { rating: fbRating });
-    document.getElementById('fb-form-wrap').style.display = 'none';
-    document.getElementById('fb-success').style.display = '';
-  } catch (e2) {
-    err.textContent = 'No se pudo enviar. Intenta de nuevo en un momento.';
-    btn.disabled = false;
-    btn.textContent = 'Enviar feedback';
-  }
-}
 
 // ====== INIT ======
 window.addEventListener('DOMContentLoaded', () => { goTo('s0'); });
