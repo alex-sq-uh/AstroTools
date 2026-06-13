@@ -6,7 +6,7 @@ Suite que unifica tres calculadoras bajo una marca, un Umami y una navegación c
 |-----|------|---------|----------|
 | **AstroHome** | `/casa` | v1.3 | ¿A qué vivienda puedes aspirar? (+ "ya sé el piso") |
 | **AstroPayroll** | `/nomina` | v2.16 | Nómina e IRPF en España |
-| **AstroSavings** | `/ahorro` | v5.0 | Guía de inversión |
+| **AstroSavings** | `/ahorro` | v4.7 | Guía de inversión |
 
 Identidad visual: navy `#1a2b5e` + dorado `#f5c84b`, tipografía Segoe UI.
 **AstroTools** es el producto; **AstroCosas** queda solo como crédito en el footer.
@@ -39,9 +39,9 @@ Originales pre-suite archivados en `..\_archivo_originales\`.
 ## Idiomas
 - **Home, Payroll y hub**: ES/CA/EN con `data-i18n` + diccionario y selector.
 - **Savings**: ES/CA/EN vía `ahorro/i18n.js` (traduce por elemento; el ES es la base intacta).
-  - ⚠️ Pendiente: los **textos dinámicos generados por JS con cifras** (resultados de Jubilación e
-    Independencia, KPIs/nota de Piso, tablas de fondos y los tooltips) siguen en ES en CA/EN.
-    Requieren hacer "language-aware" las funciones que los generan.
+  Incluye los **textos dinámicos** (proyección, Jubilación, Independencia, KPIs/nota de Piso, tablas
+  de fondos) y los **tooltips**, traducidos vía `savingsT()` en las funciones de render. Al cambiar
+  de idioma se re-renderiza la pantalla dinámica activa.
 
 ## Umami
 Website único **AstroTools** (`662e04eb-…`) vía `shared/analytics.js`. Cada app añade `data-tag`
@@ -61,6 +61,5 @@ Los repos antiguos `AstroHome`, `AstroPayroll`, `astrosavings` redirigen a las r
 dentro de AstroTools (para los enlaces que ya tenían los usuarios).
 
 ## Pendiente / ideas
-1. **Textos dinámicos de Savings** en CA/EN (ver sección Idiomas).
-2. **Login + datos personales** (fase futura; proveedor recomendado: Supabase).
-3. Apps candidatas: AstroAlquiler, AstroAutónomo, AstroRenta, AstroJubilación…
+1. **Login + datos personales** (fase futura; proveedor recomendado: Supabase).
+2. Apps candidatas: AstroAlquiler, AstroAutónomo, AstroRenta, AstroJubilación…

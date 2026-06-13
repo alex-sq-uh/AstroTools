@@ -61,7 +61,7 @@
     "Está pensada para usarse junto a modelos de IA como ChatGPT o Claude, que pueden ayudarte a resolver dudas y aprender más a medida que avanzas.": { ca: "Està pensada per usar-se juntament amb models d'IA com ChatGPT o Claude, que poden ajudar-te a resoldre dubtes i aprendre més a mesura que avances.", en: "It's meant to be used alongside AI models like ChatGPT or Claude, which can help you answer questions and learn more as you go." },
     "Parte de AstroTools: calcula tu sueldo neto en AstroPayroll y a qué vivienda puedes aspirar en AstroHome.": { ca: 'Part d\'AstroTools: calcula el teu sou net a <a href="../nomina/">AstroPayroll</a> i a quin habitatge pots aspirar a <a href="../casa/">AstroHome</a>.', en: 'Part of AstroTools: work out your net salary in <a href="../nomina/">AstroPayroll</a> and what home you can afford in <a href="../casa/">AstroHome</a>.' },
     "Empezar →": { ca: "Començar →", en: "Start →" },
-    "Una app de AstroCosas · v5.0": { ca: "Una app d'AstroCosas · v5.0", en: "An AstroCosas app · v5.0" },
+    "Una app de AstroCosas · v4.7": { ca: "Una app d'AstroCosas · v4.7", en: "An AstroCosas app · v4.7" },
 
     // ---- S1: por qué invertir ----
     "Paso 1 · Por qué invertir": { ca: "Pas 1 · Per què invertir", en: "Step 1 · Why invest" },
@@ -215,6 +215,7 @@
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (el.__i18nDone) continue;
+      if (el.hasAttribute("data-dyn")) continue; // lo gestiona el JS de la app (textos dinámicos)
       el.__i18nDone = true;
       el.__es = el.innerHTML;
       el.__key = norm(el.textContent);
@@ -246,6 +247,10 @@
   }
   function refresh(scope) { collect(scope); apply(scope); }
 
+  // Helpers para que el JS de la app traduzca sus textos dinámicos.
+  window.savingsLang = function () { return LANG; };
+  window.savingsT = function (es, ca, en) { return LANG === "ca" ? ca : LANG === "en" ? en : es; };
+
   window.setLangSavings = function (l) {
     if (l !== "es" && l !== "ca" && l !== "en") l = "es";
     LANG = l;
@@ -254,6 +259,8 @@
     for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("active", btns[i].getAttribute("data-l") === l);
     var app = document.getElementById("app");
     if (app) refresh(app);
+    // Re-renderiza la pantalla dinámica activa en el nuevo idioma.
+    if (typeof window.savingsRerender === "function") window.savingsRerender();
   };
 
   function start() {
