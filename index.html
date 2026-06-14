@@ -19,9 +19,6 @@
 
   /* ---------- Hero ---------- */
   .hero{text-align:center;padding:2.4rem 0 1rem}
-  .hero-logo{width:104px;height:104px;display:block;margin:0 auto .6rem;
-    filter:drop-shadow(0 8px 22px rgba(26,60,94,.22));animation:float 5.5s ease-in-out infinite}
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
   .hero h1{font-size:2.7rem;line-height:1.1;margin:.2rem 0;color:var(--primary);letter-spacing:-.02em;font-weight:800}
   .hero h1 .dot{color:var(--accent)}
   .hero p{color:var(--text-muted);font-size:1.1rem;margin:.5rem auto 0;max-width:560px}
@@ -58,7 +55,6 @@
   footer .dot{color:var(--accent)}
 
   @media(prefers-reduced-motion:reduce){
-    .hero-logo{animation:none}
     .app-card,.app-icon,.app-card::before{transition:none}
   }
 </style>
@@ -69,20 +65,7 @@
 
 <div class="wrap">
   <div class="hero">
-    <svg class="hero-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="hubOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>
-        <radialGradient id="hubPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>
-        <clipPath id="hubBack"><rect x="0" y="0" width="64" height="31"/></clipPath>
-        <clipPath id="hubFront"><rect x="0" y="31" width="64" height="33"/></clipPath>
-      </defs>
-      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#hubOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.9" clip-path="url(#hubBack)"/>
-      <circle cx="32" cy="30" r="14" fill="url(#hubPlanet)"/>
-      <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/>
-      <circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
-      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#hubOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#hubFront)"/>
-    </svg>
-    <h1>AstroTools<span class="dot">.</span></h1>
+<h1>AstroTools<span class="dot">.</span></h1>
     <p id="subtitle"></p>
   </div>
   <div class="grid" id="apps"></div>

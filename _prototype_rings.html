@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Prototype · Anillos planetarios</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f3fa; color: #1a2733; padding: 2rem 1.5rem }
+  h1 { font-size: 1.35rem; color: #1a2b5e; margin-bottom: .4rem; font-weight: 800 }
+  .intro { color: #5a6a7a; font-size: .88rem; margin-bottom: 1.8rem }
+  .intro strong { color: #c0392b }
+
+  .row { display: flex; align-items: stretch; background: #fff; border-radius: 18px;
+    margin-bottom: 1rem; box-shadow: 0 2px 14px rgba(26,60,94,.09); overflow: hidden }
+  .row-label { min-width: 210px; padding: 1.4rem 1.5rem; border-right: 1px solid #eef1f7;
+    display: flex; flex-direction: column; justify-content: center; gap: .4rem }
+  .badge { display: inline-block; font-size: .66rem; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; padding: 2px 9px; border-radius: 20px; width: fit-content }
+  .badge-ref  { background: #fee2e2; color: #c0392b }
+  .badge-opt  { background: #e0e7ff; color: #3b5bdb }
+  .row-label h2 { font-size: .95rem; color: #1a2b5e; font-weight: 700 }
+  .row-label p  { font-size: .78rem; color: #5a6a7a; line-height: 1.5 }
+
+  .icons { display: flex; gap: 2rem; padding: 1.5rem 2rem; align-items: center }
+  .icon-item { display: flex; flex-direction: column; align-items: center; gap: .5rem }
+  .icon-item span { font-size: .72rem; color: #5a6a7a; font-weight: 600 }
+
+  /* Iconos sobre fondo oscuro (como la cabecera) */
+  .on-dark svg  { background: linear-gradient(135deg,#0f1d44,#1a2b5e 60%,#2a3f80);
+    border-radius: 18px; padding: 6px }
+  /* Iconos sobre fondo claro (como las tarjetas del hub) */
+  .on-light svg { background: #f8fafd; border-radius: 18px; padding: 6px;
+    border: 1.5px solid #dde3ea }
+
+  svg { width: 80px; height: 80px }
+
+  .sep { text-align: center; font-size: .7rem; color: #8a9ab0; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; margin: .4rem 0 .8rem;
+    display: flex; align-items: center; gap: .5rem }
+  .sep::before,.sep::after { content:""; flex:1; height:1px; background:#dde3ea }
+
+  footer { color: #8a9ab0; font-size: .78rem; margin-top: 1.5rem; text-align: center }
+</style>
+</head>
+<body>
+
+<h1>🪐 Variantes · Anillo orbital</h1>
+<p class="intro">
+  <strong>Problema actual:</strong> el aro se dibuja entero antes del planeta,
+  así los extremos quedan ocultos detrás. Las opciones B–D lo corrigen usando
+  <em>arco trasero → planeta → arco delantero</em>.
+  <br>Cada fila muestra los 3 iconos en fondo oscuro (cabecera) y fondo claro (hub).
+</p>
+
+<!-- ─── Shared SVG defs (reutilizables en todo el doc) ─── -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden">
+  <defs>
+    <!-- Gradiente del aro -->
+    <linearGradient id="od" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7aa1ff"/>
+      <stop offset="100%" stop-color="#f5c84b"/>
+    </linearGradient>
+    <!-- Gradiente del planeta (dorado) -->
+    <radialGradient id="pd" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0%" stop-color="#f8d97a"/>
+      <stop offset="55%" stop-color="#f5c84b"/>
+      <stop offset="100%" stop-color="#c79420"/>
+    </radialGradient>
+    <!-- Clip: arco TRASERO (mitad superior, y 0–31) -->
+    <clipPath id="cb"><rect x="0" y="0" width="64" height="31"/></clipPath>
+    <!-- Clip: arco DELANTERO (mitad inferior, y 31–64) -->
+    <clipPath id="cf"><rect x="0" y="31" width="64" height="33"/></clipPath>
+  </defs>
+</svg>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     A · Actual (bug de referencia)
+═══════════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label">
+    <span class="badge badge-ref">Actual</span>
+    <h2>A · Actual (con bug)</h2>
+    <p>Aro completo → planeta encima. Los extremos del aro quedan enterrados.</p>
+  </div>
+  <div class="icons">
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem 0 0;font-size:.6rem">DARK</div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem;font-size:.6rem">LIGHT</div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     B · Capas correctas, opacidad uniforme
+═══════════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label">
+    <span class="badge badge-opt">Opción B</span>
+    <h2>B · Capas correctas</h2>
+    <p>Arco trasero → planeta → arco delantero. Misma opacidad en los dos arcos.</p>
+  </div>
+  <div class="icons">
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem 0 0;font-size:.6rem">DARK</div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem;font-size:.6rem">LIGHT</div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     C · Con profundidad (arco trasero tenue)
+═══════════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label">
+    <span class="badge badge-opt">Opción C</span>
+    <h2>C · Con profundidad</h2>
+    <p>Arco trasero al 25% de opacidad, arco delantero al 100%. Sensación 3D más marcada.</p>
+  </div>
+  <div class="icons">
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem 0 0;font-size:.6rem">DARK</div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.25" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.25" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.25" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem;font-size:.6rem">LIGHT</div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.25" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.25" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.25" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     D · Arco trasero punteado
+═══════════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label">
+    <span class="badge badge-opt">Opción D</span>
+    <h2>D · Trasero punteado</h2>
+    <p>Arco trasero punteado y tenue (estilo "detrás del planeta"), arco delantero sólido.</p>
+  </div>
+  <div class="icons">
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem 0 0;font-size:.6rem">DARK</div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2" stroke-dasharray="3.5 3" transform="rotate(-22 32 34)" opacity="0.45" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2" stroke-dasharray="3.5 3" transform="rotate(-22 32 34)" opacity="0.45" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-dark icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2" stroke-dasharray="3.5 3" transform="rotate(-22 32 34)" opacity="0.45" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+    <div class="sep" style="writing-mode:vertical-lr;margin:0 .5rem;font-size:.6rem">LIGHT</div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2" stroke-dasharray="3.5 3" transform="rotate(-22 32 34)" opacity="0.45" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Casa</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2" stroke-dasharray="3.5 3" transform="rotate(-22 32 34)" opacity="0.45" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <text x="32" y="36" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Nómina</span>
+    </div>
+    <div class="on-light icon-item">
+      <svg viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2" stroke-dasharray="3.5 3" transform="rotate(-22 32 34)" opacity="0.45" clip-path="url(#cb)"/>
+        <circle cx="32" cy="30" r="14" fill="url(#pd)"/>
+        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#od)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cf)"/>
+      </svg>
+      <span>Ahorro</span>
+    </div>
+  </div>
+</div>
+
+<footer>Prototipo local · No publicado · <a href="index.html">← Volver al hub</a></footer>
+</body>
+</html>

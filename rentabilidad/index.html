@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstroReturn · ¿Qué rentabilidad ha tenido tu inversión?</title>
+<meta name="description" content="AstroReturn — calcula, en lenguaje claro, la rentabilidad anual de tu inversión y compárala con la inflación, un fondo monetario y la bolsa mundial.">
+
+<!-- Chart.js (única dependencia externa, ya usada por la suite) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Widgets compartidos de la suite (rutas relativas) -->
+<script src="../shared/brand.js"></script>
+<script src="../shared/header.js" defer></script>
+<script src="../shared/analytics.js" defer></script>
+<script src="../shared/feedback.js" defer></script>
+
+<style>
+  :root{
+    --primary:#1a2b5e;
+    --primary-deep:#0f1d44;
+    --secondary:#4a6dd1;
+    --accent:#f5c84b;
+    --bg:#f4f6fb;
+    --surface:#ffffff;
+    --surface2:#f8fafd;
+    --border:#dde3ea;
+    --text:#1a2733;
+    --text-muted:#5a6a7a;
+    --danger:#e74c3c;
+    --danger-bg:#fdf0ee;
+    --success:#27ae60;
+    --success-bg:#edfaf2;
+    --warning:#e67e22;
+    --warning-bg:#fef6ee;
+    --radius:10px;
+    --radius-lg:14px;
+    --shadow:0 2px 12px rgba(26,60,94,0.08);
+    --shadow-lg:0 4px 24px rgba(26,60,94,0.13);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;overflow-x:hidden}
+
+  .nav-btn{background:none;border:none;color:rgba(255,255,255,0.75);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.875rem;transition:all .15s;font-family:inherit}
+  .nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,0.15);color:#fff}
+
+  /* ---------- Page ---------- */
+  .page{display:none;max-width:820px;margin:0 auto;padding:2rem 1.5rem 4rem}
+  .page.active{display:block}
+  .page-head{margin-bottom:1.5rem;padding-top:.5rem}
+  .page-head h1{font-size:1.4rem;font-weight:800;color:var(--primary);margin:0 0 4px}
+  .page-head p{color:var(--text-muted);font-size:.9rem;margin:0}
+
+  /* ---------- Cards ---------- */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem 1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow)}
+  .card-title{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+  .card-title .icon{width:28px;height:28px;background:var(--bg);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+  .card-title .sub{font-weight:500;color:var(--text-muted);font-size:.8rem;margin-left:auto}
+  .collapsible .card-title{cursor:pointer;margin-bottom:0;user-select:none}
+  .collapsible .card-title .chev{color:var(--secondary);font-weight:800;transition:transform .2s;margin-left:8px}
+  .collapsible.open .card-title{margin-bottom:1rem}
+  .collapsible.open .card-title .chev{transform:rotate(90deg)}
+  .adv-body{display:none}
+  .collapsible.open .adv-body{display:block}
+
+  /* ---------- Fields ---------- */
+  .field{margin-bottom:1rem}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-weight:600;font-size:.86rem;margin-bottom:5px}
+  .input-wrap{position:relative}
+  .input-wrap input{width:100%;padding:9px 38px 9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;font-family:inherit;font-weight:600}
+  .input-wrap input:focus{border-color:var(--secondary)}
+  .input-wrap input[type=date]{font-weight:600;padding-right:12px}
+  .input-wrap .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem;pointer-events:none}
+  .hint{font-size:.78rem;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;gap:6px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem}
+  .grid2 .field{margin-bottom:0}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+
+  .block{border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:1rem;background:var(--surface2)}
+  .block:last-child{margin-bottom:0}
+  .block-h{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--primary);font-size:.92rem;margin-bottom:.8rem}
+  .block-h .bic{width:26px;height:26px;border-radius:7px;background:#eaf0fb;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+
+  /* ---------- Dividendos dinámicos ---------- */
+  #divList{display:flex;flex-direction:column;gap:.7rem}
+  .div-row{display:grid;grid-template-columns:1fr 1fr auto;gap:.6rem;align-items:end}
+  .div-row .field{margin-bottom:0}
+  .div-del{background:var(--danger-bg);border:1px solid #f3c6bf;color:var(--danger);border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:1.1rem;line-height:1;flex-shrink:0;transition:all .15s}
+  .div-del:hover{background:var(--danger);color:#fff}
+  @media(max-width:560px){.div-row{grid-template-columns:1fr 1fr}.div-del{grid-column:1/3;width:100%;height:34px}}
+  .div-empty{font-size:.82rem;color:var(--text-muted);margin:0 0 .8rem}
+  .add-div{display:inline-flex;align-items:center;gap:7px;background:none;border:1.5px dashed var(--secondary);color:var(--secondary);font:inherit;font-weight:600;font-size:.85rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;margin-top:.9rem;transition:all .15s}
+  .add-div:hover{background:#eef4fc}
+
+  /* ---------- Botones ---------- */
+  .btn{display:inline-block;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);padding:.7rem 1.2rem;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;transition:background .15s}
+  .btn:hover{background:var(--primary-deep)}
+  .btn-accent{background:var(--accent);color:var(--primary-deep)}
+  .btn-accent:hover{background:#e9b933}
+  .btn-row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-top:1.1rem}
+  .link-ex{background:none;border:none;color:var(--secondary);font:inherit;font-weight:600;font-size:.84rem;cursor:pointer;text-decoration:underline;padding:0}
+  .copied{font-size:.84rem;font-weight:700;color:var(--success);opacity:0;transition:opacity .2s}
+  .copied.show{opacity:1}
+
+  /* ---------- Tooltip ---------- */
+  .info-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--text-muted);color:#fff;font-size:.65rem;font-weight:700;cursor:help;flex-shrink:0;position:relative;font-style:normal;vertical-align:middle}
+  .tooltip-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:.75rem;line-height:1.4;padding:8px 12px;border-radius:8px;width:230px;z-index:200;margin-bottom:6px;font-weight:400;white-space:normal;box-shadow:var(--shadow-lg);text-align:left}
+  .info-icon:hover .tooltip-box,.info-icon.show .tooltip-box{display:block}
+
+  /* ---------- Aviso / error ---------- */
+  .notice{border-radius:var(--radius);padding:.85rem 1rem;font-size:.86rem;margin-bottom:1.25rem;display:none}
+  .notice.show{display:block}
+  .notice.err{background:var(--danger-bg);border:1px solid #f3c6bf;color:#9b271a}
+  .notice.warn{background:var(--warning-bg);border:1px solid #f0c987;color:#7a4e00}
+
+  /* ---------- Resultado ---------- */
+  #results{display:none}
+  #results.show{display:block}
+  .hero{background:linear-gradient(135deg,var(--primary) 0%,#2563a8 100%);color:#fff;border-radius:var(--radius-lg);padding:1.9rem 1.75rem;margin-bottom:1.25rem;box-shadow:var(--shadow);text-align:center}
+  .hero .eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;opacity:.82;margin:0 0 6px}
+  .hero .big{font-size:3rem;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.05}
+  .hero .big.gold{color:var(--accent)}
+  .hero .tech{font-size:.8rem;opacity:.72;margin:.2rem 0 0;font-weight:600}
+  .hero .say{font-size:.95rem;opacity:.95;margin:.9rem auto 0;max-width:460px}
+
+  .kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+  @media(max-width:560px){.kpis{grid-template-columns:1fr}}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.2rem;box-shadow:var(--shadow);text-align:center}
+  .kpi .lab{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin:0 0 4px;display:flex;align-items:center;justify-content:center;gap:5px}
+  .kpi .val{font-size:1.6rem;font-weight:800;color:var(--primary);margin:0}
+  .kpi .val.pos{color:var(--success)}
+  .kpi .val.neg{color:var(--danger)}
+
+  .chart-box{position:relative;height:280px}
+  .caption{font-size:.82rem;color:var(--text-muted);margin:.9rem 0 0;text-align:center}
+
+  .verdict{border-radius:var(--radius);padding:.95rem 1.1rem;font-size:.9rem;margin-top:1rem;line-height:1.5}
+  .verdict b{font-weight:700}
+  .verdict.good{background:var(--success-bg);border:1px solid #a7d8bd;color:#114b2a}
+  .verdict.bad{background:var(--danger-bg);border:1px solid #f3c6bf;color:#9b271a}
+  .verdict.neu{background:#eef4fc;border:1px solid #cfe0f5;color:var(--primary)}
+  .verdict+.verdict{margin-top:.7rem}
+
+  .disclaimer{font-size:.76rem;color:var(--text-muted);text-align:center;margin:1.4rem auto 0;max-width:560px;line-height:1.5}
+
+  /* ---------- Página "Cómo funciona" ---------- */
+  .edu{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.9rem;overflow:hidden;background:var(--surface)}
+  .edu-q{width:100%;text-align:left;background:none;border:none;font:inherit;font-weight:700;color:var(--primary);font-size:.95rem;padding:1rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .edu-q .chev{color:var(--secondary);transition:transform .2s}
+  .edu.open .edu-q .chev{transform:rotate(90deg)}
+  .edu-a{display:none;padding:0 1.2rem 1.1rem;color:var(--text);font-size:.88rem}
+  .edu.open .edu-a{display:block}
+  .edu-a p{margin:.4rem 0}
+</style>
+</head>
+<body>
+
+<!-- ================= CABECERA (shared/header.js) ================= -->
+<astro-header app="rentabilidad" version="v1.0" brand-action>
+  <button slot="tabs" class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
+  <button slot="tabs" class="nav-btn" id="nav-how" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
+</astro-header>
+<script>
+  document.addEventListener('astro-lang',function(e){ if(window.setLang) window.setLang(e.detail.lang); });
+  document.addEventListener('astro-brand',function(){ if(window.restartApp) window.restartApp(); });
+</script>
+
+<!-- ================= PÁGINA: CALCULADORA ================= -->
+<div class="page active" id="page-calc">
+  <div class="page-head">
+    <h1 data-i18n="calc_title">¿Qué rentabilidad ha tenido tu inversión?</h1>
+    <p data-i18n="calc_subtitle">Pon lo que pagaste, lo que cobraste y cuándo. Te decimos, en lenguaje claro, cuánto has ganado de verdad.</p>
+  </div>
+
+  <!-- Entradas -->
+  <div class="card">
+    <div class="card-title"><div class="icon">💼</div> <span data-i18n="card_invest">Tu inversión</span></div>
+
+    <div class="block">
+      <div class="block-h"><span class="bic">🛒</span> <span data-i18n="buy_h">Cuando compraste</span></div>
+      <div class="grid2">
+        <div class="field">
+          <label data-i18n="lbl_buy_amt">¿Cuánto pagaste?</label>
+          <div class="input-wrap"><input id="buyAmt" type="text" inputmode="decimal" placeholder="10.000"><span class="unit">€</span></div>
+        </div>
+        <div class="field">
+          <label data-i18n="lbl_buy_date">¿Qué día?</label>
+          <div class="input-wrap"><input id="buyDate" type="date"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-h"><span class="bic">💰</span> <span data-i18n="sell_h">Cuando vendiste</span></div>
+      <div class="grid2">
+        <div class="field">
+          <label data-i18n="lbl_sell_amt">¿Cuánto cobraste?</label>
+          <div class="input-wrap"><input id="sellAmt" type="text" inputmode="decimal" placeholder="14.300"><span class="unit">€</span></div>
+        </div>
+        <div class="field">
+          <label data-i18n="lbl_sell_date">¿Qué día?</label>
+          <div class="input-wrap"><input id="sellDate" type="date"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-h"><span class="bic">🪙</span> <span data-i18n="div_h">Dividendos o cobros</span>
+        <span class="info-icon" style="margin-left:2px">i<span class="tooltip-box" data-i18n="tip_div">Dinero que te fue pagando la inversión mientras la tenías (dividendos, cupones, rentas...). Si no cobraste nada, déjalo vacío.</span></span>
+      </div>
+      <p class="div-empty" id="divEmpty" data-i18n="div_empty">¿Cobraste dividendos o rentas por el camino? Añádelos para afinar el cálculo. (Opcional)</p>
+      <div id="divList"></div>
+      <button class="add-div" id="addDiv" type="button" data-tag="add-dividend"><span>＋</span> <span data-i18n="div_add">Añadir un cobro</span></button>
+    </div>
+  </div>
+
+  <!-- Ajustes avanzados -->
+  <div class="card collapsible" id="advCard">
+    <div class="card-title" id="advToggle" role="button" tabindex="0">
+      <div class="icon">⚙️</div> <span data-i18n="adv_title">Ajustes avanzados</span>
+      <span class="sub" data-i18n="adv_sub">opcional · con qué te comparamos</span>
+      <span class="chev">▸</span>
+    </div>
+    <div class="adv-body">
+      <p class="hint" style="margin:.2rem 0 1rem" data-i18n="adv_intro">Para compararte, suponemos estas rentabilidades anuales de cada alternativa. Son estimaciones; puedes cambiarlas.</p>
+      <div class="grid2">
+        <div class="field">
+          <label><span data-i18n="lbl_inf">Inflación</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_inf">Cuánto suben los precios al año, de media. Es la línea de "no perder poder de compra".</span></span></label>
+          <div class="input-wrap"><input id="rInf" type="text" inputmode="decimal" value="2,5"><span class="unit">%</span></div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="lbl_mon">Fondo monetario</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_mon">Una opción de bajo riesgo, parecida a tener el dinero en una cuenta remunerada o letras del tesoro.</span></span></label>
+          <div class="input-wrap"><input id="rMon" type="text" inputmode="decimal" value="3"><span class="unit">%</span></div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="lbl_msci">Bolsa mundial</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_msci">La bolsa de todo el mundo (índice MSCI World). Históricamente ha rentado en torno al 7% anual a largo plazo, con altibajos.</span></span></label>
+          <div class="input-wrap"><input id="rMsci" type="text" inputmode="decimal" value="7"><span class="unit">%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="link-ex" id="exampleBtn" type="button" data-i18n="ex_btn">Ver un ejemplo</button>
+  </div>
+
+  <!-- Avisos -->
+  <div class="notice err" id="errBox" style="margin-top:1.25rem"></div>
+  <div class="notice warn" id="warnBox"></div>
+
+  <!-- Resultado -->
+  <div id="results">
+    <div class="hero">
+      <p class="eyebrow" data-i18n="hero_eyebrow">Tu rentabilidad anual</p>
+      <p class="big gold" id="heroRate">—</p>
+      <p class="tech" id="heroTech">(TIR / IRR)</p>
+      <p class="say" id="heroSay"></p>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <p class="lab"><span data-i18n="kpi_total">Ganancia total</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_total">Cuánto has ganado en total respecto a lo que pusiste, sumando la venta y los dividendos. Sin tener en cuenta el tiempo.</span></span></p>
+        <p class="val" id="kpiTotal">—</p>
+      </div>
+      <div class="kpi">
+        <p class="lab"><span data-i18n="kpi_moic">Multiplicaste tu dinero</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_moic">Cuántas veces tienes ahora respecto a lo que pusiste. ×2 significa que has doblado tu dinero.</span></span></p>
+        <p class="val" id="kpiMoic">—</p>
+      </div>
+      <div class="kpi">
+        <p class="lab" data-i18n="kpi_final">Terminaste con</p>
+        <p class="val" id="kpiFinal">—</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">📊</div> <span data-i18n="flow_title">Tus movimientos de dinero</span></div>
+      <div class="chart-box"><canvas id="flowChart"></canvas></div>
+      <p class="caption" data-i18n="flow_cap">Hacia abajo, el dinero que pusiste. Hacia arriba, el que recibiste (dividendos y venta).</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">🏁</div> <span data-i18n="rank_title">¿Cómo te ha ido frente a otras opciones?</span></div>
+      <div class="chart-box"><canvas id="rankChart"></canvas></div>
+      <p class="caption" data-i18n="rank_cap">Rentabilidad anual de tu inversión comparada con otras alternativas para el mismo dinero y el mismo tiempo.</p>
+      <div id="verdicts"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-accent" id="shareBtn" type="button" data-tag="share"><span data-i18n="share_btn">🔗 Compartir mi cálculo</span></button>
+      <span class="copied" id="copied" data-i18n="copied">¡Enlace copiado!</span>
+    </div>
+
+    <p class="disclaimer" data-i18n="disclaimer">Estimaciones, no es asesoramiento financiero. Las rentabilidades de las alternativas son supuestos. Rentabilidades pasadas no garantizan rentabilidades futuras.</p>
+  </div>
+</div>
+
+<!-- ================= PÁGINA: CÓMO FUNCIONA ================= -->
+<div class="page" id="page-how">
+  <div class="page-head">
+    <h1 data-i18n="how_title">¿Cómo funciona?</h1>
+    <p data-i18n="how_subtitle">En cristiano, sin tecnicismos.</p>
+  </div>
+
+  <div class="edu open">
+    <button class="edu-q" type="button"><span data-i18n="how_q1">¿Qué es la "rentabilidad anual"?</span><span class="chev">▸</span></button>
+    <div class="edu-a">
+      <p data-i18n="how_a1a">Es lo que ha ganado tu dinero cada año, de media. Si pusiste 10.000 € y al cabo de 3 años tienes 13.000 €, no has ganado un 30% al año: lo has repartido entre los 3 años. La rentabilidad anual te da ese ritmo medio, ya teniendo en cuenta el tiempo.</p>
+      <p data-i18n="how_a1b">Lo bueno de medirlo así es que puedes comparar inversiones que duraron tiempos distintos, manzanas con manzanas.</p>
+    </div>
+  </div>
+
+  <div class="edu">
+    <button class="edu-q" type="button"><span data-i18n="how_q2">¿Por qué importan tanto las fechas?</span><span class="chev">▸</span></button>
+    <div class="edu-a">
+      <p data-i18n="how_a2">Porque no es lo mismo cobrar un dividendo el primer mes que el último año. El dinero que recibes antes "vale más", porque puedes reinvertirlo. Por eso pedimos las fechas reales de cada movimiento y no nos limitamos a periodos redondos.</p>
+    </div>
+  </div>
+
+  <div class="edu">
+    <button class="edu-q" type="button"><span data-i18n="how_q3">¿Y eso de "TIR" o "IRR"?</span><span class="chev">▸</span></button>
+    <div class="edu-a">
+      <p data-i18n="how_a3">Es el nombre técnico de la rentabilidad anual que calculamos (en inglés, IRR; en español, TIR). Cuando hay fechas distintas se llama XIRR. No necesitas saberlo: el número grande ya es eso, explicado en cristiano.</p>
+    </div>
+  </div>
+
+  <div class="edu">
+    <button class="edu-q" type="button"><span data-i18n="how_q4">¿Qué significa "ganar poder de compra"?</span><span class="chev">▸</span></button>
+    <div class="edu-a">
+      <p data-i18n="how_a4">Los precios suben cada año (eso es la inflación). Si tu dinero crece más rápido que los precios, de verdad eres más rico: puedes comprar más cosas que antes. Si crece más despacio, aunque tengas más euros, compras menos. Por eso comparamos tu rentabilidad con la inflación.</p>
+    </div>
+  </div>
+
+  <div class="edu">
+    <button class="edu-q" type="button"><span data-i18n="how_q5">¿De dónde salen las alternativas?</span><span class="chev">▸</span></button>
+    <div class="edu-a">
+      <p data-i18n="how_a5">Son referencias orientativas para situar tu resultado: no hacer nada (0%), la inflación, un fondo de bajo riesgo y la bolsa mundial. Puedes cambiar esos porcentajes en "Ajustes avanzados". Son supuestos, no una promesa.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FEEDBACK (shared/feedback.js) ================= -->
+<astro-feedback></astro-feedback>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== i18n ===================== */
+  var T = {
+    es:{
+      nav_calc:'Calculadora', nav_how:'¿Cómo funciona?',
+      calc_title:'¿Qué rentabilidad ha tenido tu inversión?',
+      calc_subtitle:'Pon lo que pagaste, lo que cobraste y cuándo. Te decimos, en lenguaje claro, cuánto has ganado de verdad.',
+      card_invest:'Tu inversión',
+      buy_h:'Cuando compraste', lbl_buy_amt:'¿Cuánto pagaste?', lbl_buy_date:'¿Qué día?',
+      sell_h:'Cuando vendiste', lbl_sell_amt:'¿Cuánto cobraste?', lbl_sell_date:'¿Qué día?',
+      div_h:'Dividendos o cobros',
+      tip_div:'Dinero que te fue pagando la inversión mientras la tenías (dividendos, cupones, rentas...). Si no cobraste nada, déjalo vacío.',
+      div_empty:'¿Cobraste dividendos o rentas por el camino? Añádelos para afinar el cálculo. (Opcional)',
+      div_add:'Añadir un cobro', div_amt:'Importe', div_date:'Fecha', div_del:'Eliminar',
+      adv_title:'Ajustes avanzados', adv_sub:'opcional · con qué te comparamos',
+      adv_intro:'Para compararte, suponemos estas rentabilidades anuales de cada alternativa. Son estimaciones; puedes cambiarlas.',
+      lbl_inf:'Inflación', tip_inf:'Cuánto suben los precios al año, de media. Es la línea de "no perder poder de compra".',
+      lbl_mon:'Fondo monetario', tip_mon:'Una opción de bajo riesgo, parecida a tener el dinero en una cuenta remunerada o letras del tesoro.',
+      lbl_msci:'Bolsa mundial', tip_msci:'La bolsa de todo el mundo (índice MSCI World). Históricamente ha rentado en torno al 7% anual a largo plazo, con altibajos.',
+      ex_btn:'Ver un ejemplo',
+      hero_eyebrow:'Tu rentabilidad anual', heroTech:'(TIR / IRR)',
+      kpi_total:'Ganancia total', tip_total:'Cuánto has ganado en total respecto a lo que pusiste, sumando la venta y los dividendos. Sin tener en cuenta el tiempo.',
+      kpi_moic:'Multiplicaste tu dinero', tip_moic:'Cuántas veces tienes ahora respecto a lo que pusiste. ×2 significa que has doblado tu dinero.',
+      kpi_final:'Terminaste con',
+      flow_title:'Tus movimientos de dinero',
+      flow_cap:'Hacia abajo, el dinero que pusiste. Hacia arriba, el que recibiste (dividendos y venta).',
+      rank_title:'¿Cómo te ha ido frente a otras opciones?',
+      rank_cap:'Rentabilidad anual de tu inversión comparada con otras alternativas para el mismo dinero y el mismo tiempo.',
+      share_btn:'🔗 Compartir mi cálculo', copied:'¡Enlace copiado!',
+      disclaimer:'Estimaciones, no es asesoramiento financiero. Las rentabilidades de las alternativas son supuestos. Rentabilidades pasadas no garantizan rentabilidades futuras.',
+      /* labels gráfico */
+      g_buy:'Compra', g_div:'Dividendo', g_sell:'Venta',
+      r_you:'Tu inversión', r_msci:'Bolsa mundial', r_mon:'Fondo monetario', r_inf:'Inflación', r_none:'No hacer nada',
+      ax_rate:'Rentabilidad anual', money_in:'Entra', money_out:'Sale',
+      /* cómo funciona */
+      how_title:'¿Cómo funciona?', how_subtitle:'En cristiano, sin tecnicismos.',
+      how_q1:'¿Qué es la "rentabilidad anual"?',
+      how_a1a:'Es lo que ha ganado tu dinero cada año, de media. Si pusiste 10.000 € y al cabo de 3 años tienes 13.000 €, no has ganado un 30% al año: lo has repartido entre los 3 años. La rentabilidad anual te da ese ritmo medio, ya teniendo en cuenta el tiempo.',
+      how_a1b:'Lo bueno de medirlo así es que puedes comparar inversiones que duraron tiempos distintos, manzanas con manzanas.',
+      how_q2:'¿Por qué importan tanto las fechas?',
+      how_a2:'Porque no es lo mismo cobrar un dividendo el primer mes que el último año. El dinero que recibes antes "vale más", porque puedes reinvertirlo. Por eso pedimos las fechas reales de cada movimiento y no nos limitamos a periodos redondos.',
+      how_q3:'¿Y eso de "TIR" o "IRR"?',
+      how_a3:'Es el nombre técnico de la rentabilidad anual que calculamos (en inglés, IRR; en español, TIR). Cuando hay fechas distintas se llama XIRR. No necesitas saberlo: el número grande ya es eso, explicado en cristiano.',
+      how_q4:'¿Qué significa "ganar poder de compra"?',
+      how_a4:'Los precios suben cada año (eso es la inflación). Si tu dinero crece más rápido que los precios, de verdad eres más rico: puedes comprar más cosas que antes. Si crece más despacio, aunque tengas más euros, compras menos. Por eso comparamos tu rentabilidad con la inflación.',
+      how_q5:'¿De dónde salen las alternativas?',
+      how_a5:'Son referencias orientativas para situar tu resultado: no hacer nada (0%), la inflación, un fondo de bajo riesgo y la bolsa mundial. Puedes cambiar esos porcentajes en "Ajustes avanzados". Son supuestos, no una promesa.'
+    },
+    ca:{
+      nav_calc:'Calculadora', nav_how:'Com funciona?',
+      calc_title:'Quina rendibilitat ha tingut la teva inversió?',
+      calc_subtitle:'Posa el que vas pagar, el que vas cobrar i quan. T\'expliquem, amb llenguatge clar, quant has guanyat de veritat.',
+      card_invest:'La teva inversió',
+      buy_h:'Quan vas comprar', lbl_buy_amt:'Quant vas pagar?', lbl_buy_date:'Quin dia?',
+      sell_h:'Quan vas vendre', lbl_sell_amt:'Quant vas cobrar?', lbl_sell_date:'Quin dia?',
+      div_h:'Dividends o cobraments',
+      tip_div:'Diners que t\'anava pagant la inversió mentre la tenies (dividends, cupons, rendes...). Si no vas cobrar res, deixa-ho buit.',
+      div_empty:'Vas cobrar dividends o rendes pel camí? Afegeix-los per afinar el càlcul. (Opcional)',
+      div_add:'Afegir un cobrament', div_amt:'Import', div_date:'Data', div_del:'Eliminar',
+      adv_title:'Ajustos avançats', adv_sub:'opcional · amb què et comparem',
+      adv_intro:'Per comparar-te, suposem aquestes rendibilitats anuals de cada alternativa. Són estimacions; les pots canviar.',
+      lbl_inf:'Inflació', tip_inf:'Quant pugen els preus a l\'any, de mitjana. És la línia de "no perdre poder de compra".',
+      lbl_mon:'Fons monetari', tip_mon:'Una opció de baix risc, semblant a tenir els diners en un compte remunerat o lletres del tresor.',
+      lbl_msci:'Borsa mundial', tip_msci:'La borsa de tot el món (índex MSCI World). Històricament ha rendit al voltant del 7% anual a llarg termini, amb alts i baixos.',
+      ex_btn:'Veure un exemple',
+      hero_eyebrow:'La teva rendibilitat anual', heroTech:'(TIR / IRR)',
+      kpi_total:'Guany total', tip_total:'Quant has guanyat en total respecte al que vas posar, sumant la venda i els dividends. Sense tenir en compte el temps.',
+      kpi_moic:'Has multiplicat els diners', tip_moic:'Quantes vegades tens ara respecte al que vas posar. ×2 vol dir que has doblat els diners.',
+      kpi_final:'Vas acabar amb',
+      flow_title:'Els teus moviments de diners',
+      flow_cap:'Cap avall, els diners que vas posar. Cap amunt, els que vas rebre (dividends i venda).',
+      rank_title:'Com t\'ha anat respecte a altres opcions?',
+      rank_cap:'Rendibilitat anual de la teva inversió comparada amb altres alternatives pel mateix diner i el mateix temps.',
+      share_btn:'🔗 Compartir el meu càlcul', copied:'Enllaç copiat!',
+      disclaimer:'Estimacions, no és assessorament financer. Les rendibilitats de les alternatives són supòsits. Rendibilitats passades no garanteixen rendibilitats futures.',
+      g_buy:'Compra', g_div:'Dividend', g_sell:'Venda',
+      r_you:'La teva inversió', r_msci:'Borsa mundial', r_mon:'Fons monetari', r_inf:'Inflació', r_none:'No fer res',
+      ax_rate:'Rendibilitat anual', money_in:'Entra', money_out:'Surt',
+      how_title:'Com funciona?', how_subtitle:'En cristià, sense tecnicismes.',
+      how_q1:'Què és la "rendibilitat anual"?',
+      how_a1a:'És el que han guanyat els teus diners cada any, de mitjana. Si vas posar 10.000 € i al cap de 3 anys en tens 13.000, no has guanyat un 30% l\'any: ho has repartit entre els 3 anys. La rendibilitat anual et dóna aquest ritme mitjà, ja tenint en compte el temps.',
+      how_a1b:'El bo de mesurar-ho així és que pots comparar inversions que van durar temps diferents, pomes amb pomes.',
+      how_q2:'Per què importen tant les dates?',
+      how_a2:'Perquè no és el mateix cobrar un dividend el primer mes que l\'últim any. Els diners que reps abans "valen més", perquè els pots reinvertir. Per això demanem les dates reals de cada moviment i no ens limitem a períodes rodons.',
+      how_q3:'I això de "TIR" o "IRR"?',
+      how_a3:'És el nom tècnic de la rendibilitat anual que calculem (en anglès, IRR; en català, TIR). Quan hi ha dates diferents se\'n diu XIRR. No cal que ho sàpigues: el número gros ja és això, explicat en cristià.',
+      how_q4:'Què vol dir "guanyar poder de compra"?',
+      how_a4:'Els preus pugen cada any (això és la inflació). Si els teus diners creixen més ràpid que els preus, de veritat ets més ric: pots comprar més coses que abans. Si creixen més a poc a poc, encara que tinguis més euros, compres menys. Per això comparem la teva rendibilitat amb la inflació.',
+      how_q5:'D\'on surten les alternatives?',
+      how_a5:'Són referències orientatives per situar el teu resultat: no fer res (0%), la inflació, un fons de baix risc i la borsa mundial. Pots canviar aquests percentatges a "Ajustos avançats". Són supòsits, no una promesa.'
+    },
+    en:{
+      nav_calc:'Calculator', nav_how:'How it works',
+      calc_title:'How well did your investment do?',
+      calc_subtitle:'Enter what you paid, what you got back, and when. We tell you, in plain words, how much you really earned.',
+      card_invest:'Your investment',
+      buy_h:'When you bought', lbl_buy_amt:'How much did you pay?', lbl_buy_date:'Which day?',
+      sell_h:'When you sold', lbl_sell_amt:'How much did you get?', lbl_sell_date:'Which day?',
+      div_h:'Dividends or payouts',
+      tip_div:'Money the investment paid you while you held it (dividends, coupons, rents...). If you got nothing, leave it empty.',
+      div_empty:'Did you receive any dividends or payouts along the way? Add them to fine-tune the result. (Optional)',
+      div_add:'Add a payout', div_amt:'Amount', div_date:'Date', div_del:'Remove',
+      adv_title:'Advanced settings', adv_sub:'optional · what we compare you to',
+      adv_intro:'To compare, we assume these yearly returns for each alternative. They are estimates; you can change them.',
+      lbl_inf:'Inflation', tip_inf:'How much prices rise per year, on average. It is the "don\'t lose buying power" line.',
+      lbl_mon:'Money-market fund', tip_mon:'A low-risk option, similar to a high-yield savings account or treasury bills.',
+      lbl_msci:'Global stocks', tip_msci:'The whole world\'s stock market (MSCI World index). Historically around 7% a year over the long run, with ups and downs.',
+      ex_btn:'See an example',
+      hero_eyebrow:'Your yearly return', heroTech:'(IRR)',
+      kpi_total:'Total gain', tip_total:'How much you gained in total versus what you put in, adding the sale and dividends. Time not taken into account.',
+      kpi_moic:'You multiplied your money', tip_moic:'How many times you have now versus what you put in. ×2 means you doubled your money.',
+      kpi_final:'You ended with',
+      flow_title:'Your money movements',
+      flow_cap:'Down: the money you put in. Up: what you received (dividends and sale).',
+      rank_title:'How did you do versus other options?',
+      rank_cap:'Your investment\'s yearly return compared to other options for the same money and the same time.',
+      share_btn:'🔗 Share my result', copied:'Link copied!',
+      disclaimer:'Estimates, not financial advice. The returns of the alternatives are assumptions. Past returns do not guarantee future returns.',
+      g_buy:'Buy', g_div:'Dividend', g_sell:'Sale',
+      r_you:'Your investment', r_msci:'Global stocks', r_mon:'Money-market fund', r_inf:'Inflation', r_none:'Do nothing',
+      ax_rate:'Yearly return', money_in:'In', money_out:'Out',
+      how_title:'How it works', how_subtitle:'In plain words, no jargon.',
+      how_q1:'What is the "yearly return"?',
+      how_a1a:'It is what your money earned each year, on average. If you put in €10,000 and 3 years later you have €13,000, you did not earn 30% a year: it was spread over the 3 years. The yearly return gives you that average pace, already accounting for time.',
+      how_a1b:'The nice thing about measuring it this way is that you can compare investments that lasted different amounts of time, apples to apples.',
+      how_q2:'Why do the dates matter so much?',
+      how_a2:'Because getting a dividend in the first month is not the same as in the last year. Money you receive earlier is "worth more", because you can reinvest it. That is why we ask for the real dates of each movement instead of using round periods.',
+      how_q3:'What about "IRR" or "TIR"?',
+      how_a3:'It is the technical name for the yearly return we compute (IRR in English; TIR in Spanish). When the dates differ it is called XIRR. You do not need to know it: the big number already is that, explained plainly.',
+      how_q4:'What does "gaining buying power" mean?',
+      how_a4:'Prices rise every year (that is inflation). If your money grows faster than prices, you are truly richer: you can buy more than before. If it grows slower, even with more euros you can buy less. That is why we compare your return to inflation.',
+      how_q5:'Where do the alternatives come from?',
+      how_a5:'They are rough reference points to place your result: do nothing (0%), inflation, a low-risk fund and global stocks. You can change those percentages in "Advanced settings". They are assumptions, not a promise.'
+    }
+  };
+
+  var LOCALE={es:'es-ES',ca:'ca-ES',en:'en-IE'};
+  var currentLang='es';
+  function L(){ return T[currentLang]; }
+  var $=function(id){return document.getElementById(id);};
+
+  function eur0(){ return new Intl.NumberFormat(LOCALE[currentLang],{style:'currency',currency:'EUR',maximumFractionDigits:0,useGrouping:'always'}); }
+  function e0(x){ return eur0().format(Math.round(x)); }
+
+  function parseNum(str){
+    if(str==null) return 0;
+    var s=(''+str).replace(/[^0-9.,\-]/g,'');
+    if(s.indexOf(',')>=0){ s=s.replace(/\./g,'').replace(',','.'); }
+    else { var parts=s.split('.'); if(parts.length>2 || (parts.length===2 && parts[1].length===3)) s=s.replace(/\./g,''); }
+    var n=parseFloat(s); return isFinite(n)?n:0;
+  }
+  function groupThousands(s){ return (''+s).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+  function pctStr(x,dec){ if(dec==null)dec=1; var s=(Math.round(x*Math.pow(10,dec))/Math.pow(10,dec)).toFixed(dec); s=s.replace(/\.0+$/,''); return (currentLang==='en'?s:s.replace('.',','))+'%'; }
+  function multStr(x){ var s=(Math.round(x*100)/100).toFixed(2); s=s.replace(/0$/,'').replace(/\.$/,''); return '×'+(currentLang==='en'?s:s.replace('.',',')); }
+
+  /* fecha local segura a partir de "YYYY-MM-DD" */
+  function toDate(str){ if(!str) return null; var p=str.split('-'); if(p.length!==3) return null; var d=new Date(+p[0],+p[1]-1,+p[2]); return isNaN(d)?null:d; }
+  function fmtDate(d){ try{ return new Intl.DateTimeFormat(LOCALE[currentLang],{day:'2-digit',month:'short',year:'2-digit'}).format(d); }catch(e){ return ''; } }
+  function daysBetween(a,b){ return (b-a)/86400000; }
+
+  /* ===================== Núcleo: XIRR ===================== */
+  function xnpv(rate,cfs,t0){
+    var s=0; for(var i=0;i<cfs.length;i++){ var yf=daysBetween(t0,cfs[i].date)/365; s+=cfs[i].amount/Math.pow(1+rate,yf); } return s;
+  }
+  function xnpvDeriv(rate,cfs,t0){
+    var s=0; for(var i=0;i<cfs.length;i++){ var yf=daysBetween(t0,cfs[i].date)/365; if(yf===0) continue; s+= -yf*cfs[i].amount/Math.pow(1+rate,yf+1); } return s;
+  }
+  function xirr(cfs){
+    if(cfs.length<2) return null;
+    var t0=cfs[0].date;
+    // Newton-Raphson
+    var rate=0.1, i;
+    for(i=0;i<80;i++){
+      var f=xnpv(rate,cfs,t0), fp=xnpvDeriv(rate,cfs,t0);
+      if(!isFinite(f)||!isFinite(fp)||fp===0) break;
+      var nr=rate-f/fp;
+      if(nr<=-0.999999) nr=(rate-0.999)/2;        // mantener (1+r)>0
+      if(!isFinite(nr)) break;
+      if(Math.abs(nr-rate)<1e-9){ rate=nr; break; }
+      rate=nr;
+    }
+    if(isFinite(rate) && rate>-0.9999 && Math.abs(xnpv(rate,cfs,t0))<1e-4) return rate;
+    // Fallback: bisección buscando un cambio de signo
+    var lo=-0.9999, hi=1, flo=xnpv(lo,cfs,t0), fhi=xnpv(hi,cfs,t0), tries=0;
+    while(flo*fhi>0 && hi<1e7 && tries<80){ hi*=1.6; fhi=xnpv(hi,cfs,t0); tries++; }
+    if(!isFinite(flo)||!isFinite(fhi)||flo*fhi>0) return null;
+    for(var j=0;j<300;j++){
+      var mid=(lo+hi)/2, fm=xnpv(mid,cfs,t0);
+      if(!isFinite(fm)) return null;
+      if(Math.abs(fm)<1e-7 || (hi-lo)<1e-12) return mid;
+      if(flo*fm<0){ hi=mid; fhi=fm; } else { lo=mid; flo=fm; }
+    }
+    return (lo+hi)/2;
+  }
+  function signChanges(cfs){
+    var prev=0,c=0;
+    for(var i=0;i<cfs.length;i++){ var s=Math.sign(cfs[i].amount); if(s===0) continue; if(prev!==0 && s!==prev) c++; prev=s; }
+    return c;
+  }
+
+  /* ===================== Dividendos dinámicos ===================== */
+  var divs=[]; // {amt:'', date:''}
+  function renderDivs(){
+    var list=$('divList'); list.innerHTML='';
+    $('divEmpty').style.display = divs.length? 'none':'block';
+    divs.forEach(function(d,idx){
+      var row=document.createElement('div'); row.className='div-row';
+      row.innerHTML=
+        '<div class="field"><label>'+L().div_amt+'</label><div class="input-wrap"><input type="text" inputmode="decimal" class="dAmt" data-i="'+idx+'" placeholder="500" value="'+(d.amt||'')+'"><span class="unit">€</span></div></div>'+
+        '<div class="field"><label>'+L().div_date+'</label><div class="input-wrap"><input type="date" class="dDate" data-i="'+idx+'" value="'+(d.date||'')+'"></div></div>'+
+        '<button class="div-del" type="button" title="'+L().div_del+'" aria-label="'+L().div_del+'" data-i="'+idx+'">×</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.dAmt').forEach(function(el){ el.addEventListener('input',function(){ divs[+el.dataset.i].amt=el.value; calc(); }); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; divs[+el.dataset.i].amt=el.value; }); });
+    list.querySelectorAll('.dDate').forEach(function(el){ el.addEventListener('input',function(){ divs[+el.dataset.i].date=el.value; calc(); }); });
+    list.querySelectorAll('.div-del').forEach(function(el){ el.addEventListener('click',function(){ divs.splice(+el.dataset.i,1); renderDivs(); calc(); }); });
+  }
+  $('addDiv').addEventListener('click',function(){ divs.push({amt:'',date:''}); renderDivs(); });
+
+  /* ===================== Charts ===================== */
+  var flowChart=null, rankChart=null;
+  function buildFlowChart(flows){
+    if(flowChart){ flowChart.destroy(); flowChart=null; }
+    var labels=flows.map(function(f){ return fmtDate(f.date)+'\n'+f.label; });
+    var data=flows.map(function(f){ return f.amount; });
+    var colors=flows.map(function(f){ return f.amount<0? '#e74c3c':'#27ae60'; });
+    flowChart=new Chart($('flowChart').getContext('2d'),{
+      type:'bar',
+      data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderRadius:6,maxBarThickness:60}]},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{
+          title:function(it){ return it[0].label.replace('\n',' · '); },
+          label:function(it){ var v=it.raw; return (v<0?L().money_out:L().money_in)+': '+e0(Math.abs(v)); }
+        }}},
+        scales:{
+          x:{ticks:{font:{size:11},maxRotation:0,autoSkip:false,callback:function(val){ var l=this.getLabelForValue(val); return l.split('\n'); }},grid:{display:false}},
+          y:{ticks:{callback:function(v){ return e0(v); },font:{size:11}},grid:{color:'#eef2f7'}}
+        }
+      }
+    });
+  }
+  function buildRankChart(rows){
+    if(rankChart){ rankChart.destroy(); rankChart=null; }
+    var labels=rows.map(function(r){ return r.label; });
+    var data=rows.map(function(r){ return Math.round(r.rate*1000)/10; });
+    var colors=rows.map(function(r){ return r.you? '#f5c84b':'#4a6dd1'; });
+    rankChart=new Chart($('rankChart').getContext('2d'),{
+      type:'bar',
+      data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderRadius:6,maxBarThickness:34}]},
+      options:{
+        indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(it){ return pctStr(it.raw,1); }}}},
+        scales:{
+          x:{ticks:{callback:function(v){ return v+'%'; },font:{size:11}},grid:{color:'#eef2f7'},title:{display:true,text:L().ax_rate,font:{size:11},color:'#5a6a7a'}},
+          y:{ticks:{font:{size:12,weight:'600'}},grid:{display:false}}
+        }
+      }
+    });
+  }
+
+  /* ===================== Cálculo principal ===================== */
+  var last=null; // resultado para re-render al cambiar idioma
+  function showErr(msg){ var b=$('errBox'); if(msg){ b.textContent=msg; b.classList.add('show'); } else b.classList.remove('show'); }
+  function showWarn(msg){ var b=$('warnBox'); if(msg){ b.innerHTML=msg; b.classList.add('show'); } else b.classList.remove('show'); }
+
+  function readInputs(){
+    return {
+      buyAmt:parseNum($('buyAmt').value), buyDate:$('buyDate').value,
+      sellAmt:parseNum($('sellAmt').value), sellDate:$('sellDate').value,
+      divs:divs.map(function(d){ return {amt:parseNum(d.amt),date:d.date}; }).filter(function(d){ return d.amt>0 && d.date; }),
+      rInf:parseNum($('rInf').value)/100, rMon:parseNum($('rMon').value)/100, rMsci:parseNum($('rMsci').value)/100
+    };
+  }
+
+  function calc(){
+    var inp=readInputs();
+    showErr(''); showWarn('');
+    var bd=toDate(inp.buyDate), sd=toDate(inp.sellDate);
+
+    // Validación mínima (sin gritar si aún no han rellenado nada)
+    var hasBuy = inp.buyAmt>0 && bd, hasSell = inp.sellAmt>0 && sd;
+    if(!hasBuy || !hasSell){ $('results').classList.remove('show'); return; }
+    if(sd < bd){ showErr(errMsg('order')); $('results').classList.remove('show'); return; }
+
+    // Cashflows
+    var cfs=[{amount:-inp.buyAmt,date:bd,label:L().g_buy,kind:'buy'}];
+    inp.divs.forEach(function(d){ cfs.push({amount:d.amt,date:toDate(d.date),label:L().g_div,kind:'div'}); });
+    cfs.push({amount:inp.sellAmt,date:sd,label:L().g_sell,kind:'sell'});
+    // ordenar por fecha
+    cfs.sort(function(a,b){ return a.date-b.date; });
+
+    var years=daysBetween(bd,sd)/365;
+    var totalIn=inp.sellAmt+inp.divs.reduce(function(s,d){ return s+d.amt; },0);
+    var moic=totalIn/inp.buyAmt;
+    var totalGain=moic-1;
+
+    // XIRR
+    var rate=xirr(cfs);
+    var sc=signChanges(cfs);
+    var pathological = (rate===null) || !isFinite(rate);
+
+    if(pathological){
+      // No mostramos un número erróneo
+      $('results').classList.remove('show');
+      showWarn(errMsg('nosolve'));
+      last=null;
+      return;
+    }
+
+    // Avisos suaves
+    var warn='';
+    if(sc>1) warn=errMsg('multi');
+    else if(years>0 && years<0.0833) warn=errMsg('short');
+    else if(rate>10) warn=errMsg('huge');
+    showWarn(warn);
+
+    // Render hero
+    $('heroRate').textContent=pctStr(rate*100,1);
+    $('heroRate').classList.toggle('gold', rate>=0);
+    $('heroRate').style.color = rate<0? '#ffd2cc':'';
+    $('heroSay').textContent=heroSentence(rate,years,totalIn,inp.buyAmt);
+
+    // KPIs
+    var kt=$('kpiTotal'); kt.textContent=(totalGain>=0?'+':'')+pctStr(totalGain*100,1); kt.className='val '+(totalGain>=0?'pos':'neg');
+    $('kpiMoic').textContent=multStr(moic);
+    $('kpiFinal').textContent=e0(totalIn);
+
+    // Chart de flujos
+    buildFlowChart(cfs);
+
+    // Ranking
+    var bench=[
+      {key:'you', label:L().r_you, rate:rate, you:true, final:totalIn},
+      {key:'msci',label:L().r_msci,rate:inp.rMsci, final:inp.buyAmt*Math.pow(1+inp.rMsci,years)},
+      {key:'mon', label:L().r_mon, rate:inp.rMon,  final:inp.buyAmt*Math.pow(1+inp.rMon,years)},
+      {key:'inf', label:L().r_inf, rate:inp.rInf,  final:inp.buyAmt*Math.pow(1+inp.rInf,years)},
+      {key:'none',label:L().r_none,rate:0,         final:inp.buyAmt}
+    ];
+    bench.sort(function(a,b){ return b.rate-a.rate; });
+    buildRankChart(bench);
+
+    // Veredictos
+    renderVerdicts(rate,years,totalIn,inp);
+
+    $('results').classList.add('show');
+    last={inp:inp,rate:rate,years:years,totalIn:totalIn,moic:moic};
+
+    try{ if(window.umami) window.umami.track('calc_done',{rate:Math.round(rate*1000)/10,years:Math.round(years*10)/10,divs:inp.divs.length}); }catch(e){}
+  }
+
+  /* frases dinámicas */
+  function heroSentence(rate,years,totalIn,buy){
+    var rp=pctStr(Math.abs(rate*100),1), fin=e0(totalIn), inv=e0(buy), yrs=(Math.round(years*10)/10);
+    if(currentLang==='ca'){
+      if(rate<0) return 'Cada any vas perdre un '+rp+' de mitjana: de '+inv+' vas passar a '+fin+'.';
+      return 'De mitjana, els teus diners van créixer un '+rp+' cada any: de '+inv+' a '+fin+' en '+yrs+' anys.';
+    }
+    if(currentLang==='en'){
+      if(rate<0) return 'On average you lost '+rp+' per year: from '+inv+' you ended with '+fin+'.';
+      return 'On average, your money grew '+rp+' each year: from '+inv+' to '+fin+' over '+yrs+' years.';
+    }
+    if(rate<0) return 'Cada año perdiste un '+rp+' de media: de '+inv+' pasaste a '+fin+'.';
+    return 'De media, tu dinero creció un '+rp+' cada año: de '+inv+' a '+fin+' en '+yrs+' años.';
+  }
+
+  function renderVerdicts(rate,years,totalIn,inp){
+    var box=$('verdicts'); box.innerHTML='';
+    var msciFinal=inp.buyAmt*Math.pow(1+inp.rMsci,years);
+    var real=(1+rate)/(1+inp.rInf)-1;
+
+    // 1) vs bolsa mundial
+    var v1=document.createElement('div'); var beat=rate>=inp.rMsci;
+    v1.className='verdict '+(beat?'good':'neu');
+    v1.innerHTML=cmpStocks(rate,inp.rMsci,totalIn,msciFinal,beat);
+    box.appendChild(v1);
+
+    // 2) inflación / poder de compra
+    var v2=document.createElement('div'); var gained=real>=0;
+    v2.className='verdict '+(gained?'good':'bad');
+    v2.innerHTML=cmpInflation(real,inp.rInf,gained);
+    box.appendChild(v2);
+  }
+  function cmpStocks(rate,rMsci,fin,msciFin,beat){
+    var you=pctStr(rate*100,1), m=pctStr(rMsci*100,1), f=e0(fin), mf=e0(msciFin);
+    if(currentLang==='ca') return '<b>La teva inversió: '+you+' a l\'any</b> → vas acabar amb '+f+'. A la borsa mundial ('+m+') hauries acabat amb '+mf+'. '+(beat?'Ho has fet <b>millor que la borsa</b>.':'La borsa ho hauria fet <b>una mica millor</b>.');
+    if(currentLang==='en') return '<b>Your investment: '+you+' a year</b> → you ended with '+f+'. In global stocks ('+m+') you would have ended with '+mf+'. '+(beat?'You did <b>better than the market</b>.':'The market would have done <b>a bit better</b>.');
+    return '<b>Tu inversión: '+you+' al año</b> → terminaste con '+f+'. En la bolsa mundial ('+m+') habrías terminado con '+mf+'. '+(beat?'Lo has hecho <b>mejor que la bolsa</b>.':'La bolsa lo habría hecho <b>algo mejor</b>.');
+  }
+  function cmpInflation(real,rInf,gained){
+    var rp=pctStr(Math.abs(real*100),1), inf=pctStr(rInf*100,1);
+    if(currentLang==='ca') return gained? 'El teu diner ha crescut més ràpid que els preus (inflació '+inf+'): <b>has guanyat poder de compra</b>, un '+rp+' a l\'any per sobre dels preus.' : 'El teu diner ha crescut més a poc a poc que els preus (inflació '+inf+'): <b>has perdut poder de compra</b>, un '+rp+' a l\'any.';
+    if(currentLang==='en') return gained? 'Your money grew faster than prices (inflation '+inf+'): <b>you gained buying power</b>, about '+rp+' a year above prices.' : 'Your money grew slower than prices (inflation '+inf+'): <b>you lost buying power</b>, about '+rp+' a year.';
+    return gained? 'Tu dinero ha crecido más rápido que los precios (inflación '+inf+'): <b>has ganado poder de compra</b>, un '+rp+' al año por encima de los precios.' : 'Tu dinero ha crecido más despacio que los precios (inflación '+inf+'): <b>has perdido poder de compra</b>, un '+rp+' al año.';
+  }
+
+  function errMsg(k){
+    var M={
+      es:{order:'La fecha de venta no puede ser anterior a la de compra. Revísalas.',
+          nosolve:'Con estos datos no podemos calcular una rentabilidad anual fiable. Revisa los importes y las fechas (por ejemplo, que haya una compra y una venta claras).',
+          multi:'Tus movimientos cambian de signo varias veces, así que la rentabilidad anual puede tener más de una lectura. Tómala con cautela.',
+          short:'El periodo es muy corto, así que la cifra anual puede parecer exagerada. Mira mejor la "ganancia total".',
+          huge:'La rentabilidad anual sale altísima (periodo corto o ganancia muy grande). Fíjate también en la "ganancia total".'},
+      ca:{order:'La data de venda no pot ser anterior a la de compra. Revisa-les.',
+          nosolve:'Amb aquestes dades no podem calcular una rendibilitat anual fiable. Revisa els imports i les dates (per exemple, que hi hagi una compra i una venda clares).',
+          multi:'Els teus moviments canvien de signe diverses vegades, així que la rendibilitat anual pot tenir més d\'una lectura. Pren-la amb cautela.',
+          short:'El període és molt curt, així que la xifra anual pot semblar exagerada. Mira millor el "guany total".',
+          huge:'La rendibilitat anual surt altíssima (període curt o guany molt gran). Fixa\'t també en el "guany total".'},
+      en:{order:'The sell date cannot be earlier than the buy date. Please check them.',
+          nosolve:'With this data we cannot compute a reliable yearly return. Check the amounts and dates (for example, that there is a clear buy and a clear sale).',
+          multi:'Your movements change sign several times, so the yearly return can have more than one reading. Take it with caution.',
+          short:'The period is very short, so the yearly figure may look exaggerated. Look at the "total gain" instead.',
+          huge:'The yearly return comes out very high (short period or very large gain). Also look at the "total gain".'}
+    };
+    return (M[currentLang]||M.es)[k];
+  }
+
+  /* ===================== Compartir por URL ===================== */
+  function buildShareURL(){
+    var inp={ buyAmt:$('buyAmt').value, buyDate:$('buyDate').value, sellAmt:$('sellAmt').value, sellDate:$('sellDate').value };
+    var q=[];
+    if(parseNum(inp.buyAmt)) q.push('bp='+Math.round(parseNum(inp.buyAmt)));
+    if(inp.buyDate) q.push('bd='+inp.buyDate);
+    if(parseNum(inp.sellAmt)) q.push('sp='+Math.round(parseNum(inp.sellAmt)));
+    if(inp.sellDate) q.push('sd='+inp.sellDate);
+    var dv=divs.map(function(d){ var a=Math.round(parseNum(d.amt)); return (a&&d.date)? a+'~'+d.date : null; }).filter(Boolean);
+    if(dv.length) q.push('d='+dv.join('!'));
+    // benchmarks sólo si se han tocado (distintos del default)
+    if($('rInf').value.replace(',','.')!=='2.5' && $('rInf').value!=='2,5') q.push('inf='+$('rInf').value.replace(',','.'));
+    if(parseNum($('rMon').value)!==3) q.push('mon='+$('rMon').value.replace(',','.'));
+    if(parseNum($('rMsci').value)!==7) q.push('msc='+$('rMsci').value.replace(',','.'));
+    var base=location.href.split('?')[0].split('#')[0];
+    return base+(q.length? '?'+q.join('&'):'');
+  }
+  function loadFromURL(){
+    var qs=location.search.replace(/^\?/,''); if(!qs) return false;
+    var p={}; qs.split('&').forEach(function(kv){ var i=kv.indexOf('='); if(i<0) return; p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1)); });
+    var any=false;
+    if(p.bp){ $('buyAmt').value=groupThousands(p.bp); any=true; }
+    if(p.bd){ $('buyDate').value=p.bd; any=true; }
+    if(p.sp){ $('sellAmt').value=groupThousands(p.sp); any=true; }
+    if(p.sd){ $('sellDate').value=p.sd; any=true; }
+    if(p.inf){ $('rInf').value=p.inf.replace('.',','); }
+    if(p.mon){ $('rMon').value=p.mon.replace('.',','); }
+    if(p.msc){ $('rMsci').value=p.msc.replace('.',','); }
+    if(p.d){ divs=p.d.split('!').map(function(s){ var x=s.split('~'); return {amt:x[0]?groupThousands(x[0]):'',date:x[1]||''}; }); any=true; }
+    renderDivs();
+    return any;
+  }
+  $('shareBtn').addEventListener('click',function(){
+    var url=buildShareURL();
+    var done=function(){ var c=$('copied'); c.classList.add('show'); setTimeout(function(){ c.classList.remove('show'); },2200); try{ history.replaceState(null,'',url); }catch(e){} try{ if(window.umami) window.umami.track('share_click'); }catch(e){} };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ fallbackCopy(url); done(); }); }
+    else { fallbackCopy(url); done(); }
+  });
+  function fallbackCopy(text){ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); }
+
+  /* ===================== Ejemplo ===================== */
+  $('exampleBtn').addEventListener('click',function(){
+    $('buyAmt').value='10.000'; $('buyDate').value='2021-03-01';
+    $('sellAmt').value='14.300'; $('sellDate').value='2024-03-01';
+    divs=[{amt:'250',date:'2022-03-01'},{amt:'250',date:'2023-03-01'}];
+    renderDivs(); calc(); $('results').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  /* ===================== UI: páginas, plegables, tooltips ===================== */
+  window.showPage=function(p){
+    document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
+    $('page-'+p).classList.add('active');
+    $('nav-calc').classList.toggle('active',p==='calc');
+    $('nav-how').classList.toggle('active',p==='how');
+    window.scrollTo(0,0);
+  };
+  (function(){ var t=$('advToggle'); function tog(){ $('advCard').classList.toggle('open'); }
+    t.addEventListener('click',tog); t.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tog(); } });
+  })();
+  document.querySelectorAll('.edu .edu-q').forEach(function(q){ q.addEventListener('click',function(){ q.parentElement.classList.toggle('open'); }); });
+  document.querySelectorAll('.info-icon').forEach(function(ic){
+    ic.addEventListener('click',function(e){ e.stopPropagation(); var open=ic.classList.contains('show'); document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');}); if(!open) ic.classList.add('show'); });
+  });
+  document.addEventListener('click',function(){ document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');}); });
+
+  /* ===================== Listeners de inputs ===================== */
+  ['buyAmt','sellAmt','buyDate','sellDate','rInf','rMon','rMsci'].forEach(function(id){ $(id).addEventListener('input',calc); });
+  ['buyAmt','sellAmt'].forEach(function(id){ var el=$(id); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; calc(); }); });
+
+  /* ===================== i18n apply ===================== */
+  function applyStatic(){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){ var v=L()[el.getAttribute('data-i18n')]; if(typeof v==='string') el.textContent=v; });
+    document.title = currentLang==='ca'? 'AstroReturn · Quina rendibilitat ha tingut la teva inversió?'
+                   : currentLang==='en'? 'AstroReturn · How well did your investment do?'
+                   : 'AstroReturn · ¿Qué rentabilidad ha tenido tu inversión?';
+    $('heroTech').textContent=L().heroTech;
+  }
+  window.setLang=function(l){
+    if(!T[l]) l='es';
+    currentLang=l; document.documentElement.lang=l;
+    applyStatic(); renderDivs(); calc();
+  };
+
+  /* ===================== Reiniciar (logo) ===================== */
+  window.restartApp=function(){
+    ['buyAmt','sellAmt'].forEach(function(id){ $(id).value=''; });
+    $('buyDate').value=''; $('sellDate').value='';
+    $('rInf').value='2,5'; $('rMon').value='3'; $('rMsci').value='7';
+    divs=[]; renderDivs();
+    $('results').classList.remove('show'); showErr(''); showWarn('');
+    try{ history.replaceState(null,'',location.href.split('?')[0]); }catch(e){}
+    showPage('calc');
+  };
+
+  /* ===================== Init ===================== */
+  var lang0=(document.documentElement.lang||'es').slice(0,2).toLowerCase(); if(!T[lang0]) lang0='es';
+  currentLang=lang0;
+  applyStatic();
+  var hadURL=loadFromURL();
+  renderDivs();
+  if(hadURL) calc();
+})();
+</script>
+</body>
+</html>
