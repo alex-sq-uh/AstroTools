@@ -74,6 +74,9 @@
   .input-wrap input[type=date]{font-weight:600;padding-right:12px}
   .input-wrap .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem;pointer-events:none}
   .hint{font-size:.78rem;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;gap:6px}
+  .field label.lbl-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .today-btn{background:#eef4fc;border:1px solid #cfe0f5;color:var(--secondary);font:inherit;font-weight:600;font-size:.74rem;padding:2px 10px;border-radius:20px;cursor:pointer;transition:all .15s;flex-shrink:0}
+  .today-btn:hover{background:var(--secondary);color:#fff;border-color:var(--secondary)}
 
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem}
   .grid2 .field{margin-bottom:0}
@@ -187,7 +190,7 @@
           <div class="input-wrap"><input id="buyAmt" type="text" inputmode="decimal" placeholder="10.000"><span class="unit">€</span></div>
         </div>
         <div class="field">
-          <label data-i18n="lbl_buy_date">¿Qué día?</label>
+          <label class="lbl-row"><span data-i18n="lbl_buy_date">¿Qué día?</span><button class="today-btn" type="button" data-target="buyDate" data-i18n="today_btn">Hoy</button></label>
           <div class="input-wrap"><input id="buyDate" type="date"></div>
         </div>
       </div>
@@ -201,7 +204,7 @@
           <div class="input-wrap"><input id="sellAmt" type="text" inputmode="decimal" placeholder="14.300"><span class="unit">€</span></div>
         </div>
         <div class="field">
-          <label data-i18n="lbl_sell_date">¿Qué día?</label>
+          <label class="lbl-row"><span data-i18n="lbl_sell_date">¿Qué día?</span><button class="today-btn" type="button" data-target="sellDate" data-i18n="today_btn">Hoy</button></label>
           <div class="input-wrap"><input id="sellDate" type="date"></div>
         </div>
       </div>
@@ -236,8 +239,8 @@
           <div class="input-wrap"><input id="rMon" type="text" inputmode="decimal" value="3"><span class="unit">%</span></div>
         </div>
         <div class="field">
-          <label><span data-i18n="lbl_msci">Bolsa mundial</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_msci">La bolsa de todo el mundo (índice MSCI World). Históricamente ha rentado en torno al 7% anual a largo plazo, con altibajos.</span></span></label>
-          <div class="input-wrap"><input id="rMsci" type="text" inputmode="decimal" value="7"><span class="unit">%</span></div>
+          <label><span data-i18n="lbl_msci">Bolsa mundial</span> <span class="info-icon">i<span class="tooltip-box" data-i18n="tip_msci">La bolsa de todo el mundo (índice MSCI World). Históricamente ha rentado en torno al 8% anual a largo plazo, con altibajos.</span></span></label>
+          <div class="input-wrap"><input id="rMsci" type="text" inputmode="decimal" value="8"><span class="unit">%</span></div>
         </div>
       </div>
     </div>
@@ -355,7 +358,7 @@
       calc_title:'¿Qué rentabilidad ha tenido tu inversión?',
       calc_subtitle:'Pon lo que pagaste, lo que cobraste y cuándo. Te decimos, en lenguaje claro, cuánto has ganado de verdad.',
       card_invest:'Tu inversión',
-      buy_h:'Cuando compraste', lbl_buy_amt:'¿Cuánto pagaste?', lbl_buy_date:'¿Qué día?',
+      buy_h:'Cuando compraste', lbl_buy_amt:'¿Cuánto pagaste?', lbl_buy_date:'¿Qué día?', today_btn:'Hoy',
       sell_h:'Cuando vendiste', lbl_sell_amt:'¿Cuánto cobraste?', lbl_sell_date:'¿Qué día?',
       div_h:'Dividendos o cobros',
       tip_div:'Dinero que te fue pagando la inversión mientras la tenías (dividendos, cupones, rentas...). Si no cobraste nada, déjalo vacío.',
@@ -365,7 +368,7 @@
       adv_intro:'Para compararte, suponemos estas rentabilidades anuales de cada alternativa. Son estimaciones; puedes cambiarlas.',
       lbl_inf:'Inflación', tip_inf:'Cuánto suben los precios al año, de media. Es la línea de "no perder poder de compra".',
       lbl_mon:'Fondo monetario', tip_mon:'Una opción de bajo riesgo, parecida a tener el dinero en una cuenta remunerada o letras del tesoro.',
-      lbl_msci:'Bolsa mundial', tip_msci:'La bolsa de todo el mundo (índice MSCI World). Históricamente ha rentado en torno al 7% anual a largo plazo, con altibajos.',
+      lbl_msci:'Bolsa mundial', tip_msci:'La bolsa de todo el mundo (índice MSCI World). Históricamente ha rentado en torno al 8% anual a largo plazo, con altibajos.',
       ex_btn:'Ver un ejemplo',
       hero_eyebrow:'Tu rentabilidad anual', heroTech:'(TIR / IRR)',
       kpi_total:'Ganancia total', tip_total:'Cuánto has ganado en total respecto a lo que pusiste, sumando la venta y los dividendos. Sin tener en cuenta el tiempo.',
@@ -400,7 +403,7 @@
       calc_title:'Quina rendibilitat ha tingut la teva inversió?',
       calc_subtitle:'Posa el que vas pagar, el que vas cobrar i quan. T\'expliquem, amb llenguatge clar, quant has guanyat de veritat.',
       card_invest:'La teva inversió',
-      buy_h:'Quan vas comprar', lbl_buy_amt:'Quant vas pagar?', lbl_buy_date:'Quin dia?',
+      buy_h:'Quan vas comprar', lbl_buy_amt:'Quant vas pagar?', lbl_buy_date:'Quin dia?', today_btn:'Avui',
       sell_h:'Quan vas vendre', lbl_sell_amt:'Quant vas cobrar?', lbl_sell_date:'Quin dia?',
       div_h:'Dividends o cobraments',
       tip_div:'Diners que t\'anava pagant la inversió mentre la tenies (dividends, cupons, rendes...). Si no vas cobrar res, deixa-ho buit.',
@@ -410,7 +413,7 @@
       adv_intro:'Per comparar-te, suposem aquestes rendibilitats anuals de cada alternativa. Són estimacions; les pots canviar.',
       lbl_inf:'Inflació', tip_inf:'Quant pugen els preus a l\'any, de mitjana. És la línia de "no perdre poder de compra".',
       lbl_mon:'Fons monetari', tip_mon:'Una opció de baix risc, semblant a tenir els diners en un compte remunerat o lletres del tresor.',
-      lbl_msci:'Borsa mundial', tip_msci:'La borsa de tot el món (índex MSCI World). Històricament ha rendit al voltant del 7% anual a llarg termini, amb alts i baixos.',
+      lbl_msci:'Borsa mundial', tip_msci:'La borsa de tot el món (índex MSCI World). Històricament ha rendit al voltant del 8% anual a llarg termini, amb alts i baixos.',
       ex_btn:'Veure un exemple',
       hero_eyebrow:'La teva rendibilitat anual', heroTech:'(TIR / IRR)',
       kpi_total:'Guany total', tip_total:'Quant has guanyat en total respecte al que vas posar, sumant la venda i els dividends. Sense tenir en compte el temps.',
@@ -443,7 +446,7 @@
       calc_title:'How well did your investment do?',
       calc_subtitle:'Enter what you paid, what you got back, and when. We tell you, in plain words, how much you really earned.',
       card_invest:'Your investment',
-      buy_h:'When you bought', lbl_buy_amt:'How much did you pay?', lbl_buy_date:'Which day?',
+      buy_h:'When you bought', lbl_buy_amt:'How much did you pay?', lbl_buy_date:'Which day?', today_btn:'Today',
       sell_h:'When you sold', lbl_sell_amt:'How much did you get?', lbl_sell_date:'Which day?',
       div_h:'Dividends or payouts',
       tip_div:'Money the investment paid you while you held it (dividends, coupons, rents...). If you got nothing, leave it empty.',
@@ -453,7 +456,7 @@
       adv_intro:'To compare, we assume these yearly returns for each alternative. They are estimates; you can change them.',
       lbl_inf:'Inflation', tip_inf:'How much prices rise per year, on average. It is the "don\'t lose buying power" line.',
       lbl_mon:'Money-market fund', tip_mon:'A low-risk option, similar to a high-yield savings account or treasury bills.',
-      lbl_msci:'Global stocks', tip_msci:'The whole world\'s stock market (MSCI World index). Historically around 7% a year over the long run, with ups and downs.',
+      lbl_msci:'Global stocks', tip_msci:'The whole world\'s stock market (MSCI World index). Historically around 8% a year over the long run, with ups and downs.',
       ex_btn:'See an example',
       hero_eyebrow:'Your yearly return', heroTech:'(IRR)',
       kpi_total:'Total gain', tip_total:'How much you gained in total versus what you put in, adding the sale and dividends. Time not taken into account.',
@@ -777,7 +780,7 @@
     // benchmarks sólo si se han tocado (distintos del default)
     if($('rInf').value.replace(',','.')!=='2.5' && $('rInf').value!=='2,5') q.push('inf='+$('rInf').value.replace(',','.'));
     if(parseNum($('rMon').value)!==3) q.push('mon='+$('rMon').value.replace(',','.'));
-    if(parseNum($('rMsci').value)!==7) q.push('msc='+$('rMsci').value.replace(',','.'));
+    if(parseNum($('rMsci').value)!==8) q.push('msc='+$('rMsci').value.replace(',','.'));
     var base=location.href.split('?')[0].split('#')[0];
     return base+(q.length? '?'+q.join('&'):'');
   }
@@ -833,6 +836,10 @@
   ['buyAmt','sellAmt','buyDate','sellDate','rInf','rMon','rMsci'].forEach(function(id){ $(id).addEventListener('input',calc); });
   ['buyAmt','sellAmt'].forEach(function(id){ var el=$(id); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; calc(); }); });
 
+  /* Botón "Hoy" en las fechas */
+  function todayISO(){ var d=new Date(); var m=('0'+(d.getMonth()+1)).slice(-2); var dd=('0'+d.getDate()).slice(-2); return d.getFullYear()+'-'+m+'-'+dd; }
+  document.querySelectorAll('.today-btn').forEach(function(b){ b.addEventListener('click',function(){ var t=$(b.getAttribute('data-target')); t.value=todayISO(); calc(); }); });
+
   /* ===================== i18n apply ===================== */
   function applyStatic(){
     document.querySelectorAll('[data-i18n]').forEach(function(el){ var v=L()[el.getAttribute('data-i18n')]; if(typeof v==='string') el.textContent=v; });
@@ -851,7 +858,7 @@
   window.restartApp=function(){
     ['buyAmt','sellAmt'].forEach(function(id){ $(id).value=''; });
     $('buyDate').value=''; $('sellDate').value='';
-    $('rInf').value='2,5'; $('rMon').value='3'; $('rMsci').value='7';
+    $('rInf').value='2,5'; $('rMon').value='3'; $('rMsci').value='8';
     divs=[]; renderDivs();
     $('results').classList.remove('show'); showErr(''); showWarn('');
     try{ history.replaceState(null,'',location.href.split('?')[0]); }catch(e){}
