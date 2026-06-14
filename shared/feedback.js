@@ -15,7 +15,7 @@
   var ENDPOINT_DEFAULT = "https://formsubmit.co/ajax/31181a9b83dda38926ace2532e4a9aba";
 
   var STR = {
-    es: { q:"¿Te ha sido útil?", comment:"💬 Dejar un comentario",
+    es: { q:"¿Te ha sido útil?", comment:"💬 Dejar un comentario", share:"📤 Compartir", copied:"✓ Enlace copiado",
       thanks:"¡Gracias por tu valoración!", more:"¿Algo que mejorar? Cuéntanos",
       mtitle:"Cuéntanos más", msub:"Tu opinión nos ayuda a mejorar.",
       ratelbl:"Tu puntuación", clbl:"Comentarios (opcional)",
@@ -23,7 +23,7 @@
       stitle:"¡Gracias!", ssub:"Tu feedback nos ayuda muchísimo.", close:"Cerrar",
       evalid:"Pon al menos una puntuación o un comentario.",
       esend:"No se pudo enviar. Inténtalo de nuevo en un momento." },
-    ca: { q:"T'ha estat útil?", comment:"💬 Deixa un comentari",
+    ca: { q:"T'ha estat útil?", comment:"💬 Deixa un comentari", share:"📤 Comparteix", copied:"✓ Enllaç copiat",
       thanks:"Gràcies per la teva valoració!", more:"Alguna cosa a millorar? Explica'ns",
       mtitle:"Explica'ns més", msub:"La teva opinió ens ajuda a millorar.",
       ratelbl:"La teva puntuació", clbl:"Comentaris (opcional)",
@@ -31,7 +31,7 @@
       stitle:"Gràcies!", ssub:"El teu feedback ens ajuda moltíssim.", close:"Tancar",
       evalid:"Posa almenys una puntuació o un comentari.",
       esend:"No s'ha pogut enviar. Torna-ho a provar d'aquí un moment." },
-    en: { q:"Was this helpful?", comment:"💬 Leave a comment",
+    en: { q:"Was this helpful?", comment:"💬 Leave a comment", share:"📤 Share", copied:"✓ Link copied",
       thanks:"Thanks for your rating!", more:"Anything to improve? Tell us",
       mtitle:"Tell us more", msub:"Your feedback helps us improve.",
       ratelbl:"Your rating", clbl:"Comments (optional)",
@@ -66,6 +66,11 @@
     ".comment{background:none;border:1.5px solid #cfd9e6;color:#4a6dd1;font:inherit;font-weight:600;" +
       "font-size:.85rem;padding:.45rem .9rem;border-radius:9px;cursor:pointer;transition:all .15s}" +
     ".comment:hover{border-color:#4a6dd1;background:#eef4fc}" +
+    ".btn-row{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.15rem}" +
+    ".share{background:none;border:1.5px solid #cfd9e6;color:#1a9e5c;font:inherit;font-weight:600;" +
+      "font-size:.85rem;padding:.45rem .9rem;border-radius:9px;cursor:pointer;transition:all .15s}" +
+    ".share:hover{border-color:#1a9e5c;background:#edfaf2}" +
+    ".share.ok{border-color:#1a9e5c;background:#edfaf2;pointer-events:none}" +
     ".thanks{font-weight:700;color:#1a9e5c;font-size:.95rem}" +
     ".thanks .more{display:block;margin-top:.5rem;background:none;border:none;color:#4a6dd1;font:inherit;" +
       "font-weight:600;font-size:.83rem;cursor:pointer;text-decoration:underline}" +
@@ -119,7 +124,10 @@
           '<div id="inline">' +
             '<p class="q">' + T.q + '</p>' +
             stars("inlineStars") +
-            '<button class="comment" id="open">' + T.comment + '</button>' +
+            '<div class="btn-row">' +
+              '<button class="comment" id="open">' + T.comment + '</button>' +
+              '<button class="share" id="share">' + T.share + '</button>' +
+            '</div>' +
           '</div>' +
           '<div class="thanks" id="thanks" style="display:none">' + T.thanks +
             '<button class="more" id="openMore">' + T.more + ' →</button>' +
@@ -201,6 +209,28 @@
       });
 
       $("#open").addEventListener("click", openModal);
+
+      $("#share").addEventListener("click", async function () {
+        var url = location.href;
+        var title = document.title;
+        /* Móvil / navegadores con Web Share API → sheet nativo (WhatsApp, etc.) */
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: title, url: url });
+            track("share", { app: appName(), method: "native" });
+            return;
+          } catch (e) { if (e.name === "AbortError") return; /* usuario canceló */ }
+        }
+        /* Fallback desktop: copiar al portapapeles */
+        try {
+          await navigator.clipboard.writeText(url);
+          track("share", { app: appName(), method: "copy" });
+          var btn = $("#share"), orig = btn.textContent;
+          btn.textContent = T.copied; btn.classList.add("ok");
+          setTimeout(function () { btn.textContent = orig; btn.classList.remove("ok"); }, 2200);
+        } catch (e) {}
+      });
+
       $("#openMore").addEventListener("click", openModal);
       $("#close").addEventListener("click", closeModal);
       $("#closeOk").addEventListener("click", closeModal);
