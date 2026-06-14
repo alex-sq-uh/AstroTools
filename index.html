@@ -52,8 +52,6 @@
   .app-card h2 .accent{color:var(--accent)}
   .app-card .tag{color:var(--text-muted);font-size:.92rem;line-height:1.45;max-width:230px}
 
-  footer{text-align:center;color:var(--text-muted);font-size:.85rem;margin-top:3rem}
-  footer .dot{color:var(--accent)}
 
   @media(prefers-reduced-motion:reduce){
     .app-card,.app-icon,.app-card::before{transition:none}
@@ -70,7 +68,6 @@
     <p id="subtitle"></p>
   </div>
   <div class="grid" id="apps"></div>
-  <footer id="foot"></footer>
 </div>
 
 <script>
@@ -82,53 +79,53 @@
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="cOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
         '<radialGradient id="cPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
-        '<clipPath id="cBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
-        '<clipPath id="cFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cBack)"/>' +
+        '<clipPath id="cBack"><rect x="0" y="0" width="64" height="28"/></clipPath>' +
+        '<clipPath id="cFront"><rect x="0" y="28" width="64" height="36"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" opacity="0.85" clip-path="url(#cBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#cPlanet)"/>' +
         '<path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cFront)"/>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#cFront)"/>' +
       '</svg>',
     nomina:
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="nOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
         '<radialGradient id="nPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
-        '<clipPath id="nBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
-        '<clipPath id="nFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#nBack)"/>' +
+        '<clipPath id="nBack"><rect x="0" y="0" width="64" height="28"/></clipPath>' +
+        '<clipPath id="nFront"><rect x="0" y="28" width="64" height="36"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" opacity="0.85" clip-path="url(#nBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#nPlanet)"/>' +
         '<text x="32" y="36" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#nFront)"/>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#nFront)"/>' +
       '</svg>',
     ahorro:
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="aOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
         '<radialGradient id="aPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
-        '<clipPath id="aBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
-        '<clipPath id="aFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#aBack)"/>' +
+        '<clipPath id="aBack"><rect x="0" y="0" width="64" height="28"/></clipPath>' +
+        '<clipPath id="aFront"><rect x="0" y="28" width="64" height="36"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" opacity="0.85" clip-path="url(#aBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#aPlanet)"/>' +
         '<path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
         '<path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#aFront)"/>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#aFront)"/>' +
       '</svg>',
     rentabilidad:
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="rOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
         '<radialGradient id="rPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
-        '<clipPath id="rBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
-        '<clipPath id="rFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#rOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#rBack)"/>' +
+        '<clipPath id="rBack"><rect x="0" y="0" width="64" height="28"/></clipPath>' +
+        '<clipPath id="rFront"><rect x="0" y="28" width="64" height="36"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#rOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" opacity="0.85" clip-path="url(#rBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#rPlanet)"/>' +
         '<rect x="25.5" y="31.5" width="3.1" height="5" rx="1" fill="#1a2b5e"/>' +
         '<rect x="30.4" y="28.5" width="3.1" height="8" rx="1" fill="#1a2b5e"/>' +
         '<rect x="35.3" y="25" width="3.1" height="11.5" rx="1" fill="#1a2b5e"/>' +
         '<path d="M24.5 30 L31 25.5 L35 28 L40.5 23" fill="none" stroke="#1a2b5e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#rOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#rFront)"/>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#rOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#rFront)"/>' +
       '</svg>'
   };
 
@@ -136,19 +133,16 @@
     es: {
       title: "AstroTools · Tu suite de calculadoras",
       subtitle: "Herramientas financieras para el día a día.",
-      foot: '<strong>AstroTools<span class="dot">.</span></strong> · una app de AstroCosas',
       tag: { casa: "Mi presupuesto para un hogar", nomina: "Entiende tu nómina y tu IRPF", ahorro: "Haz que tu dinero trabaje por ti", rentabilidad: "Calcula rentabilidades" }
     },
     ca: {
       title: "AstroTools · La teva suite de calculadores",
       subtitle: "Eines financeres per al dia a dia.",
-      foot: '<strong>AstroTools<span class="dot">.</span></strong> · una app d\'AstroCosas',
       tag: { casa: "El meu pressupost per a una llar", nomina: "Entén la teva nòmina i el teu IRPF", ahorro: "Fes que els teus diners treballin per tu", rentabilidad: "Calcula rendibilitats" }
     },
     en: {
       title: "AstroTools · Your suite of calculators",
       subtitle: "Financial tools for everyday life.",
-      foot: '<strong>AstroTools<span class="dot">.</span></strong> · an AstroCosas app',
       tag: { casa: "My budget for a home", nomina: "Understand your payslip and income tax", ahorro: "Make your money work for you", rentabilidad: "Calculate returns" }
     }
   };
@@ -161,7 +155,6 @@
     var t = T[l] || T.es;
     document.title = t.title;
     document.getElementById("subtitle").textContent = t.subtitle;
-    document.getElementById("foot").innerHTML = t.foot;
     document.getElementById("apps").innerHTML = cfg.apps.map(function (a) {
       return '<a class="app-card" href="' + a.href + '" aria-label="' + a.name + '">' +
                (ICONS[a.id] || "") +

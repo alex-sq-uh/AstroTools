@@ -43,14 +43,14 @@
       '<defs>' +
         '<linearGradient id="ahHdrOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
         '<radialGradient id="ahHdrPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
-        '<clipPath id="ahHdrBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
-        '<clipPath id="ahHdrFront"><rect x="0" y="31" width="64" height="33"/></clipPath>' +
+        '<clipPath id="ahHdrBack"><rect x="0" y="0" width="64" height="28"/></clipPath>' +
+        '<clipPath id="ahHdrFront"><rect x="0" y="28" width="64" height="36"/></clipPath>' +
       '</defs>' +
-      '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#ahHdrOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#ahHdrBack)"/>' +
+      '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#ahHdrOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" opacity="0.85" clip-path="url(#ahHdrBack)"/>' +
       '<circle cx="32" cy="30" r="14" fill="url(#ahHdrPlanet)"/>' +
       '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/>' +
       '<circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
-      '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#ahHdrOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#ahHdrFront)"/>' +
+      '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#ahHdrOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#ahHdrFront)"/>' +
     '</svg>';
 
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
