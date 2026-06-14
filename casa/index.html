@@ -218,48 +218,17 @@
   .hidden{display:none!important}
 </style>
 <script src="../shared/brand.js"></script>
-<script src="../shared/nav.js" defer></script>
+<script src="../shared/header.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
 <script src="../shared/feedback.js" defer></script>
 </head>
 <body>
-<astro-nav current="casa"></astro-nav>
-
-<!-- ================= TOPBAR ================= -->
-<div class="topbar">
-  <div class="topbar-brand">
-    <svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="ahOrbit" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/>
-        </linearGradient>
-        <radialGradient id="ahPlanet" cx="0.35" cy="0.3" r="0.85">
-          <stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/>
-        </radialGradient>
-      </defs>
-      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#ahOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
-      <circle cx="32" cy="30" r="14" fill="url(#ahPlanet)"/>
-      <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
-      <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/>
-      <circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
-    </svg>
-    <div class="brand-text">
-      <span class="name">Astro<span class="accent">Home</span></span>
-      <span class="ver">v1.3</span>
-    </div>
-  </div>
-  <div class="nav-links">
-    <button class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
-    <button class="nav-btn" id="nav-how" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
-  </div>
-  <div class="topbar-right">
-    <div class="lang-sel">
-      <button class="lang-btn active" data-lang="es" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-    </div>
-  </div>
-</div>
+<!-- ================= CABECERA (shared/header.js) ================= -->
+<astro-header app="casa" version="v1.4">
+  <button slot="tabs" class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
+  <button slot="tabs" class="nav-btn" id="nav-how" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
+</astro-header>
+<script>document.addEventListener('astro-lang',function(e){ if(window.setLang) window.setLang(e.detail.lang); });</script>
 
 <!-- ================= CALCULATOR ================= -->
 <div class="page active" id="page-calc">
@@ -613,7 +582,7 @@
       <circle cx="32" cy="30" r="13" fill="#f5c84b"/>
       <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
     </svg>
-    <span>AstroHome</span><span class="ver-tag">v1.3</span>
+    <span>AstroHome</span><span class="ver-tag">v1.4</span>
   </div>
   <div><span data-i18n="footer_astrocosas">Una app de AstroCosas</span></div>
 </footer>

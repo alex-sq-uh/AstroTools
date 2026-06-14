@@ -27,7 +27,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 
 /* ====== LAYOUT ====== */
 #app{height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;background:linear-gradient(155deg,#e8f4ff 0%,#eef5fb 60%,#e8f2f8 100%);overflow:hidden}
-#app::before{content:'';position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sky),var(--sky-dark),var(--sky));z-index:300}
 .screens{flex:1;width:100%;max-width:680px;overflow:hidden;position:relative;padding:0 1rem}
 
 /* ====== TOPBAR ====== */
@@ -208,42 +207,23 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 
 </style>
 <script src="../shared/brand.js"></script>
-<script src="../shared/nav.js" defer></script>
+<script src="../shared/header.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
 <script src="../shared/feedback.js" defer></script>
 <script defer src="i18n.js"></script>
 <link rel="stylesheet" href="../shared/savings-skin.css">
 </head>
 <body>
-<astro-nav current="ahorro"></astro-nav>
 <div id="app">
 
-  <!-- ====== TOPBAR ====== -->
-  <div class="topbar">
-    <div class="topbar-brand" onclick="restart()">
-      <svg class="brand-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="asOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>
-          <radialGradient id="asPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>
-        </defs>
-        <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#asOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>
-        <circle cx="32" cy="30" r="14" fill="url(#asPlanet)"/>
-        <path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
-      </svg>
-      <div class="brand-text">
-        <span class="brand-name">Astro<span class="accent">Savings</span></span>
-        <span class="brand-ver">v4.8</span>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <button class="back-btn hidden" id="back-btn" onclick="goBack()">← Volver</button>
-      <button class="lang-btn active" data-l="es" onclick="setLangSavings('es')">ES</button>
-      <button class="lang-btn" data-l="ca" onclick="setLangSavings('ca')">CA</button>
-      <button class="lang-btn" data-l="en" onclick="setLangSavings('en')">EN</button>
-    </div>
-  </div>
+  <!-- ====== CABECERA (shared/header.js) ====== -->
+  <astro-header app="ahorro" version="v4.9" brand-action>
+    <button slot="action" class="back-btn hidden" id="back-btn" onclick="goBack()">← Volver</button>
+  </astro-header>
+  <script>
+    document.addEventListener('astro-lang',function(e){ if(window.setLangSavings) window.setLangSavings(e.detail.lang); });
+    document.addEventListener('astro-brand',function(){ if(window.restart) window.restart(); });
+  </script>
 
   <!-- ====== MILESTONES ====== -->
   <div class="milestones">
@@ -280,7 +260,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
       <div class="privacy-note">Está pensada para usarse junto a modelos de IA como ChatGPT o Claude, que pueden ayudarte a resolver dudas y aprender más a medida que avanzas.</div>
       <div class="privacy-note">Parte de <a href="../">AstroTools</a>: calcula tu sueldo neto en <a href="../nomina/">AstroPayroll</a> y a qué vivienda puedes aspirar en <a href="../casa/">AstroHome</a>.</div>
       <button class="btn-primary" onclick="goTo('s1')">Empezar →</button>
-      <div class="foot">Una app de AstroCosas · v4.8</div>
+      <div class="foot">Una app de AstroCosas · v4.9</div>
     </div>
 
     <!-- ====== S1: POR QUÉ INVERTIR ====== -->

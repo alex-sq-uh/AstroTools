@@ -4,9 +4,9 @@ Suite que unifica tres calculadoras bajo una marca, un Umami y una navegación c
 
 | App | Ruta | Versión | Qué hace |
 |-----|------|---------|----------|
-| **AstroHome** | `/casa` | v1.3 | ¿A qué vivienda puedes aspirar? (+ "ya sé el piso") |
-| **AstroPayroll** | `/nomina` | v2.16 | Nómina e IRPF en España |
-| **AstroSavings** | `/ahorro` | v4.8 | Guía de inversión |
+| **AstroHome** | `/casa` | v1.4 | ¿A qué vivienda puedes aspirar? (+ "ya sé el piso") |
+| **AstroPayroll** | `/nomina` | v2.17 | Nómina e IRPF en España |
+| **AstroSavings** | `/ahorro` | v4.9 | Guía de inversión |
 
 Identidad visual: navy `#1a2b5e` + dorado `#f5c84b`, tipografía Segoe UI.
 **AstroTools** es el producto; **AstroCosas** queda solo como crédito en el footer.
@@ -28,7 +28,8 @@ cd C:\Users\alexe\Documents\AstroTools
 - `ahorro/i18n.js` — motor de traducción específico de AstroSavings.
 - `shared/`
   - `brand.js` — **única fuente del nombre** y lista de apps. Renombrar la suite = 1 línea aquí.
-  - `nav.js` — `<astro-nav>`: barra superior cambiador de apps (Shadow DOM, rutas relativas).
+  - `header.js` — `<astro-header app version [brand-action]>`: **cabecera única** de las 3 apps (Shadow DOM). Una sola cabecera/sombra en filas: ☰ + AstroTools · logo + nombre + versión · pestañas internas (slot `tabs`). El ☰ despliega selector de app + idioma. Idioma vía evento `astro-lang`; marca clicable vía `astro-brand`. Sustituye a `nav.js` + el topbar propio.
+  - `nav.js` — `<astro-nav>`: barra superior cambiador de apps (Shadow DOM). Ya solo la usa el hub.
   - `feedback.js` — `<astro-feedback>`: widget de feedback compartido (estrellas con 1 clic + pop-up).
   - `analytics.js` — Umami con `data-tag` por app.
   - `tokens.css` / `base.css` — design system de la suite (hub).
