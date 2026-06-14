@@ -98,7 +98,8 @@
           ".menu-btn{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:8px;width:34px;height:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:0;flex-shrink:0}" +
           ".menu-btn span{display:block;width:16px;height:2px;background:#fff;border-radius:2px}" +
           ".menu-btn:hover{background:rgba(255,255,255,.2)}" +
-          ".suite{font-weight:800;font-size:.9rem;letter-spacing:.02em}" +
+          ".suite{font-weight:800;font-size:.9rem;letter-spacing:.02em;color:#fff;text-decoration:none;display:inline-flex;align-items:center;border-radius:6px;padding:2px 4px;transition:background .15s}" +
+          "a.suite:hover{background:rgba(255,255,255,.14)}" +
           ".suite .dot{color:#f5c84b}" +
           /* fila 2 */
           ".row2{display:flex;align-items:center;gap:11px;padding:.55rem 1rem .6rem}" +
@@ -132,7 +133,7 @@
         '<header class="header">' +
           '<div class="row1">' +
             '<button class="menu-btn" id="mb" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button>' +
-            '<span class="suite">' + cfg.brand + '<span class="dot">.</span></span>' +
+            '<a class="suite" href="' + (prefix || "./") + '" aria-label="' + escAttr(cfg.brand) + '">' + cfg.brand + '<span class="dot">.</span></a>' +
           "</div>" +
           (home ? "" :
           '<div class="row2">' +
