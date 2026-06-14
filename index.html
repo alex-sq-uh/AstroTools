@@ -8,64 +8,143 @@
 <link rel="stylesheet" href="shared/tokens.css">
 <link rel="stylesheet" href="shared/base.css">
 <script src="shared/brand.js"></script>
-<script src="shared/nav.js" defer></script>
+<script src="shared/header.js" defer></script>
 <script src="shared/analytics.js" defer></script>
 <style>
-  .lang-sel{display:flex;gap:6px;justify-content:flex-end;margin-bottom:.4rem}
-  .lang-sel button{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);font-family:inherit;font-size:.8rem;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
-  .lang-sel button:hover{border-color:var(--secondary);color:var(--secondary)}
-  .lang-sel button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-  .hero{text-align:center;padding:1rem 0 2rem}
-  .hero h1{font-size:2.2rem;margin:.2rem 0;color:var(--primary)}
+  body{background:
+    radial-gradient(1100px 520px at 50% -240px, #eaf0ff 0%, rgba(234,240,255,0) 70%),
+    var(--bg);
+  }
+  .wrap{max-width:1040px}
+
+  /* ---------- Hero ---------- */
+  .hero{text-align:center;padding:2.4rem 0 1rem}
+  .hero-logo{width:104px;height:104px;display:block;margin:0 auto .6rem;
+    filter:drop-shadow(0 8px 22px rgba(26,60,94,.22));animation:float 5.5s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .hero h1{font-size:2.7rem;line-height:1.1;margin:.2rem 0;color:var(--primary);letter-spacing:-.02em;font-weight:800}
   .hero h1 .dot{color:var(--accent)}
-  .hero p{color:var(--text-muted);font-size:1.05rem;margin:.4rem auto;max-width:560px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem;margin-top:1.5rem}
-  .card h2{margin:.1rem 0 .35rem;font-size:1.15rem;color:var(--primary)}
-  .card .tag{color:var(--text-muted);font-size:.92rem}
-  .card .go{display:inline-block;margin-top:.9rem;font-weight:600;color:var(--secondary)}
-  footer{text-align:center;color:var(--text-muted);font-size:.85rem;margin-top:2.5rem}
+  .hero p{color:var(--text-muted);font-size:1.1rem;margin:.5rem auto 0;max-width:560px}
+
+  /* ---------- Grid de apps ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2.4rem}
+  @media(max-width:780px){.grid{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
+
+  .app-card{
+    position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.55rem;
+    padding:2.1rem 1.4rem 1.9rem;background:var(--surface);
+    border:1.5px solid var(--border);border-radius:20px;box-shadow:var(--shadow);
+    text-decoration:none;color:inherit;overflow:hidden;
+    transition:transform .24s cubic-bezier(.4,0,.2,1),box-shadow .24s,border-color .24s;
+  }
+  /* halo dorado que aparece al pasar el ratón */
+  .app-card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(420px 200px at 50% -40px,rgba(245,200,75,.16),rgba(245,200,75,0) 70%);
+    opacity:0;transition:opacity .24s}
+  .app-card:hover,.app-card:focus-visible{transform:translateY(-6px);border-color:var(--accent);
+    box-shadow:0 16px 38px rgba(26,60,94,.16);outline:none}
+  .app-card:focus-visible{box-shadow:0 0 0 3px rgba(245,200,75,.55),0 16px 38px rgba(26,60,94,.16)}
+  .app-card:hover::before,.app-card:focus-visible::before{opacity:1}
+
+  .app-icon{width:76px;height:76px;flex-shrink:0;margin-bottom:.35rem;
+    transition:transform .24s cubic-bezier(.34,1.56,.64,1)}
+  .app-card:hover .app-icon,.app-card:focus-visible .app-icon{transform:scale(1.13) rotate(-3deg)}
+
+  .app-card h2{margin:0;font-size:1.22rem;color:var(--primary);font-weight:800;letter-spacing:.01em}
+  .app-card h2 .accent{color:var(--accent)}
+  .app-card .tag{color:var(--text-muted);font-size:.92rem;line-height:1.45;max-width:230px}
+
+  footer{text-align:center;color:var(--text-muted);font-size:.85rem;margin-top:3rem}
+  footer .dot{color:var(--accent)}
+
+  @media(prefers-reduced-motion:reduce){
+    .hero-logo{animation:none}
+    .app-card,.app-icon,.app-card::before{transition:none}
+  }
 </style>
 </head>
 <body>
-<astro-nav></astro-nav>
+<astro-header home></astro-header>
+<script>document.addEventListener('astro-lang',function(e){ if(window.setLang) window.setLang(e.detail.lang); });</script>
+
 <div class="wrap">
-  <div class="lang-sel">
-    <button data-l="es" class="active" onclick="setLang('es')">ES</button>
-    <button data-l="ca" onclick="setLang('ca')">CA</button>
-    <button data-l="en" onclick="setLang('en')">EN</button>
-  </div>
   <div class="hero">
+    <svg class="hero-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="hubOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>
+        <radialGradient id="hubPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>
+      </defs>
+      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#hubOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.9"/>
+      <circle cx="32" cy="30" r="14" fill="url(#hubPlanet)"/>
+      <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/>
+      <circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+    </svg>
     <h1>AstroTools<span class="dot">.</span></h1>
     <p id="subtitle"></p>
   </div>
   <div class="grid" id="apps"></div>
   <footer id="foot"></footer>
 </div>
+
 <script>
   var cfg = window.ASTROTOOLS;
+
+  /* Icono distintivo (planeta) de cada app, igual que su propia cabecera */
+  var ICONS = {
+    casa:
+      '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<defs><linearGradient id="cOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
+        '<radialGradient id="cPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient></defs>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>' +
+        '<circle cx="32" cy="30" r="14" fill="url(#cPlanet)"/>' +
+        '<path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>' +
+        '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+      '</svg>',
+    nomina:
+      '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<defs><linearGradient id="nOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
+        '<radialGradient id="nPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient></defs>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>' +
+        '<circle cx="32" cy="30" r="14" fill="url(#nPlanet)"/>' +
+        '<text x="32" y="36" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>' +
+        '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+      '</svg>',
+    ahorro:
+      '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<defs><linearGradient id="aOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
+        '<radialGradient id="aPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient></defs>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>' +
+        '<circle cx="32" cy="30" r="14" fill="url(#aPlanet)"/>' +
+        '<path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+      '</svg>'
+  };
+
   var T = {
     es: {
       title: "AstroTools · Tu suite de calculadoras",
-      subtitle: "Una suite de calculadoras para tomar mejores decisiones con tu dinero.",
-      open: "Abrir →",
-      foot: "<strong>AstroTools</strong> es una app de AstroCosas",
-      tag: { casa: "¿A qué casa puedes aspirar?", nomina: "Tu nómina e IRPF, mes a mes", ahorro: "Haz que tu dinero trabaje por ti" }
+      subtitle: "Herramientas financieras para el día a día.",
+      foot: '<strong>AstroTools<span class="dot">.</span></strong> · una app de AstroCosas',
+      tag: { casa: "Mi presupuesto para un hogar", nomina: "Entiende tu nómina y tu IRPF", ahorro: "Haz que tu dinero trabaje por ti" }
     },
     ca: {
       title: "AstroTools · La teva suite de calculadores",
-      subtitle: "Una suite de calculadores per prendre millors decisions amb els teus diners.",
-      open: "Obrir →",
-      foot: "<strong>AstroTools</strong> és una app d'AstroCosas",
-      tag: { casa: "A quina casa pots aspirar?", nomina: "La teva nòmina i IRPF, mes a mes", ahorro: "Fes que els teus diners treballin per tu" }
+      subtitle: "Eines financeres per al dia a dia.",
+      foot: '<strong>AstroTools<span class="dot">.</span></strong> · una app d\'AstroCosas',
+      tag: { casa: "El meu pressupost per a una llar", nomina: "Entén la teva nòmina i el teu IRPF", ahorro: "Fes que els teus diners treballin per tu" }
     },
     en: {
       title: "AstroTools · Your suite of calculators",
-      subtitle: "A suite of calculators to make better decisions with your money.",
-      open: "Open →",
-      foot: "<strong>AstroTools</strong> is an AstroCosas app",
-      tag: { casa: "What home can you afford?", nomina: "Your payslip and income tax, month by month", ahorro: "Make your money work for you" }
+      subtitle: "Financial tools for everyday life.",
+      foot: '<strong>AstroTools<span class="dot">.</span></strong> · an AstroCosas app',
+      tag: { casa: "My budget for a home", nomina: "Understand your payslip and income tax", ahorro: "Make your money work for you" }
     }
   };
+
+  function accentName(name){
+    return name.indexOf("Astro") === 0 ? 'Astro<span class="accent">' + name.slice(5) + '</span>' : name;
+  }
 
   function render(l) {
     var t = T[l] || T.es;
@@ -73,10 +152,10 @@
     document.getElementById("subtitle").textContent = t.subtitle;
     document.getElementById("foot").innerHTML = t.foot;
     document.getElementById("apps").innerHTML = cfg.apps.map(function (a) {
-      return '<a class="card" href="' + a.href + '">' +
-               '<h2>' + a.name + '</h2>' +
+      return '<a class="app-card" href="' + a.href + '" aria-label="' + a.name + '">' +
+               (ICONS[a.id] || "") +
+               '<h2>' + accentName(a.name) + '</h2>' +
                '<div class="tag">' + (t.tag[a.id] || a.tagline) + '</div>' +
-               '<span class="go">' + t.open + '</span>' +
              '</a>';
     }).join("");
   }
@@ -84,8 +163,6 @@
   window.setLang = function (l) {
     if (!T[l]) l = "es";
     document.documentElement.lang = l;
-    var btns = document.querySelectorAll(".lang-sel button");
-    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("active", btns[i].getAttribute("data-l") === l);
     render(l);
   };
 

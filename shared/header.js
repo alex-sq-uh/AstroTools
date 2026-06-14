@@ -60,6 +60,7 @@
       var app = this.getAttribute("app") || "";
       var version = this.getAttribute("version") || "";
       var brandAction = this.hasAttribute("brand-action");
+      var home = this.hasAttribute("home"); // hub: cabecera slim de 1 fila (sin row2/row3)
 
       var lang = (document.documentElement.lang || "es").slice(0, 2).toLowerCase();
       if (["es", "ca", "en"].indexOf(lang) < 0) lang = "es";
@@ -130,6 +131,7 @@
             '<button class="menu-btn" id="mb" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button>' +
             '<span class="suite">' + cfg.brand + '<span class="dot">.</span></span>' +
           "</div>" +
+          (home ? "" :
           '<div class="row2">' +
             '<span class="brand' + (brandAction ? " clickable" : "") + '" id="brand">' +
               LOGO +
@@ -137,7 +139,7 @@
               (version ? '<span class="app-ver">' + escAttr(version) + "</span>" : "") +
             "</span>" +
             (hasAction ? '<span class="row2-action"><slot name="action"></slot></span>' : "") +
-          "</div>" +
+          "</div>") +
           (hasTabs ? '<div class="row3"><slot name="tabs"></slot></div>' : "") +
           '<div class="menu" id="menu">' +
             '<div class="menu-sec">' +

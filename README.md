@@ -28,8 +28,7 @@ cd C:\Users\alexe\Documents\AstroTools
 - `ahorro/i18n.js` — motor de traducción específico de AstroSavings.
 - `shared/`
   - `brand.js` — **única fuente del nombre** y lista de apps. Renombrar la suite = 1 línea aquí.
-  - `header.js` — `<astro-header app version [brand-action]>`: **cabecera única** de las 3 apps (Shadow DOM). Una sola cabecera/sombra en filas: ☰ + AstroTools · logo + nombre + versión · pestañas internas (slot `tabs`). El ☰ despliega selector de app + idioma. Idioma vía evento `astro-lang`; marca clicable vía `astro-brand`. Sustituye a `nav.js` + el topbar propio.
-  - `nav.js` — `<astro-nav>`: barra superior cambiador de apps (Shadow DOM). Ya solo la usa el hub.
+  - `header.js` — `<astro-header app version [brand-action] [home]>`: **cabecera única** del hub + las 3 apps (Shadow DOM). Una sola cabecera/sombra en filas: ☰ + AstroTools · logo + nombre + versión · pestañas internas (slot `tabs`). El ☰ despliega selector de app + idioma. Idioma vía evento `astro-lang`; marca clicable vía `astro-brand`; `home` = cabecera slim del hub (solo fila 1). Sustituyó al antiguo `<astro-nav>` + el topbar propio de cada app.
   - `feedback.js` — `<astro-feedback>`: widget de feedback compartido (estrellas con 1 clic + pop-up).
   - `analytics.js` — Umami con `data-tag` por app.
   - `tokens.css` / `base.css` — design system de la suite (hub).
