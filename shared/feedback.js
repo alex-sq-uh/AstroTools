@@ -45,7 +45,8 @@
     var p = location.pathname;
     return /\/casa\//.test(p) ? "AstroHome"
          : /\/nomina\//.test(p) ? "AstroPayroll"
-         : /\/ahorro\//.test(p) ? "AstroSavings" : "AstroTools";
+         : /\/ahorro\//.test(p) ? "AstroSavings"
+         : /\/rentabilidad\//.test(p) ? "AstroReturn" : "AstroTools";
   }
   function lang() {
     var l = (document.documentElement.lang || "es").slice(0, 2).toLowerCase();

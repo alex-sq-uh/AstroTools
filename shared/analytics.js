@@ -16,9 +16,10 @@
   // Etiqueta por app, para distinguir en Umami quién usa cada una.
   // Umami separa por URL, pero el data-tag permite filtrar páginas Y eventos por app.
   var p = location.pathname;
-  var tag = /\/casa\//.test(p)   ? "AstroHome"
-          : /\/nomina\//.test(p) ? "AstroPayroll"
-          : /\/ahorro\//.test(p) ? "AstroSavings"
+  var tag = /\/casa\//.test(p)         ? "AstroHome"
+          : /\/nomina\//.test(p)       ? "AstroPayroll"
+          : /\/ahorro\//.test(p)       ? "AstroSavings"
+          : /\/rentabilidad\//.test(p) ? "AstroReturn"
           : "Hub";
 
   var s = document.createElement("script");
