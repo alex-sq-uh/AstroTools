@@ -73,11 +73,14 @@
       <defs>
         <linearGradient id="hubOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>
         <radialGradient id="hubPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>
+        <clipPath id="hubBack"><rect x="0" y="0" width="64" height="31"/></clipPath>
+        <clipPath id="hubFront"><rect x="0" y="31" width="64" height="33"/></clipPath>
       </defs>
-      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#hubOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.9"/>
+      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#hubOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.9" clip-path="url(#hubBack)"/>
       <circle cx="32" cy="30" r="14" fill="url(#hubPlanet)"/>
       <circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/>
       <circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>
+      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#hubOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#hubFront)"/>
     </svg>
     <h1>AstroTools<span class="dot">.</span></h1>
     <p id="subtitle"></p>
@@ -94,30 +97,39 @@
     casa:
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="cOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
-        '<radialGradient id="cPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>' +
+        '<radialGradient id="cPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
+        '<clipPath id="cBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
+        '<clipPath id="cFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#cBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#cPlanet)"/>' +
         '<path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#cOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#cFront)"/>' +
       '</svg>',
     nomina:
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="nOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
-        '<radialGradient id="nPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>' +
+        '<radialGradient id="nPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
+        '<clipPath id="nBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
+        '<clipPath id="nFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#nBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#nPlanet)"/>' +
         '<text x="32" y="36" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-weight="800" font-size="16" fill="#1a2b5e">€</text>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#nOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#nFront)"/>' +
       '</svg>',
     ahorro:
       '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs><linearGradient id="aOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
-        '<radialGradient id="aPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient></defs>' +
-        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85"/>' +
+        '<radialGradient id="aPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
+        '<clipPath id="aBack"><rect x="0" y="0" width="64" height="31"/></clipPath>' +
+        '<clipPath id="aFront"><rect x="0" y="31" width="64" height="33"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" opacity="0.85" clip-path="url(#aBack)"/>' +
         '<circle cx="32" cy="30" r="14" fill="url(#aPlanet)"/>' +
         '<path d="M25 34 L30 29 L34 32 L40 25" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
         '<path d="M36.5 25 L40 25 L40 28.5" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+        '<ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="url(#aOrbit)" stroke-width="2.4" transform="rotate(-22 32 34)" clip-path="url(#aFront)"/>' +
       '</svg>'
   };
 
