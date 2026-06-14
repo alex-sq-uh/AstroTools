@@ -1041,7 +1041,7 @@
 </footer>
 
 <script>
-const APP_VERSION = '2.16';
+const APP_VERSION = '2.17';
 // Escala IRPF 2025 — Cataluña (suma estatal + autonómico)
 // Fuente: https://taxdown.es/irpf/tabla-tramos
 const TRAMOS = [
@@ -1063,10 +1063,14 @@ const TRAMOS = [
 //   CC 4,70% + Desempleo 1,55% + FP 0,10% + MEI 0,15% = 6,50%
 const SS_RATE = 0.0650;
 const SS_CAP_DEFAULT = 61214.40;
-const SOL_LIMITS = [61214.40, 76518.00, 91821.60];
+// Límites por tramo de la cuota de solidaridad 2026 (sobre la base de cotización):
+//   Tramo 1: del tope hasta +10% (61.214,40 → 67.335,84)
+//   Tramo 2: de +10% a +50% (67.335,84 → 91.821,60)
+//   Tramo 3: por encima de +50% (> 91.821,60)
+const SOL_LIMITS = [61214.40, 67335.84, 91821.60];
 // Cuota de solidaridad 2026: SOLO la parte que paga el empleado
-// (el total se reparte ~1:5 con la empresa). Tipos confirmados para 2026:
-//   Tramo 1 (0–25% exceso): 0,19% · Tramo 2 (25–50%): 0,21% · Tramo 3 (>50%): 0,24%
+// (el total se reparte ~1:5 con la empresa). Tipos del empleado para 2026:
+//   Tramo 1 (tope→+10%): 0,19% · Tramo 2 (+10%→+50%): 0,21% · Tramo 3 (>+50%): 0,24%
 const SOL_RATES  = [0.0019, 0.0021, 0.0024];
 const HEALTH_EXEMPT = 500;
 const TICKETS_LIMIT = 2750;
@@ -1074,12 +1078,16 @@ const TRANS_LIMIT = 1500;   // abono transporte exento (Art. 42.3.b LIRPF): 1.50
 // IRPF base deductions (LIRPF arts. 19 y 20)
 const OTROS_GASTOS = 2000;           // gasto deducible automático
 const MINIMO_PERSONAL = 5550;        // mínimo personal general
-// Reducción por rendimientos del trabajo — Art. 20 LIRPF (redacción RDL 4/2024)
-// La fórmula legal tiene un salto: a 17.673,52 € la reducción cae a 0 de golpe.
-const RT_RED_MAX = 7302;             // reducción máxima
-const RT_RED_LOW = 14852;            // hasta este RN se aplica el máximo
-const RT_RED_HIGH = 17673.52;        // a partir de este RN la reducción es 0
-const RT_RED_SLOPE = 1.75;           // pendiente entre LOW y HIGH
+// Reducción por rendimientos del trabajo — Art. 20 LIRPF (redacción RDL 4/2024, vigente 2025-2026)
+// La reducción decrece en DOS tramos lineales y llega a 0 de forma continua en 19.747,50 €
+// (NO hay salto: el segundo tramo existe precisamente para evitar el "error de salto").
+const RT_RED_MAX  = 7302;            // reducción máxima (RN ≤ 14.852)
+const RT_RED_LOW  = 14852;           // hasta este RN se aplica el máximo
+const RT_RED_MID  = 17673.52;        // fin del 1er tramo decreciente / inicio del 2º
+const RT_RED_HIGH = 19747.50;        // a partir de este RN la reducción es 0
+const RT_RED_SLOPE1 = 1.75;          // pendiente tramo 1 (14.852 → 17.673,52)
+const RT_RED_MID_VAL = 2364.34;      // reducción en RN = 17.673,52 (= 7302 − 1,75·2821,52)
+const RT_RED_SLOPE2 = 1.14;          // pendiente tramo 2 (17.673,52 → 19.747,50)
 // Límites de reducción por aportaciones a planes de pensiones — Art. 52 LIRPF
 const PENSION_LIMIT_INDIVIDUAL = 1500;   // límite general aportación del trabajador
 const PENSION_LIMIT_INCREMENT  = 8500;   // incremento para planes de empleo
@@ -1181,7 +1189,7 @@ const T = {
     edu8_title:'🏦 ¿Por qué es tan bueno el plan de pensiones de empresa?', edu8_p1:'Triple ventaja: ahorras para el futuro, reduces IRPF ahora, y la empresa añade dinero extra.', edu8_p2:'El dinero tributará en la jubilación, probablemente en un tramo más bajo.',
     edu9_title:'🏛️ ¿Qué es la Seguridad Social?', edu9_p1:'El sistema que financia la sanidad, pensiones y desempleo.', edu9_p2:'En 2026 pagas como empleado: CC 4,70% + desempleo 1,55% + FP 0,10% + MEI 0,15% = 6,50% sobre la base, con tope anual de 61.214,40 €.',
     edu10_title:'⚡ ¿Qué es la cuota de solidaridad?', edu10_p1:'Cotización adicional sobre el salario que supera el tope de la SS. Se reparte ~5:1 entre empresa y trabajador.', edu10_p2:'Tipos que paga el empleado en 2026: 0,19% / 0,21% / 0,24% según el tramo del exceso. Solo afecta si superas 61.214,40 €.',
-    sol_t1:'De 0 € a 15.303,60 € de exceso', sol_t2:'De 15.303,60 € a 30.607,20 € de exceso', sol_t3:'Más de 30.607,20 € de exceso',
+    sol_t1:'De 0 € a 6.121,44 € de exceso', sol_t2:'De 6.121,44 € a 30.607,20 € de exceso', sol_t3:'Más de 30.607,20 € de exceso',
     tramos_title:'Tramos del IRPF 2025 · Cataluña', tramos_sub:'Suma del tipo estatal y del tipo autonómico de Cataluña. Otras CCAA aplican tipos diferentes.',
     col_tramo:'Tramo', col_tipo:'Tipo', col_tipo_estatal:'Estatal', col_tipo_auto:'Autonómico', col_tipo_total:'Total', col_cuota:'Cuota', col_cuota_tramo:'Lo que pagas en este tramo', col_desc:'Explicación', col_base:'Base en tramo', col_total:'Cuota íntegra',
     tramo_top_range:'Más de 300.000 €',
@@ -1313,7 +1321,7 @@ const T = {
     edu8_title:'🏦 Per què és tan bo el pla de pensions?', edu8_p1:"Triple avantatge: estalvies per al futur, reduceixes l'IRPF ara, i l'empresa afegeix diners extra.", edu8_p2:'Els diners tributaran en la jubilació, probablement en un tram més baix.',
     edu9_title:"🏛️ Què és la Seguretat Social?", edu9_p1:'El sistema que finança la sanitat, pensions i atur.', edu9_p2:'El 2026 pagues com a empleat: CC 4,70% + atur 1,55% + FP 0,10% + MEI 0,15% = 6,50% sobre la base, amb topall anual de 61.214,40 €.',
     edu10_title:'⚡ Què és la quota de solidaritat?', edu10_p1:"Cotització addicional sobre el salari que supera el topall de la SS. Es reparteix ~5:1 entre empresa i treballador.", edu10_p2:"Tipus que paga l'empleat el 2026: 0,19% / 0,21% / 0,24% segons el tram de l'excés. Només afecta si superes 61.214,40 €.",
-    sol_t1:"De 0 € a 15.303,60 € d'excés", sol_t2:"De 15.303,60 € a 30.607,20 € d'excés", sol_t3:"Més de 30.607,20 € d'excés",
+    sol_t1:"De 0 € a 6.121,44 € d'excés", sol_t2:"De 6.121,44 € a 30.607,20 € d'excés", sol_t3:"Més de 30.607,20 € d'excés",
     tramos_title:"Trams de l'IRPF 2025 · Catalunya", tramos_sub:"Suma del tipus estatal i del tipus autonòmic de Catalunya. Altres CCAA apliquen tipus diferents.",
     col_tramo:'Tram', col_tipo:'Tipus', col_tipo_estatal:'Estatal', col_tipo_auto:'Autonòmic', col_tipo_total:'Total', col_cuota:'Quota', col_cuota_tramo:'El que pagues en aquest tram', col_desc:'Explicació', col_base:'Base en tram', col_total:'Quota íntegra',
     tramo_top_range:'Més de 300.000 €',
@@ -1445,7 +1453,7 @@ const T = {
     edu8_title:'🏦 Why is the company pension plan so good?', edu8_p1:'Triple benefit: you save for the future, reduce your tax bill now, and the company adds free money.', edu8_p2:"The money will be taxed when you withdraw it at retirement, likely at a lower rate.",
     edu9_title:'🏛️ What is Social Security?', edu9_p1:'The system that funds healthcare, pensions, and unemployment.', edu9_p2:'In 2026 you pay as an employee: CC 4.70% + unemployment 1.55% + FP 0.10% + MEI 0.15% = 6.50% on the contribution base, with an annual cap of €61,214.40.',
     edu10_title:'⚡ What is the solidarity surcharge?', edu10_p1:'Extra contribution on the part of the salary above the SS cap. Split roughly 5:1 between employer and employee.', edu10_p2:'Employee rates in 2026: 0.19% / 0.21% / 0.24% by excess tier. Only affects those who exceed €61,214.40.',
-    sol_t1:'From €0 to €15,303.60 of excess', sol_t2:'From €15,303.60 to €30,607.20 of excess', sol_t3:'More than €30,607.20 of excess',
+    sol_t1:'From €0 to €6,121.44 of excess', sol_t2:'From €6,121.44 to €30,607.20 of excess', sol_t3:'More than €30,607.20 of excess',
     tramos_title:'2025 Income Tax Brackets · Catalonia', tramos_sub:'Sum of state rate and Catalonia regional rate. Other regions apply different rates.',
     col_tramo:'Bracket', col_tipo:'Rate', col_tipo_estatal:'State', col_tipo_auto:'Regional', col_tipo_total:'Total', col_cuota:'Tax due', col_cuota_tramo:'What you pay in this bracket', col_desc:'Explanation', col_base:'Income in bracket', col_total:'Gross tax',
     tramo_top_range:'Over €300,000',
@@ -1804,9 +1812,10 @@ function getMarginalRate(base){
 // Input: rendimiento neto del trabajo previo a la reducción (= íntegros − SS − 2.000)
 function reduccionTrabajo(rnt){
   if(rnt <= 0) return 0;
-  if(rnt <= RT_RED_LOW) return RT_RED_MAX;
-  if(rnt >= RT_RED_HIGH) return 0; // cliff legal: salta a 0 en 17.673,52 €
-  return Math.max(0, RT_RED_MAX - RT_RED_SLOPE * (rnt - RT_RED_LOW));
+  if(rnt <= RT_RED_LOW) return RT_RED_MAX;                                  // 7.302
+  if(rnt <= RT_RED_MID)  return RT_RED_MAX   - RT_RED_SLOPE1 * (rnt - RT_RED_LOW);  // 7302 − 1,75·(rnt−14852)
+  if(rnt <= RT_RED_HIGH) return RT_RED_MID_VAL - RT_RED_SLOPE2 * (rnt - RT_RED_MID); // 2364,34 − 1,14·(rnt−17673,52)
+  return 0;                                                                // > 19.747,50
 }
 
 // Cuota líquida del IRPF a partir de los componentes del trabajo
@@ -1841,8 +1850,11 @@ function coefMaxAportacionTrabajador(contribEmpresa, rendTrabajo){
 // Todas las contribuciones de la empresa son retribución en especie y se suman a
 // los rendimientos íntegros; aquí calculamos qué parte de cada bloque es deducible.
 //   worker = aportación trabajador · match = match empresa · tramos = aportación obligatoria empresa
-//   rendTrabajo = rendimientos íntegros del trabajo (para la regla de 60.000 € y el 30%)
-function pensionBreakdown(worker, match, tramos, rendTrabajo){
+//   rendTrabajo     = rendimientos ÍNTEGROS del trabajo (regla de los 60.000 €, Art. 52.1)
+//   rendNetoTrabajo = rendimientos NETOS del trabajo (íntegros − SS − gastos) para el tope del 30%.
+//                     Si no se pasa, se usa rendTrabajo (compatibilidad).
+function pensionBreakdown(worker, match, tramos, rendTrabajo, rendNetoTrabajo){
+  if(rendNetoTrabajo == null) rendNetoTrabajo = rendTrabajo;
   const company = match + tramos;
   const coefMax = coefMaxAportacionTrabajador(company, rendTrabajo);
   let individualRoom = PENSION_LIMIT_INDIVIDUAL;   // 1.500 €, solo trabajador
@@ -1865,9 +1877,9 @@ function pensionBreakdown(worker, match, tramos, rendTrabajo){
   let dedVoluntaria   = dedWorker + dedMatch;
   let dedInvoluntaria = dedTramos;
 
-  // Tope global: 30% de los rendimientos netos del trabajo. Si recorta, se reduce
+  // Tope global: 30% de los rendimientos NETOS del trabajo. Si recorta, se reduce
   // primero la parte involuntaria (tramos) y después la voluntaria.
-  const cap30 = PENSION_PCT_NET * Math.max(0, rendTrabajo);
+  const cap30 = PENSION_PCT_NET * Math.max(0, rendNetoTrabajo);
   let total = dedVoluntaria + dedInvoluntaria;
   if(total > cap30){
     let over = total - cap30;
@@ -1994,8 +2006,30 @@ function calculate(){
   // Rendimientos del trabajo aprox. — incluye las contribuciones de la empresa al plan,
   // que son retribución en especie (para la regla de 60.000 € y el tope del 30%).
   const rendTrabajoAprox = weightedSalaryProj + carAnnual + lifeAmt + healthTaxable + otrosAmt + (hasBonus ? bonusAmt : 0) + pensionCompanyAnnual;
+
+  // ── Cotización a la SS: se calcula mes a mes con la base topada al MÁXIMO MENSUAL ──
+  // El bonus es retribución salarial y SÍ cotiza (en el mes que se cobra, con su tope mensual).
+  // La retribución flexible aportada por el trabajador reduce la base de cotización.
+  const ticketsFlexAnnual = (ticketsType==='flex') ? ticketsExempt : 0;
+  const transFlexAnnual   = (transType  ==='flex') ? transExempt   : 0;
+  const guardFlexAnnual   = (guardType  ==='flex') ? guardExempt   : 0;
+  const healthFlexAnnual  = (healthType ==='flex') ? healthExempt  : 0;
+  const flexExemptAnnualSS = ticketsFlexAnnual + transFlexAnnual + guardFlexAnnual + healthFlexAnnual;
+  let annualSSReal = 0;
+  for(let mm = 1; mm <= 12; mm++){
+    const salM = ((hasRaise && mm >= raiseMonth) ? newSalary : salaryBase) / 12;
+    let baseM = salM + (hasCar ? carMonthly : 0) - flexExemptAnnualSS/12;
+    if(hasBonus && mm === bonusMonth) baseM += bonusAmt;   // el bonus cotiza el mes que se cobra
+    annualSSReal += Math.min(Math.max(0, baseM), ssCapMonth) * SS_RATE;
+  }
+  // Base anual para la cuota de solidaridad (incluye el bonus como retribución).
+  const annSalForSolidarity = Math.max(0, weightedSalaryProj + carAnnual + (hasBonus ? bonusAmt : 0) - flexExemptAnnualSS);
+  const annSolAnnual = calcSolidarity(annSalForSolidarity, ssCapUsed);
+
+  // Rendimiento NETO del trabajo (Art. 19) para el tope del 30% del plan: íntegros − SS − gastos.
+  const rendNetoTrabajo = Math.max(0, rendTrabajoAprox - annualSSReal - annSolAnnual - OTROS_GASTOS);
   const penB = hasPension
-    ? pensionBreakdown(pensionEmpAnnual, pensionMatchAmt, pensionTramos, rendTrabajoAprox)
+    ? pensionBreakdown(pensionEmpAnnual, pensionMatchAmt, pensionTramos, rendTrabajoAprox, rendNetoTrabajo)
     : { dedVoluntaria:0, dedInvoluntaria:0, total:0, coefMax:0, voluntariaContrib:0, involuntariaContrib:0, voluntariaExcess:0, involuntariaExcess:0 };
   const pensionDeductibleAnnual = penB.total;
 
@@ -2077,14 +2111,11 @@ function calculate(){
       projBase += fBaseM;
     }
 
-    // Annual SS base & projected annual pension contribution for the IRPF helper
-    const annSalForSS = ((hasRaise && raiseMonth <= 12) ?
-      (salaryBase * (raiseMonth-1)/12 + newSalary * (13-raiseMonth)/12)
-      : salaryBase) + carAnnual - (ticketsType==='flex'?ticketsExempt:0) - (transType==='flex'?transExempt:0) - (guardType==='flex'?guardExempt:0) - (healthType==='flex'?healthExempt:0);
-    const annualSS = Math.min(annSalForSS, ssCapUsed) * SS_RATE;
-    // La cuota de solidaridad del trabajador también es cotización a la SS y, por tanto,
-    // gasto deducible del rendimiento del trabajo (Art. 19.2.a LIRPF).
-    const annSolProj = calcSolidarity(annSalForSS, ssCapUsed);
+    // SS anual real (topada mes a mes, incluye el bonus) y cuota de solidaridad: calculadas
+    // una sola vez antes del bucle (annualSSReal, annSolAnnual). Ambas son gasto deducible
+    // del rendimiento del trabajo (Art. 19.2.a LIRPF: cotización normal + cuota de solidaridad).
+    const annualSS = annualSSReal;
+    const annSolProj = annSolAnnual;
 
     // El bucle resta la aportación COMPLETA del trabajador; la añadimos de vuelta para
     // obtener los rendimientos íntegros. Además, las contribuciones de la empresa al plan
@@ -2098,8 +2129,9 @@ function calculate(){
     const irpfM = Math.max(0, targetRetained - accRetained);
     accRetained += irpfM;
 
-    // SS
-    const ssBaseM = Math.min(curSalaryMonth + carM - ticketsFlexM - transFlexM - guardFlexM - healthFlexM, ssCapMonth);
+    // SS del mes: base = salario + car − flex (+ bonus si se cobra este mes), topada al máximo mensual.
+    const ssBonusM = (hasBonus && m === bonusMonth) ? bonusAmt : 0;
+    const ssBaseM = Math.min(curSalaryMonth + carM - ticketsFlexM - transFlexM - guardFlexM - healthFlexM + ssBonusM, ssCapMonth);
     const ssM = ssBaseM * SS_RATE;
 
     // Solidarity (annual, prorate monthly) — ya calculada arriba como annSolProj
@@ -2175,7 +2207,9 @@ function calculate(){
   // encima del tope SS (61.214,40 € en 2026) cotizas siempre lo mismo, así que reducir
   // el bruto no ahorra nada. Lo mismo para la cuota de solidaridad (que cae al bajar el
   // exceso sobre el tope, dentro de sus propios tramos).
-  const fullSalForSS = weightedSalaryProj + carAnnual;
+  // Incluye el bonus: si salario+bonus ya supera el tope, reducir el bruto vía flexible
+  // no ahorra SS (la base ya está topada), y este cálculo lo refleja correctamente.
+  const fullSalForSS = weightedSalaryProj + carAnnual + (hasBonus ? bonusAmt : 0);
   const totalFlexExemptWorker =
     (ticketsType==='flex' ? ticketsExempt : 0) +
     (transType  ==='flex' ? transExempt   : 0) +
