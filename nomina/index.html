@@ -3,8 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AstroPayroll · Calculadora de nómina e IRPF España</title>
-<meta name="description" content="AstroPayroll — calculadora de nómina e IRPF en España. Calcula tu neto mes a mes con bonus, plan de pensiones, tickets y retribución flexible.">
+<title>Calculadora de IRPF y nómina 2026 · AstroPayroll</title>
+<meta name="description" content="Calcula tu sueldo neto e IRPF en España mes a mes: bonus, plan de pensiones, tickets restaurante y retribución flexible. Al instante y sin registro.">
+
+<!-- Favicon (planeta de la suite, SVG inline) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='30' r='15' fill='%23f5c84b'/%3E%3Ctext x='32' y='37' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='18' fill='%231a2b5e'%3E%E2%82%AC%3C/text%3E%3Cellipse cx='32' cy='34' rx='27' ry='9' fill='none' stroke='%237aa1ff' stroke-width='3' transform='rotate(-22 32 34)'/%3E%3C/svg%3E">
+
+<!-- Open Graph / previsualización en redes y mensajería -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AstroTools">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Calculadora de IRPF y nómina 2026 · AstroPayroll">
+<meta property="og:description" content="Introduce tu salario y calculamos el desglose real mes a mes: sueldo neto, IRPF, Seguridad Social, bonus, plan de pensiones y retribución flexible.">
+<meta property="og:url" content="https://alex-sq-uh.github.io/AstroTools/nomina/">
+<meta property="og:image" content="https://alex-sq-uh.github.io/AstroTools/nomina/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AstroPayroll — calculadora de nómina e IRPF en España">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculadora de IRPF y nómina 2026 · AstroPayroll">
+<meta name="twitter:description" content="Tu sueldo neto e IRPF mes a mes, con bonus, plan de pensiones y retribución flexible.">
+<meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/nomina/og.jpg">
+
+<link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/nomina/">
 <style>
   :root {
     --primary: #1a2b5e;
@@ -336,6 +358,60 @@
 <script src="../shared/header.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
 <script src="../shared/feedback.js" defer></script>
+
+<!-- Datos estructurados: aplicación + preguntas frecuentes (texto real de la guía) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AstroPayroll",
+  "url": "https://alex-sq-uh.github.io/AstroTools/nomina/",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "es-ES",
+  "description": "Calculadora de nómina e IRPF en España: tu sueldo neto mes a mes, con bonus, plan de pensiones, tickets restaurante y retribución flexible.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "isPartOf": { "@type": "WebSite", "name": "AstroTools", "url": "https://alex-sq-uh.github.io/AstroTools/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Qué es el IRPF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "El IRPF (Impuesto sobre la Renta de las Personas Físicas) es el impuesto que pagas por lo que ganas. Tu empresa lo descuenta automáticamente cada mes de tu nómina antes de pagarte: eso es la retención." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué significa que el IRPF tenga tramos?",
+      "acceptedAnswer": { "@type": "Answer", "text": "El IRPF es progresivo: cuanto más ganas, más pagas en proporción. Pero los porcentajes no se aplican a todo tu salario, sino solo a la parte de ingresos que cae dentro de cada tramo." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué diferencia hay entre tipo marginal y tipo efectivo?",
+      "acceptedAnswer": { "@type": "Answer", "text": "El tipo marginal es el porcentaje que pagas por el último euro que ganas. El tipo efectivo es el porcentaje real medio que pagas sobre todo tu salario. Por eso una subida salarial no te hace pagar más en el tramo anterior." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Por qué los tickets restaurante me ahorran dinero?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Los tickets restaurante (hasta 2.750 €/año) están exentos de IRPF y de Seguridad Social. El ahorro se calcula con tu tipo marginal porque ese importe sustituye a la parte más alta de tu salario." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Por qué me retienen tanto el mes del bonus?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Tu empresa recalcula toda la retención del año en el momento de pagar el bonus. Es un ajuste: no pagas más en total al año, pero ese mes la retención es mucho mayor." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué es la cuota de solidaridad?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Es una cotización adicional sobre el salario que supera el tope de la Seguridad Social. Se reparte aproximadamente 5:1 entre empresa y trabajador. Los tipos que paga el empleado en 2026 son 0,19% / 0,21% / 0,24% según el tramo del exceso, y solo afecta si superas 61.214,40 € al año." }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <!-- ================= CABECERA (shared/header.js) ================= -->

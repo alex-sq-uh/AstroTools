@@ -3,7 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>AstroSavings · Haz que tu dinero trabaje por ti</title>
+<title>Calculadora de ahorro e inversión · AstroSavings</title>
+<meta name="description" content="Descubre cuánto puede crecer tu dinero en fondos indexados: simula el interés compuesto, entiende el riesgo y haz que tus ahorros trabajen por ti. Gratis.">
+
+<!-- Favicon (planeta de la suite, SVG inline) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='30' r='15' fill='%23f5c84b'/%3E%3Cpath d='M25 34 L30 29 L34 32 L40 25' fill='none' stroke='%231a2b5e' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M36.5 25 L40 25 L40 28.5' fill='none' stroke='%231a2b5e' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cellipse cx='32' cy='34' rx='27' ry='9' fill='none' stroke='%237aa1ff' stroke-width='3' transform='rotate(-22 32 34)'/%3E%3C/svg%3E">
+
+<!-- Open Graph / previsualización en redes y mensajería -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AstroTools">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Calculadora de ahorro e inversión · AstroSavings">
+<meta property="og:description" content="Simula cuánto puede crecer tu dinero con el interés compuesto invirtiendo en fondos indexados, y entiende el riesgo en lenguaje claro.">
+<meta property="og:url" content="https://alex-sq-uh.github.io/AstroTools/ahorro/">
+<meta property="og:image" content="https://alex-sq-uh.github.io/AstroTools/ahorro/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AstroSavings — calculadora de ahorro e inversión">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculadora de ahorro e inversión · AstroSavings">
+<meta name="twitter:description" content="Simula el interés compuesto invirtiendo en fondos indexados y haz que tus ahorros trabajen por ti.">
+<meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/ahorro/og.jpg">
+
+<link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/ahorro/">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 /* ====== RESET & TOKENS ====== */
@@ -212,6 +236,55 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 <script src="../shared/feedback.js" defer></script>
 <script defer src="i18n.js"></script>
 <link rel="stylesheet" href="../shared/savings-skin.css">
+
+<!-- Datos estructurados: aplicación + preguntas frecuentes (texto real de la guía) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AstroSavings",
+  "url": "https://alex-sq-uh.github.io/AstroTools/ahorro/",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "es-ES",
+  "description": "Simula el crecimiento de tus ahorros invertidos en fondos indexados con el interés compuesto, y entiende el riesgo en lenguaje claro.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "isPartOf": { "@type": "WebSite", "name": "AstroTools", "url": "https://alex-sq-uh.github.io/AstroTools/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Por qué conviene invertir y no dejar el dinero en el banco?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cada año las cosas cuestan un poco más por la inflación. Lo que hoy compras con 100 € en 10 años puede costar unos 135 €. Si tu dinero está parado en la cuenta, poco a poco puedes comprar menos con él. Invertir bien es poner tu dinero a trabajar para que crezca más rápido que la inflación; cuanto antes empieces, más tiempo tiene para crecer." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué es exactamente un fondo indexado?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Es como una cesta que contiene un trocito de miles de empresas a la vez. En lugar de elegir empresas una por una, compras la cesta entera. Uno de los más populares replica el índice MSCI World, que contiene unas 1.500 empresas de 23 países desarrollados (Apple, Nestlé, Toyota, Inditex…). Si esas empresas en conjunto suben un 7%, tu fondo sube aproximadamente lo mismo." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Por qué funcionan tan bien los fondos indexados?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Se renuevan solos (cuando una empresa va mal acaba saliendo del índice y entra otra mejor), tienen un coste muy bajo (comisiones del 0,1% al 0,3% anual), no exigen decisiones porque replican el índice automáticamente y, a largo plazo, está demostrado que ofrecen mejor rentabilidad y menor riesgo que la mayoría de fondos." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué riesgo tiene invertir en fondos indexados?",
+      "acceptedAnswer": { "@type": "Answer", "text": "El valor sube y baja. A largo plazo el MSCI World ha subido de media en torno a un 8% anual desde 1979, pero hay años muy malos: en 2008 cayó cerca de un 40% y tardó unos 5 años en recuperarse. Por eso solo conviene invertir dinero que no vayas a necesitar a corto plazo, idealmente 5-10 años o más." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Puedo sacar el dinero cuando quiera?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sí. Cuando inviertes compras participaciones del fondo y puedes venderlas cuando quieras, recibiendo el dinero en tu cuenta en pocos días. No hay penalizaciones por sacarlo antes de tiempo, pero sí pagas impuestos sobre las ganancias cuando vendes, no antes." }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div id="app">

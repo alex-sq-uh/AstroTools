@@ -36,6 +36,55 @@
 <script src="../shared/analytics.js" defer></script>
 <script src="../shared/feedback.js" defer></script>
 
+<!-- Datos estructurados: aplicación + preguntas frecuentes (texto real de "¿Cómo funciona?") -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AstroReturn",
+  "url": "https://alex-sq-uh.github.io/AstroTools/rentabilidad/",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "es-ES",
+  "description": "Calcula la rentabilidad anual real de tus inversiones (TIR/XIRR) y compárala con la inflación, un fondo monetario y la bolsa mundial.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "isPartOf": { "@type": "WebSite", "name": "AstroTools", "url": "https://alex-sq-uh.github.io/AstroTools/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Qué es la rentabilidad anual de una inversión?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Es lo que ha ganado tu dinero cada año, de media. Si pusiste 10.000 € y al cabo de 3 años tienes 13.000 €, no has ganado un 30% al año: lo has repartido entre los 3 años. La rentabilidad anual te da ese ritmo medio, ya teniendo en cuenta el tiempo, y permite comparar inversiones que duraron periodos distintos." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Por qué importan las fechas de cada movimiento?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Porque no es lo mismo cobrar un dividendo el primer mes que el último año. El dinero que recibes antes vale más, porque puedes reinvertirlo. Por eso pedimos las fechas reales de cada movimiento y no nos limitamos a periodos redondos." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué es la TIR o IRR (XIRR)?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Es el nombre técnico de la rentabilidad anual que calculamos (en inglés IRR, en español TIR). Cuando hay fechas distintas se llama XIRR. No necesitas saberlo: el número grande ya es eso, explicado en lenguaje claro." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué significa ganar poder de compra?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Los precios suben cada año por la inflación. Si tu dinero crece más rápido que los precios, de verdad eres más rico: puedes comprar más cosas que antes. Si crece más despacio, aunque tengas más euros compras menos. Por eso comparamos tu rentabilidad con la inflación." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿De dónde salen las alternativas con las que se compara?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Son referencias orientativas para situar tu resultado: no hacer nada (0%), la inflación, un fondo de bajo riesgo y la bolsa mundial. Puedes cambiar esos porcentajes en Ajustes avanzados. Son supuestos, no una promesa." }
+    }
+  ]
+}
+</script>
+
 <style>
   :root{
     --primary:#1a2b5e;

@@ -1,0 +1,11 @@
+# AstroTools — robots.txt
+# NOTA: el sitio se publica en GitHub Pages bajo subcarpeta
+# (https://alex-sq-uh.github.io/AstroTools/). Google solo lee el robots.txt
+# del dominio raíz (https://alex-sq-uh.github.io/robots.txt), que no controlamos.
+# Por eso este archivo es informativo: para indexar, envía el sitemap a mano
+# desde Google Search Console.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://alex-sq-uh.github.io/AstroTools/sitemap.xml

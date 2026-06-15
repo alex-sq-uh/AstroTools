@@ -3,7 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AstroHome · ¿A qué casa puedes aspirar?</title>
+<title>¿Qué casa puedo comprar con mi sueldo? · AstroHome</title>
+<meta name="description" content="Calcula a qué vivienda puedes aspirar con tu sueldo y tus ahorros: precio del piso, hipoteca, entrada, impuestos y cuota mensual, explicado en lenguaje claro.">
+
+<!-- Favicon (planeta de la suite, SVG inline) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='30' r='15' fill='%23f5c84b'/%3E%3Cpath d='M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z' fill='%231a2b5e'/%3E%3Cellipse cx='32' cy='34' rx='27' ry='9' fill='none' stroke='%237aa1ff' stroke-width='3' transform='rotate(-22 32 34)'/%3E%3C/svg%3E">
+
+<!-- Open Graph / previsualización en redes y mensajería -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AstroTools">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="¿Qué casa puedo comprar con mi sueldo? · AstroHome">
+<meta property="og:description" content="Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar: hipoteca, entrada, impuestos y cuota mensual.">
+<meta property="og:url" content="https://alex-sq-uh.github.io/AstroTools/casa/">
+<meta property="og:image" content="https://alex-sq-uh.github.io/AstroTools/casa/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AstroHome — calculadora de qué casa puedes comprar">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="¿Qué casa puedo comprar con mi sueldo? · AstroHome">
+<meta name="twitter:description" content="Calcula qué piso puedes comprar con tu sueldo y tus ahorros: hipoteca, entrada, impuestos y cuota.">
+<meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/casa/og.jpg">
+
+<link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/casa/">
+
 <style>
   :root{
     --primary:#1a2b5e;
@@ -221,6 +245,55 @@
 <script src="../shared/header.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
 <script src="../shared/feedback.js" defer></script>
+
+<!-- Datos estructurados: aplicación + preguntas frecuentes (texto real de "¿Cómo funciona?") -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AstroHome",
+  "url": "https://alex-sq-uh.github.io/AstroTools/casa/",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "es-ES",
+  "description": "Calcula a qué vivienda puedes aspirar con tu sueldo y tus ahorros: precio del piso, hipoteca, entrada, impuestos y cuota mensual.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "isPartOf": { "@type": "WebSite", "name": "AstroTools", "url": "https://alex-sq-uh.github.io/AstroTools/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Cuánto me presta el banco según mi sueldo?",
+      "acceptedAnswer": { "@type": "Answer", "text": "El banco mira lo que cobras y calcula una cuota máxima al mes: como mucho dedica un 30% de tu sueldo neto a pagar la hipoteca. A partir de esa cuota, del interés y de los años para devolverlo, sale el dinero máximo que te puede prestar. Por ejemplo, con 35.000 € netos al año la cuota máxima ronda los 875 €/mes, que a 30 años equivalen a un préstamo de unos 230.000 €." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuánta entrada necesito para comprar un piso?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Lo normal es que el banco financie el 80% del precio del piso. El 20% restante, la entrada, lo pones tú con tus ahorros. Por eso el precio del piso al que puedes aspirar es el préstamo del banco dividido entre 0,80. Si el banco te presta 230.000 €, el piso puede costar unos 288.000 € y la entrada serían unos 58.000 €." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué impuestos y gastos hay que pagar aparte al comprar una vivienda?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Al comprar pagas un impuesto (el ITP en vivienda usada, normalmente 10%) más notaría, registro, gestoría y tasación (otro 1%–2%). El banco no financia esto: sale de tus ahorros. En total, prepara alrededor de un 12% del precio solo en impuestos y gastos, además de la entrada." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Me conviene poner la entrada mínima o todos mis ahorros?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Si pones solo la entrada mínima (el 20% + los gastos), pides la hipoteca más grande y te queda dinero para la reforma u otros imprevistos. Si pones todos tus ahorros, pides menos dinero al banco y pagas menos cada mes, pero te quedas sin colchón. No hay una opción correcta: depende de si prefieres pagar menos al mes o conservar dinero disponible." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo se calcula la cuota mensual de la hipoteca?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cada mes devuelves al banco una parte del dinero prestado más los intereses: esa es tu cuota. A más años, la cuota baja (pagas durante más tiempo); a más interés, la cuota sube. El cálculo usa el sistema habitual en España, con cuota fija todos los meses." }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <!-- ================= CABECERA (shared/header.js) ================= -->

@@ -3,8 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AstroTools · Tu suite de calculadoras</title>
-<meta name="description" content="AstroTools — suite de herramientas: nómina e IRPF, vivienda y ahorro. Calcula, planifica y decide mejor.">
+<title>Calculadoras financieras gratis · AstroTools</title>
+<meta name="description" content="Suite de calculadoras financieras gratis para España: descubre a qué piso puedes aspirar, calcula tu sueldo neto e IRPF y haz crecer tus ahorros. Sin registro.">
+
+<!-- Favicon (planeta de la suite, SVG inline) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='30' r='15' fill='%23f5c84b'/%3E%3Cellipse cx='32' cy='34' rx='27' ry='9' fill='none' stroke='%237aa1ff' stroke-width='3' transform='rotate(-22 32 34)'/%3E%3C/svg%3E">
+
+<!-- Open Graph / previsualización en redes y mensajería -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AstroTools">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Calculadoras financieras gratis · AstroTools">
+<meta property="og:description" content="Calcula tu sueldo neto, a qué casa puedes aspirar e invierte tus ahorros. Suite de herramientas financieras para España. Sin registro ni cookies.">
+<meta property="og:url" content="https://alex-sq-uh.github.io/AstroTools/">
+<meta property="og:image" content="https://alex-sq-uh.github.io/AstroTools/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AstroTools — suite de calculadoras financieras">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculadoras financieras gratis · AstroTools">
+<meta name="twitter:description" content="Calcula tu sueldo neto, a qué casa puedes aspirar e invierte tus ahorros. Gratis y sin registro.">
+<meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/og.jpg">
+
+<link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/">
 <link rel="stylesheet" href="shared/tokens.css">
 <link rel="stylesheet" href="shared/base.css">
 <script src="shared/brand.js"></script>
@@ -57,6 +79,25 @@
     .app-card,.app-icon,.app-card::before{transition:none}
   }
 </style>
+
+<!-- Datos estructurados: la suite como sitio web + listado de herramientas -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "AstroTools",
+  "url": "https://alex-sq-uh.github.io/AstroTools/",
+  "inLanguage": "es-ES",
+  "description": "Suite de calculadoras financieras gratuitas para España: vivienda, nómina e IRPF, ahorro e inversión y rentabilidad.",
+  "publisher": { "@type": "Organization", "name": "AstroTools" },
+  "hasPart": [
+    { "@type": "WebApplication", "name": "AstroHome", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/casa/", "description": "Calcula a qué vivienda puedes aspirar según tu sueldo y tus ahorros." },
+    { "@type": "WebApplication", "name": "AstroPayroll", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/nomina/", "description": "Calculadora de nómina e IRPF en España: tu sueldo neto mes a mes." },
+    { "@type": "WebApplication", "name": "AstroSavings", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/ahorro/", "description": "Simula el crecimiento de tus ahorros invertidos en fondos indexados." },
+    { "@type": "WebApplication", "name": "AstroReturn", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/rentabilidad/", "description": "Calcula la rentabilidad anual real de tus inversiones." }
+  ]
+}
+</script>
 </head>
 <body>
 <astro-header home></astro-header>
