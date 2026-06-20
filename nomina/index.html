@@ -252,14 +252,6 @@
   .share-copied { color: var(--success); font-size: 0.82rem; display: none; margin-left: 8px; }
   .share-copied.show { display: inline; }
 
-  /* FOOTER */
-  .site-footer { margin-top: 3rem; padding: 1.75rem 1rem 2rem; text-align: center; font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid var(--border); background: var(--surface); }
-  .site-footer .foot-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
-  .site-footer .foot-brand svg { width: 22px; height: 22px; }
-  .site-footer a { text-decoration: none; color: var(--secondary); font-weight: 600; }
-  .site-footer a:hover { text-decoration: underline; }
-  .site-footer .ver-tag { display: inline-block; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 1px 9px; font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
-
   /* RESPONSIVE */
   @media (max-width: 600px) {
     body { font-size: 14px; }
@@ -1102,20 +1094,6 @@
 
 <astro-feedback></astro-feedback>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="foot-brand">
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="#4a6dd1" stroke-width="3" transform="rotate(-22 32 34)"/>
-      <circle cx="32" cy="30" r="13" fill="#f5c84b"/>
-      <text x="32" y="35" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-weight="800" font-size="15" fill="#1a2b5e">€</text>
-    </svg>
-    <span>AstroPayroll</span>
-    <span class="ver-tag">v2.17</span>
-  </div>
-  <div data-i18n="footer_astrocosas">Una app de AstroCosas · Datos fiscales 2026</div>
-</footer>
-
 <script>
 const APP_VERSION = '2.17';
 // Escala IRPF 2025 — Cataluña (suma estatal + autonómico)
@@ -1180,9 +1158,7 @@ let lastResult = null;
 const T = {
   es:{
     brand:'AstroPayroll', nav_calc:'Calculadora', nav_how:'¿Cómo funciona?', nav_tramos:'Tramos IRPF',
-    suite_title:'¿Y ahora qué?', suite_home:'¿A qué piso puedes aspirar con este sueldo? · AstroHome', suite_savings:'Haz que tus ahorros trabajen para ti · AstroSavings',
-    footer_astrocosas:'Una app de AstroCosas · Datos fiscales 2026',
-    calc_title:'¿Cuánto me queda neto?', calc_subtitle:'Introduce tu salario y te calculamos el desglose real mes a mes.',
+    suite_title:'¿Y ahora qué?', suite_home:'¿A qué piso puedes aspirar con este sueldo? · AstroHome', suite_savings:'Haz que tus ahorros trabajen para ti · AstroSavings',    calc_title:'¿Cuánto me queda neto?', calc_subtitle:'Introduce tu salario y te calculamos el desglose real mes a mes.',
     blk_salary:'Salario base', lbl_salary_base:'Salario base bruto anual', tip_salary:'Es el sueldo que aparece en tu contrato antes de que te descuenten nada. No incluye bonus ni extras.', tip_salary_short:'El sueldo de tu contrato antes de descuentos',
     toggle_raise:'¿Tienes subida salarial este año?', toggle_raise_sub:'Recalcularemos mes a mes como lo haría tu empresa',
     lbl_old_salary:'Salario anterior (€/año)', lbl_new_salary:'Salario nuevo (€/año)', lbl_raise_pct:'Incremento:', lbl_raise_month:'Mes en el que ocurre',
@@ -1215,7 +1191,7 @@ const T = {
     lbl_otro_name:'Nombre', hint_otros_total:'Total anual:',
     val_guard:'Ticket guardería', val_otro_prefix:'Beneficio en especie:',
     ann_otros_spkd:'Otros beneficios en especie',
-    hero_valuation:'Valoración del salario + beneficios', hero_net_take:'Salario neto a recibir', hero_flex_saving:'Ahorro IRPF de retribución flexible',
+    hero_valuation:'Valoración del salario + beneficios', hero_net_take:'Salario neto a recibir', hero_flex_saving:'Ahorro fiscal por retribución flexible',
     blk_health:'Seguro médico', toggle_health_sub:'Lo paga la empresa', lbl_health_type:'¿Cómo funciona tu seguro médico?',
     health_ontop:'Beneficio adicional (on top)', health_flex:'Retribución flexible',
     tip_health_ontop:'La empresa paga el seguro encima de tu sueldo. Hasta 500 €/año está exento de IRPF. El exceso tributa como retribución en especie.',
@@ -1312,9 +1288,7 @@ const T = {
   },
   ca:{
     brand:'AstroPayroll', nav_calc:'Calculadora', nav_how:'Com funciona?', nav_tramos:'Trams IRPF',
-    suite_title:'I ara què?', suite_home:'A quin pis pots aspirar amb aquest sou? · AstroHome', suite_savings:'Fes que els teus estalvis treballin per tu · AstroSavings',
-    footer_astrocosas:'Una app d\'AstroCosas · Dades fiscals 2026',
-    calc_title:'Quant em queda net?', calc_subtitle:'Introdueix el teu salari i calculem el desglossament real mes a mes.',
+    suite_title:'I ara què?', suite_home:'A quin pis pots aspirar amb aquest sou? · AstroHome', suite_savings:'Fes que els teus estalvis treballin per tu · AstroSavings',    calc_title:'Quant em queda net?', calc_subtitle:'Introdueix el teu salari i calculem el desglossament real mes a mes.',
     blk_salary:'Salari base', lbl_salary_base:'Salari base brut anual', tip_salary:'És el sou que apareix al teu contracte abans de cap descompte.', tip_salary_short:'El sou del teu contracte abans de descomptes',
     toggle_raise:'Tens pujada salarial enguany?', toggle_raise_sub:'Recalcularem mes a mes com ho faria la teva empresa',
     lbl_old_salary:'Salari anterior (€/any)', lbl_new_salary:'Salari nou (€/any)', lbl_raise_pct:'Increment:', lbl_raise_month:'Mes en què ocorre',
@@ -1347,7 +1321,7 @@ const T = {
     lbl_otro_name:'Nom', hint_otros_total:'Total anual:',
     val_guard:'Tiquet guarderia', val_otro_prefix:'Benefici en espècie:',
     ann_otros_spkd:'Altres beneficis en espècie',
-    hero_valuation:'Valoració del salari + beneficis', hero_net_take:'Salari net a rebre', hero_flex_saving:"Estalvi IRPF de retribució flexible",
+    hero_valuation:'Valoració del salari + beneficis', hero_net_take:'Salari net a rebre', hero_flex_saving:"Estalvi fiscal per retribució flexible",
     blk_health:'Assegurança mèdica', toggle_health_sub:"La paga l'empresa", lbl_health_type:'Com funciona la teva assegurança mèdica?',
     health_ontop:'Benefici addicional (on top)', health_flex:'Retribució flexible',
     tip_health_ontop:"L'empresa paga l'assegurança a sobre del teu sou. Fins a 500 €/any és exempt d'IRPF.",
@@ -1444,9 +1418,7 @@ const T = {
   },
   en:{
     brand:'AstroPayroll', nav_calc:'Calculator', nav_how:'How does it work?', nav_tramos:'Tax Brackets',
-    suite_title:'What now?', suite_home:'What home can you afford on this salary? · AstroHome', suite_savings:'Put your savings to work · AstroSavings',
-    footer_astrocosas:'An app by AstroCosas · 2026 tax data',
-    calc_title:'How much do I take home?', calc_subtitle:'Enter your salary and we calculate your real monthly breakdown.',
+    suite_title:'What now?', suite_home:'What home can you afford on this salary? · AstroHome', suite_savings:'Put your savings to work · AstroSavings',    calc_title:'How much do I take home?', calc_subtitle:'Enter your salary and we calculate your real monthly breakdown.',
     blk_salary:'Base salary', lbl_salary_base:'Annual gross base salary', tip_salary:'The salary stated in your contract before any deductions. Does not include bonuses or extras.', tip_salary_short:'Your contract salary before deductions',
     toggle_raise:'Getting a salary raise this year?', toggle_raise_sub:"We'll recalculate month by month like your company would",
     lbl_old_salary:'Previous salary (€/year)', lbl_new_salary:'New salary (€/year)', lbl_raise_pct:'Increase:', lbl_raise_month:'Month it takes effect',
@@ -1479,7 +1451,7 @@ const T = {
     lbl_otro_name:'Name', hint_otros_total:'Annual total:',
     val_guard:'Childcare voucher', val_otro_prefix:'Benefit in kind:',
     ann_otros_spkd:'Other benefits in kind',
-    hero_valuation:'Salary + benefits valuation', hero_net_take:'Take-home net salary', hero_flex_saving:'Income tax saving from flexible remuneration',
+    hero_valuation:'Salary + benefits valuation', hero_net_take:'Take-home net salary', hero_flex_saving:'Tax saving from flexible remuneration',
     blk_health:'Health insurance', toggle_health_sub:'Paid by the company', lbl_health_type:'How does your health insurance work?',
     health_ontop:'Additional benefit (on top of salary)', health_flex:'Flexible remuneration',
     tip_health_ontop:'The company pays the insurance on top of your salary. Up to €500/year is exempt from income tax. The excess is taxed as a benefit in kind.',
@@ -2343,12 +2315,9 @@ function calculate(){
   const flexSavingHealth  = (healthType==='flex')  ? healthExempt  * marginalRate + healthSavingSS : 0;
   const flexSavingTotal = flexSavingTickets + flexSavingTrans + flexSavingGuard + flexSavingHealth;
 
-  // Ahorro IRPF únicamente (sin SS) — para el hero. Incluye AMBOS modos: cuando la
-  // retribución flexible está exenta, no tributa en IRPF aunque se reciba "on top".
-  const flexIRPFSavingTickets = hasTickets ? ticketsExempt * marginalRate : 0;
-  const flexIRPFSavingTrans   = hasTrans   ? transExempt   * marginalRate : 0;
-  const flexIRPFSavingGuard   = hasGuard   ? guardExempt   * marginalRate : 0;
-  const flexIRPFSavingTotal   = flexIRPFSavingTickets + flexIRPFSavingTrans + flexIRPFSavingGuard;
+  // El ahorro de la retribución flexible se calcula arriba en flexSavingTotal (IRPF + SS,
+  // solo modalidad "aportada por el trabajador"). El hero y la valoración del paquete usan
+  // ese mismo valor, para que coincidan.
 
   // Importes exentos de retribución flexible (reducen la base; van como deducción explícita).
   const flexExemptTickets = (ticketsType==='flex') ? ticketsExempt : 0;
@@ -2379,7 +2348,6 @@ function calculate(){
     // Valoración de beneficios
     benefitSalary, benefitBonus, benefitCar, benefitTickets, benefitTrans, benefitGuard, benefitHealth, benefitLife, benefitOtros, benefitPensionCompany, benefitTotal,
     flexSavingTickets, flexSavingTrans, flexSavingGuard, flexSavingHealth, flexSavingTotal,
-    flexIRPFSavingTotal,
     flexExemptTickets, flexExemptTrans, flexExemptGuard, flexExemptHealth, flexExemptTotal, grossPercibido
   };
 
@@ -2402,7 +2370,7 @@ function renderResults(r){
   // Hero (totales redondeados a 0 decimales para una lectura más clara)
   document.getElementById('heroValuation').textContent = fmtRound(r.benefitTotal);
   document.getElementById('heroNet').textContent = fmtRound(r.totalNet);
-  document.getElementById('heroFlexSaving').textContent = (r.flexIRPFSavingTotal > 0 ? '+' : '') + fmtRound(r.flexIRPFSavingTotal);
+  document.getElementById('heroFlexSaving').textContent = (r.flexSavingTotal > 0 ? '+' : '') + fmtRound(r.flexSavingTotal);
 
   // ── Valoración de salario y beneficios ──
   // Cuando la retribución flexible se aporta "por el trabajador", el importe sale del

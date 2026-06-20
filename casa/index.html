@@ -208,14 +208,6 @@
   .edu-body p:last-child{margin-bottom:0}
   .edu-body .ex{background:var(--bg);border-left:3px solid var(--secondary);border-radius:6px;padding:.7rem .9rem;margin-top:.6rem;font-size:.83rem;color:var(--text-muted)}
 
-  /* ---------- Footer ---------- */
-  .site-footer{margin-top:3rem;padding:1.75rem 1rem 2rem;text-align:center;font-size:.82rem;color:var(--text-muted);border-top:1px solid var(--border);background:var(--surface)}
-  .site-footer .foot-brand{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--primary);margin-bottom:4px}
-  .site-footer .foot-brand svg{width:22px;height:22px}
-  .site-footer a{text-decoration:none;color:var(--secondary);font-weight:600}
-  .site-footer a:hover{text-decoration:underline}
-  .site-footer .ver-tag{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:1px 9px;font-size:.72rem;color:var(--text-muted);margin-left:6px}
-
   @media(max-width:600px){
     .topbar{padding:0 .9rem;height:auto;min-height:56px;padding-top:8px;padding-bottom:8px}
     .nav-links{order:3;flex-basis:100%;width:100%;justify-content:space-between;margin-top:8px;gap:4px}
@@ -647,19 +639,6 @@
 
 <astro-feedback></astro-feedback>
 
-<!-- ================= FOOTER ================= -->
-<footer class="site-footer">
-  <div class="foot-brand">
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <ellipse cx="32" cy="34" rx="26" ry="9" fill="none" stroke="#4a6dd1" stroke-width="3" transform="rotate(-22 32 34)"/>
-      <circle cx="32" cy="30" r="13" fill="#f5c84b"/>
-      <path d="M24.5 31.2 L32 24.8 L39.5 31.2 L37.6 31.2 L37.6 37 L34.2 37 L34.2 32.6 L29.8 32.6 L29.8 37 L26.4 37 L26.4 31.2 Z" fill="#1a2b5e"/>
-    </svg>
-    <span>AstroHome</span><span class="ver-tag">v1.4</span>
-  </div>
-  <div><span data-i18n="footer_astrocosas">Una app de AstroCosas</span></div>
-</footer>
-
 <script>
 (function(){
   "use strict";
@@ -697,9 +676,7 @@
       flow_title:'Las cuentas de la compra',
       flow_b1:'El piso y quién lo paga', flow_price:'Precio del piso', flow_bank:'Lo pone el banco', flow_down:'Lo pones tú (entrada)',
       flow_b2:'A dónde va tu dinero · ahorros:', flow_down2:'Entrada del piso', flow_itp:'Impuesto de compra', flow_otros:'Otros gastos', flow_reform:'Reforma',
-      disclaimer:'AstroHome es una herramienta orientativa para entender cómo funciona la compra de una vivienda. No es asesoramiento financiero ni fiscal: las condiciones reales dependen de cada banco, de tu comunidad autónoma y de tu situación. Tus datos se calculan en tu navegador y no se guardan; usamos Umami Analytics (sin cookies ni datos personales) solo para contar visitas.',
-      footer_astrocosas:'Una app de AstroCosas',
-      how_title:'¿Cómo funciona?', how_subtitle:'La compra de una vivienda en pasos sencillos. Toca cada apartado para ampliar.',
+      disclaimer:'AstroHome es una herramienta orientativa para entender cómo funciona la compra de una vivienda. No es asesoramiento financiero ni fiscal: las condiciones reales dependen de cada banco, de tu comunidad autónoma y de tu situación. Tus datos se calculan en tu navegador y no se guardan; usamos Umami Analytics (sin cookies ni datos personales) solo para contar visitas.',      how_title:'¿Cómo funciona?', how_subtitle:'La compra de una vivienda en pasos sencillos. Toca cada apartado para ampliar.',
       how1_t:'1 · Tu sueldo decide cuánto te presta el banco',
       how1_p1:'El banco mira lo que cobras y calcula una cuota máxima al mes: como mucho dedica un 30% de tu sueldo neto a pagar la hipoteca, para que puedas vivir con el resto.',
       how1_p2:'A partir de esa cuota, del interés y de los años para devolverlo, sale el dinero máximo que te puede prestar.',
@@ -824,9 +801,7 @@
       flow_title:'Els comptes de la compra',
       flow_b1:'El pis i qui el paga', flow_price:'Preu del pis', flow_bank:'Ho posa el banc', flow_down:'Ho poses tu (entrada)',
       flow_b2:'On van els teus diners · estalvis:', flow_down2:'Entrada del pis', flow_itp:'Impost de compra', flow_otros:'Altres despeses', flow_reform:'Reforma',
-      disclaimer:'AstroHome és una eina orientativa per entendre com funciona la compra d’un habitatge. No és assessorament financer ni fiscal: les condicions reals depenen de cada banc, de la teva comunitat autònoma i de la teva situació. Les teves dades es calculen al teu navegador i no es desen; fem servir Umami Analytics (sense galetes ni dades personals) només per comptar visites.',
-      footer_astrocosas:'Una app d’AstroCosas',
-      how_title:'Com funciona?', how_subtitle:'La compra d’un habitatge en passos senzills. Toca cada apartat per ampliar.',
+      disclaimer:'AstroHome és una eina orientativa per entendre com funciona la compra d’un habitatge. No és assessorament financer ni fiscal: les condicions reals depenen de cada banc, de la teva comunitat autònoma i de la teva situació. Les teves dades es calculen al teu navegador i no es desen; fem servir Umami Analytics (sense galetes ni dades personals) només per comptar visites.',      how_title:'Com funciona?', how_subtitle:'La compra d’un habitatge en passos senzills. Toca cada apartat per ampliar.',
       how1_t:'1 · El teu sou decideix quant et presta el banc',
       how1_p1:'El banc mira el que cobres i calcula una quota màxima al mes: com a molt dedica un 30% del sou net a pagar la hipoteca, perquè puguis viure amb la resta.',
       how1_p2:'A partir d’aquesta quota, de l’interès i dels anys per tornar-lo, surt el màxim que et pot prestar.',
@@ -950,9 +925,7 @@
       flow_title:'The numbers of the purchase',
       flow_b1:'The home and who pays for it', flow_price:'Home price', flow_bank:'The bank puts in', flow_down:'You put in (deposit)',
       flow_b2:'Where your money goes · savings:', flow_down2:'Home deposit', flow_itp:'Purchase tax', flow_otros:'Other costs', flow_reform:'Renovation',
-      disclaimer:'AstroHome is a guidance tool to understand how buying a home works. It is not financial or tax advice: the real terms depend on each bank, your region and your situation. Your data is computed in your browser and not stored; we use Umami Analytics (no cookies, no personal data) only to count visits.',
-      footer_astrocosas:'An AstroCosas app',
-      how_title:'How it works', how_subtitle:'Buying a home in simple steps. Tap each section to expand.',
+      disclaimer:'AstroHome is a guidance tool to understand how buying a home works. It is not financial or tax advice: the real terms depend on each bank, your region and your situation. Your data is computed in your browser and not stored; we use Umami Analytics (no cookies, no personal data) only to count visits.',      how_title:'How it works', how_subtitle:'Buying a home in simple steps. Tap each section to expand.',
       how1_t:'1 · Your salary decides how much the bank lends',
       how1_p1:'The bank looks at what you earn and sets a maximum monthly payment: at most 30% of your net salary goes to the mortgage, so you can live on the rest.',
       how1_p2:'From that payment, the interest and the years to repay, comes the maximum it can lend you.',
