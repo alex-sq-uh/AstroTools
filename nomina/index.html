@@ -1223,7 +1223,7 @@ const T = {
     val_total:'Valoración total del paquete', val_flex_saving_total:'Ahorro fiscal por retribución flexible',
     info_flex_title:'Ahorro por retribución flexible', info_flex_total:'Ahorro total estimado',
     info_pension_title:'Aportación total anual al plan de pensiones', info_pension_emp:'Aportada por ti (empleado)', info_pension_company:'Aportada por la empresa', info_pension_total:'Total al plan',
-    ann_percibido_title:'Importes percibidos (bruto)', ann_percibido_total:'Total percibido (bruto)', ann_net_exp:'Este es el importe neto que te ingresan en la cuenta a lo largo del año.',
+    ann_percibido_title:'Importes percibidos (bruto)', ann_percibido_total:'Total percibido (bruto)', ann_flex_cash:'Retribución flexible (la pagas con tu salario)', ann_net_exp:'Este es el importe neto que te ingresan en la cuenta a lo largo del año.', ann_net_exp_flex:'Este importe ya descuenta la retribución flexible que pones de tu bolsillo: es el dinero que llega realmente a tu cuenta.',
     ann_impuestos_title:'Impuestos (cotizaciones a la SS)', ann_otras_ded_title:'Otras deducciones y reducciones', ann_flex_ded:'Retribución flexible exenta', ann_cash_title:'Del bruto al neto (lo que sale de tu nómina)',
     show_calc:'Ver cómo se calcula la retención mensual',
     monthly_calc_exp:'Tu empresa recalcula la retención de IRPF cada mes. La lógica es: proyecta cuánto ganarás en todo el año desde ese mes, calcula el IRPF anual total, y retiene lo que falta para llegar a ese importe restando lo que ya te ha retenido. Así, si en marzo cobras el bonus, la retención de ese mes sube mucho para compensar.',
@@ -1353,7 +1353,7 @@ const T = {
     val_total:'Valoració total del paquet', val_flex_saving_total:'Estalvi fiscal per retribució flexible',
     info_flex_title:'Estalvi per retribució flexible', info_flex_total:'Estalvi total estimat',
     info_pension_title:'Aportació total anual al pla de pensions', info_pension_emp:'Aportada per tu (empleat)', info_pension_company:"Aportada per l'empresa", info_pension_total:'Total al pla',
-    ann_percibido_title:'Imports percebuts (brut)', ann_percibido_total:'Total percebut (brut)', ann_net_exp:"Aquest és l'import net que t'ingressen al compte al llarg de l'any.",
+    ann_percibido_title:'Imports percebuts (brut)', ann_percibido_total:'Total percebut (brut)', ann_flex_cash:'Retribució flexible (la pagues amb el teu salari)', ann_net_exp:"Aquest és l'import net que t'ingressen al compte al llarg de l'any.", ann_net_exp_flex:"Aquest import ja descompta la retribució flexible que poses de la teva butxaca: és els diners que arriben realment al teu compte.",
     ann_impuestos_title:'Impostos (cotitzacions a la SS)', ann_otras_ded_title:'Altres deduccions i reduccions', ann_flex_ded:'Retribució flexible exempta', ann_cash_title:'Del brut al net (el que surt de la nòmina)',
     show_calc:'Veure com es calcula la retenció mensual',
     monthly_calc_exp:"La teva empresa recalcula la retenció d'IRPF cada mes. Projecta quant guanyaràs en tot l'any, calcula l'IRPF total i reté el que falta.",
@@ -1483,7 +1483,7 @@ const T = {
     val_total:'Total package valuation', val_flex_saving_total:'Tax saving from flexible remuneration',
     info_flex_title:'Flexible remuneration saving', info_flex_total:'Total estimated saving',
     info_pension_title:'Total annual pension contribution', info_pension_emp:'Contributed by you (employee)', info_pension_company:'Contributed by the company', info_pension_total:'Total to plan',
-    ann_percibido_title:'Amounts received (gross)', ann_percibido_total:'Total received (gross)', ann_net_exp:'This is the net amount deposited into your account over the year.',
+    ann_percibido_title:'Amounts received (gross)', ann_percibido_total:'Total received (gross)', ann_flex_cash:'Flexible remuneration (worker-funded)', ann_net_exp:'This is the net amount deposited into your account over the year.', ann_net_exp_flex:'This amount already deducts the flexible remuneration you fund from your salary: it is the cash that actually lands in your account.',
     ann_impuestos_title:'Taxes (Social Security contributions)', ann_otras_ded_title:'Other deductions & reductions', ann_flex_ded:'Tax-exempt flexible remuneration', ann_cash_title:'From gross to net (what leaves your payslip)',
     show_calc:'How is monthly withholding calculated?',
     monthly_calc_exp:"Your company recalculates income tax withholding every month. It projects how much you'll earn for the full year from that month, calculates total annual tax, and withholds what's needed minus what's already been withheld. That's why the bonus month sees a high withholding.",
@@ -2426,16 +2426,17 @@ function renderResults(r){
 
   // (4) Del bruto al neto — lo que de verdad sale de tu nómina
   ann += `<div class="section-title" style="margin-top:1rem;">${t('ann_cash_title')}</div>`;
+  if(r.flexExemptTotal > 0) ann += `<div class="inline-sum neg"><span>${t('ann_flex_cash')}</span><span class="val">−${fmt(r.flexExemptTotal)}</span></div>`;
   ann += `<div class="inline-sum neg"><span>${t('ann_irpf')} <span style="color:var(--text-muted);font-size:0.8rem;">(${fmtPct(r.effectiveRate*100)} ${t('ann_irpf_rate')})</span></span><span class="val">−${fmt(r.totalIRPF)}</span></div>`;
   ann += `<div class="inline-sum neg"><span>${t('ann_ss')} <span style="color:var(--text-muted);font-size:0.8rem;">(${pct(r.totalSS)})</span></span><span class="val">−${fmt(r.totalSS)}</span></div>`;
   if(r.totalSol > 0) ann += `<div class="inline-sum neg"><span>${t('ann_solidarity')} <span style="color:var(--text-muted);font-size:0.8rem;">(${pct(r.totalSol)})</span></span><span class="val">−${fmt(r.totalSol)}</span></div>`;
   if(r.hasPension) ann += `<div class="inline-sum neg"><span>${t('ann_pension_emp')}</span><span class="val">−${fmt(r.totalPensionEmp)}</span></div>`;
 
-  const totalDed = r.totalIRPF + r.totalSS + r.totalSol + r.totalPensionEmp;
+  const totalDed = r.totalIRPF + r.totalSS + r.totalSol + r.totalPensionEmp + r.flexExemptTotal;
   ann += `<div class="inline-sum total neg" style="color:var(--danger);"><span>${t('ann_total_ded')}</span><span class="val">−${fmtRound(totalDed)}</span></div>`;
   ann += `<div class="inline-sum total pos"><span>${t('ann_net')}</span><span class="val">${fmtRound(r.totalNet)}</span></div>`;
   ann += `<div style="text-align:right;font-size:0.8rem;font-weight:600;color:var(--success);margin-top:-2px;">≈ ${fmtRound(r.totalNet/12)}${t('per_month_label')}</div>`;
-  ann += `<p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">${t('ann_net_exp')}</p>`;
+  ann += `<p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">${t(r.flexExemptTotal > 0 ? 'ann_net_exp_flex' : 'ann_net_exp')}</p>`;
 
   document.getElementById('annualBreakdown').innerHTML = ann;
 
