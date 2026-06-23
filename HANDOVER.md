@@ -24,7 +24,7 @@ Reglas de oro (no negociables salvo que el dueño diga lo contrario):
 ## 1. Qué es AstroTools
 
 Suite de **calculadoras financieras gratuitas para España**, en lenguaje llano ("en
-cristiano", sin tecnicismos). Un **hub** (página de inicio) + **4 apps**, cada una en su
+cristiano", sin tecnicismos). Un **hub** (página de inicio) + **5 apps**, cada una en su
 carpeta. Todo es cliente: los cálculos ocurren en el navegador, no se guarda nada, sin
 cookies (analítica anónima con Umami).
 
@@ -34,7 +34,8 @@ cookies (analítica anónima con Umami).
 | `nomina/` | **AstroPayroll** | Sueldo neto e IRPF mes a mes (bonus, plan de pensiones, tickets, retribución flexible). |
 | `ahorro/` | **AstroSavings** | Cuánto crece tu dinero en fondos indexados (interés compuesto, riesgo). Guía paso a paso. |
 | `rentabilidad/` | **AstroReturn** | Rentabilidad anual real (TIR/XIRR) de una inversión vs inflación y bolsa. |
-| `/` (raíz) | **AstroTools** (hub) | Portada con las tarjetas de las 4 apps. |
+| `forecast/` | **AstroForecast** | Planificación financiera a largo plazo: proyecta tu patrimonio año a año según tus flujos de caja y cuánto podrías retirar. |
+| `/` (raíz) | **AstroTools** (hub) | Portada con las tarjetas de las 5 apps. |
 
 Convención de nombres: la marca de cada app es **Astro + Palabra** (AstroHome,
 AstroPayroll…). La parte "Astro" va en blanco y la palabra final en dorado (`--accent`).
@@ -59,8 +60,9 @@ AstroTools/
 ├── nomina/index.html       ← AstroPayroll
 ├── ahorro/index.html       ← AstroSavings (+ i18n.js)
 ├── rentabilidad/index.html ← AstroReturn
+├── forecast/index.html     ← AstroForecast (Chart.js, skin navy)
 ├── og.jpg                  ← imagen de previsualización del hub (1200×630)
-├── casa/og.jpg  nomina/og.jpg  ahorro/og.jpg  rentabilidad/og.jpg
+├── casa/og.jpg  nomina/og.jpg  ahorro/og.jpg  rentabilidad/og.jpg  forecast/og.jpg
 ├── sitemap.xml  robots.txt ← SEO (raíz del repo)
 ├── shared/
 │   ├── brand.js            ← ÚNICA fuente del nombre y lista de apps (window.ASTROTOOLS)
@@ -123,7 +125,8 @@ Es el elemento visual central y debe dibujarse SIEMPRE igual. SVG `viewBox="0 0 
 - **4 estrellitas** blancas: `(11,14) r1.4`, `(54,18) r1`, `(52,48) r1.2`, `(9,50) r1`.
 - **Símbolo de cada app** en navy `#1a2b5e`, entre el planeta y el arco delantero:
   - casa → casita (`path` tejado+cuerpo), nomina → `€` (text), ahorro → flecha de
-    tendencia ascendente, rentabilidad → barras + línea, hub/header → **sin símbolo**
+    tendencia ascendente, rentabilidad → barras + línea, forecast → curva de proyección
+    ascendente + estrella de 4 puntas en la punta, hub/header → **sin símbolo**
     (planeta liso).
 
 Snippet canónico en `shared/header.js` (ids `ahHdr…`) y en el hub `index.html` (objeto
@@ -250,7 +253,7 @@ posiciones y colores idénticos.
 
 ---
 
-## 11. Estado actual (a 2026-06-20)
+## 11. Estado actual (a 2026-06-22)
 
 **En producción (pushed, commit `5317b01`):**
 - Las 4 apps + hub con SEO técnico completo (§7), 5 `og.jpg`, `sitemap.xml`, `robots.txt`.
@@ -259,6 +262,29 @@ posiciones y colores idénticos.
 - Hub sin footer ni planeta flotante del hero.
 
 **En local, PENDIENTE de push (cambios sin commitear):**
+- **App nueva: AstroForecast** (`forecast/index.html`) — planificador financiero a largo
+  plazo. Entradas: edad inicial (vacía) y final (100 por defecto), ahorros iniciales
+  (opcional) y N flujos de caja (entra/sale, importe con selector €/mes↔€/año **por
+  defecto €/año**, de edad a edad). Salidas: hero + KPIs (al 6%), gráfico de patrimonio
+  (banda 0–8% para que no se aplaste el 6%; el 10–12% solo en la tabla), gráfico de
+  flujos entra/sale, y tabla año a año con patrimonio **0/2/4/6/8/10/12%** (columna 6%
+  resaltada) y toggle Patrimonio↔Renta disponible (tasa de retirada def. **3%**). La
+  renta se muestra a la edad de "jubilación" (primer año con flujo neto negativo).
+  Euros **nominales** (sin descontar inflación; se explica en la pestaña "Conceptos").
+  Skin navy, Chart.js, trilingüe, SEO completo + `forecast/og.jpg`. Cálculo: aportaciones
+  a fin de año, `patrimonio_t = patrimonio_{t-1}·(1+r) + flujo_neto_t`. **Integrada** en
+  `shared/brand.js`, `shared/header.js` (ICONS+regex), `shared/feedback.js` (regex),
+  el `ICONS`/tarjetas del hub y `sitemap.xml`. Verificada en local sin
+  errores de consola; cálculos comprobados a mano. Falta confirmar el push y reenviar
+  `sitemap.xml` por Search Console.
+- **Hub reorganizado en 2 secciones** (`index.html`): **"Calculadoras"** (AstroHome,
+  AstroPayroll, AstroReturn, AstroForecast) y **"Guías paso a paso"** (AstroSavings, la
+  única experiencia guiada/formativa). Cada sección lleva título + subtítulo trilingüe
+  (objeto `T[...].sec`). El grid pasó a `repeat(auto-fit,212px)` centrado (se adapta a
+  cualquier nº de tarjetas; la tarjeta sola de Guías queda centrada, no huérfana). La
+  agrupación vive en el array `GROUPS` del hub; **cualquier app de `brand.js` sin grupo
+  asignado cae automáticamente en "Calculadoras"** (red de seguridad). Al añadir una app
+  nueva, si es formativa, mete su `id` en el grupo `learn`.
 - **Footer eliminado** de `casa`, `nomina` y `ahorro` (la barra inferior "Una app de
   AstroCosas …": markup + CSS `.site-footer`/`.foot` + claves i18n `footer_astrocosas`).
   Verificado sin errores. Falta que el dueño confirme el push.

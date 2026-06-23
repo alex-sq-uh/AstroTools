@@ -46,9 +46,15 @@
   .hero p{color:var(--text-muted);font-size:1.1rem;margin:.5rem auto 0;max-width:560px}
 
   /* ---------- Grid de apps ---------- */
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-top:2.4rem}
-  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);max-width:560px;margin-inline:auto}}
-  @media(max-width:480px){.grid{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
+  /* Secciones de apps (Calculadoras / Guías) */
+  .apps-section{margin-top:2.6rem}
+  .apps-section:first-child{margin-top:2.4rem}
+  .sec-head{text-align:center;margin-bottom:1.15rem}
+  .sec-head h2{font-size:1.2rem;font-weight:800;color:var(--primary);margin:0 0 .2rem;letter-spacing:.01em}
+  .sec-head .sec-sub{color:var(--text-muted);font-size:.92rem}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,212px);justify-content:center;gap:1.25rem}
+  @media(max-width:480px){.grid{grid-template-columns:minmax(0,330px)}}
 
   .app-card{
     position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.55rem;
@@ -94,7 +100,8 @@
     { "@type": "WebApplication", "name": "AstroHome", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/casa/", "description": "Calcula a qué vivienda puedes aspirar según tu sueldo y tus ahorros." },
     { "@type": "WebApplication", "name": "AstroPayroll", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/nomina/", "description": "Calculadora de nómina e IRPF en España: tu sueldo neto mes a mes." },
     { "@type": "WebApplication", "name": "AstroSavings", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/ahorro/", "description": "Simula el crecimiento de tus ahorros invertidos en fondos indexados." },
-    { "@type": "WebApplication", "name": "AstroReturn", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/rentabilidad/", "description": "Calcula la rentabilidad anual real de tus inversiones." }
+    { "@type": "WebApplication", "name": "AstroReturn", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/rentabilidad/", "description": "Calcula la rentabilidad anual real de tus inversiones." },
+    { "@type": "WebApplication", "name": "AstroForecast", "applicationCategory": "FinanceApplication", "url": "https://alex-sq-uh.github.io/AstroTools/forecast/", "description": "Planifica tu futuro financiero a largo plazo proyectando tu patrimonio año a año." }
   ]
 }
 </script>
@@ -108,7 +115,7 @@
 <h1>AstroTools<span class="dot">.</span></h1>
     <p id="subtitle"></p>
   </div>
-  <div class="grid" id="apps"></div>
+  <div id="apps"></div>
 </div>
 
 <script>
@@ -167,6 +174,19 @@
         '<path d="M24.5 30 L31 25.5 L35 28 L40.5 23" fill="none" stroke="#1a2b5e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>' +
         '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
         '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#rOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#rFront)"/>' +
+      '</svg>',
+    forecast:
+      '<svg class="app-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<defs><linearGradient id="fOrbit" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7aa1ff"/><stop offset="100%" stop-color="#f5c84b"/></linearGradient>' +
+        '<radialGradient id="fPlanet" cx="0.35" cy="0.3" r="0.85"><stop offset="0%" stop-color="#f8d97a"/><stop offset="55%" stop-color="#f5c84b"/><stop offset="100%" stop-color="#c79420"/></radialGradient>' +
+        '<clipPath id="fBack"><rect x="0" y="0" width="64" height="28"/></clipPath>' +
+        '<clipPath id="fFront"><rect x="0" y="28" width="64" height="36"/></clipPath></defs>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#fOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" opacity="0.85" clip-path="url(#fBack)"/>' +
+        '<circle cx="32" cy="30" r="14" fill="url(#fPlanet)"/>' +
+        '<path d="M24 35.5 C29 35 30.5 30.5 33 28 C35 26 36.8 25 38.5 24" fill="none" stroke="#1a2b5e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="M38.5 21 L39.6 22.9 L41.5 24 L39.6 25.1 L38.5 27 L37.4 25.1 L35.5 24 L37.4 22.9 Z" fill="#1a2b5e"/>' +
+        '<circle cx="11" cy="14" r="1.4" fill="#fff"/><circle cx="54" cy="18" r="1" fill="#fff"/><circle cx="52" cy="48" r="1.2" fill="#fff"/><circle cx="9" cy="50" r="1" fill="#fff"/>' +
+        '<ellipse cx="32" cy="30" rx="26" ry="9" fill="none" stroke="url(#fOrbit)" stroke-width="2.4" transform="rotate(-22 32 30)" clip-path="url(#fFront)"/>' +
       '</svg>'
   };
 
@@ -174,17 +194,20 @@
     es: {
       title: "AstroTools · Tu suite de calculadoras",
       subtitle: "Herramientas financieras para el día a día.",
-      tag: { casa: "Mi presupuesto para un hogar", nomina: "Entiende tu nómina y tu IRPF", ahorro: "Haz que tu dinero trabaje por ti", rentabilidad: "Calcula rentabilidades" }
+      tag: { casa: "Mi presupuesto para un hogar", nomina: "Entiende tu nómina y tu IRPF", ahorro: "Haz que tu dinero trabaje por ti", rentabilidad: "Calcula rentabilidades", forecast: "Planifica tu futuro a largo plazo" },
+      sec: { calc: "Calculadoras", calcSub: "Mete tus números y te damos la cifra", learn: "Guías paso a paso", learnSub: "Aprende invirtiendo, sin prisa" }
     },
     ca: {
       title: "AstroTools · La teva suite de calculadores",
       subtitle: "Eines financeres per al dia a dia.",
-      tag: { casa: "El meu pressupost per a una llar", nomina: "Entén la teva nòmina i el teu IRPF", ahorro: "Fes que els teus diners treballin per tu", rentabilidad: "Calcula rendibilitats" }
+      tag: { casa: "El meu pressupost per a una llar", nomina: "Entén la teva nòmina i el teu IRPF", ahorro: "Fes que els teus diners treballin per tu", rentabilidad: "Calcula rendibilitats", forecast: "Planifica el teu futur a llarg termini" },
+      sec: { calc: "Calculadores", calcSub: "Posa els teus números i et donem la xifra", learn: "Guies pas a pas", learnSub: "Aprèn invertint, sense pressa" }
     },
     en: {
       title: "AstroTools · Your suite of calculators",
       subtitle: "Financial tools for everyday life.",
-      tag: { casa: "My budget for a home", nomina: "Understand your payslip and income tax", ahorro: "Make your money work for you", rentabilidad: "Calculate returns" }
+      tag: { casa: "My budget for a home", nomina: "Understand your payslip and income tax", ahorro: "Make your money work for you", rentabilidad: "Calculate returns", forecast: "Plan your long-term future" },
+      sec: { calc: "Calculators", calcSub: "Enter your numbers, we give you the figure", learn: "Step-by-step guides", learnSub: "Learn by investing, no rush" }
     }
   };
 
@@ -192,16 +215,42 @@
     return name.indexOf("Astro") === 0 ? 'Astro<span class="accent">' + name.slice(5) + '</span>' : name;
   }
 
+  /* Agrupación de apps en el hub. Cualquier app de brand.js que no figure aquí
+     se añade automáticamente a "Calculadoras" (red de seguridad). */
+  var GROUPS = [
+    { key: "calc",  ids: ["casa", "nomina", "rentabilidad", "forecast"] },
+    { key: "learn", ids: ["ahorro"] }
+  ];
+  // apps de brand.js sin grupo asignado → a Calculadoras (una sola vez)
+  (function () {
+    var assigned = {}; GROUPS.forEach(function (g) { g.ids.forEach(function (id) { assigned[id] = 1; }); });
+    cfg.apps.forEach(function (a) { if (!assigned[a.id]) GROUPS[0].ids.push(a.id); });
+  })();
+
+  function card(a, t) {
+    if (!a) return "";
+    return '<a class="app-card" href="' + a.href + '" aria-label="' + a.name + '">' +
+             (ICONS[a.id] || "") +
+             '<h2>' + accentName(a.name) + '</h2>' +
+             '<div class="tag">' + ((t.tag && t.tag[a.id]) || a.tagline) + '</div>' +
+           '</a>';
+  }
+
   function render(l) {
     var t = T[l] || T.es;
     document.title = t.title;
     document.getElementById("subtitle").textContent = t.subtitle;
-    document.getElementById("apps").innerHTML = cfg.apps.map(function (a) {
-      return '<a class="app-card" href="' + a.href + '" aria-label="' + a.name + '">' +
-               (ICONS[a.id] || "") +
-               '<h2>' + accentName(a.name) + '</h2>' +
-               '<div class="tag">' + (t.tag[a.id] || a.tagline) + '</div>' +
-             '</a>';
+
+    var byId = {}; cfg.apps.forEach(function (a) { byId[a.id] = a; });
+
+    document.getElementById("apps").innerHTML = GROUPS.map(function (g) {
+      var cards = g.ids.map(function (id) { return card(byId[id], t); }).join("");
+      if (!cards) return "";
+      return '<section class="apps-section">' +
+               '<div class="sec-head"><h2>' + t.sec[g.key] + '</h2>' +
+               '<div class="sec-sub">' + t.sec[g.key + "Sub"] + '</div></div>' +
+               '<div class="grid">' + cards + '</div>' +
+             '</section>';
     }).join("");
   }
 

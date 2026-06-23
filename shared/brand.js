@@ -12,6 +12,7 @@ window.ASTROTOOLS = {
     { id: "casa",         name: "AstroHome",    href: "casa/",         tagline: "¿A qué casa puedes aspirar?" },
     { id: "nomina",       name: "AstroPayroll", href: "nomina/",       tagline: "Tu nómina e IRPF, mes a mes" },
     { id: "ahorro",       name: "AstroSavings", href: "ahorro/",       tagline: "Haz que tu dinero trabaje por ti" },
-    { id: "rentabilidad", name: "AstroReturn",  href: "rentabilidad/", tagline: "Calcula rentabilidades" }
+    { id: "rentabilidad", name: "AstroReturn",  href: "rentabilidad/", tagline: "Calcula rentabilidades" },
+    { id: "forecast",     name: "AstroForecast",href: "forecast/",     tagline: "Planifica tu futuro financiero" }
   ]
 };

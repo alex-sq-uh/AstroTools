@@ -46,7 +46,8 @@
     return /\/casa\//.test(p) ? "AstroHome"
          : /\/nomina\//.test(p) ? "AstroPayroll"
          : /\/ahorro\//.test(p) ? "AstroSavings"
-         : /\/rentabilidad\//.test(p) ? "AstroReturn" : "AstroTools";
+         : /\/rentabilidad\//.test(p) ? "AstroReturn"
+         : /\/forecast\//.test(p) ? "AstroForecast" : "AstroTools";
   }
   function lang() {
     var l = (document.documentElement.lang || "es").slice(0, 2).toLowerCase();

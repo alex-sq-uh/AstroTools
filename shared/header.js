@@ -27,10 +27,10 @@
    ============================================================ */
 (function () {
   var cfg = window.ASTROTOOLS || { brand: "AstroTools", apps: [] };
-  var inApp = /\/(casa|nomina|ahorro|rentabilidad)\//.test(location.pathname);
+  var inApp = /\/(casa|nomina|ahorro|rentabilidad|forecast)\//.test(location.pathname);
   var prefix = inApp ? "../" : ""; // para llegar a las apps hermanas
 
-  var ICONS = { casa: "🏠", nomina: "🧾", ahorro: "📈", rentabilidad: "📊" };
+  var ICONS = { casa: "🏠", nomina: "🧾", ahorro: "📈", rentabilidad: "📊", forecast: "🔭" };
   var MENU_T = {
     es: { apps: "Cambiar de app", lang: "Idioma" },
     ca: { apps: "Canviar d'app", lang: "Idioma" },
