@@ -261,22 +261,18 @@ posiciones y colores idénticos.
 - Logo planeta con el aro corregido (delante/detrás) y centrado en el ecuador (cy=30).
 - Hub sin footer ni planeta flotante del hero.
 
-**En local, PENDIENTE de push (cambios sin commitear):**
-- **App nueva: AstroForecast** (`forecast/index.html`) — planificador financiero a largo
-  plazo. Entradas: edad inicial (vacía) y final (100 por defecto), ahorros iniciales
-  (opcional) y N flujos de caja (entra/sale, importe con selector €/mes↔€/año **por
-  defecto €/año**, de edad a edad). Salidas: hero + KPIs (al 6%), gráfico de patrimonio
-  (banda 0–8% para que no se aplaste el 6%; el 10–12% solo en la tabla), gráfico de
-  flujos entra/sale, y tabla año a año con patrimonio **0/2/4/6/8/10/12%** (columna 6%
-  resaltada) y toggle Patrimonio↔Renta disponible (tasa de retirada def. **3%**). La
-  renta se muestra a la edad de "jubilación" (primer año con flujo neto negativo).
-  Euros **nominales** (sin descontar inflación; se explica en la pestaña "Conceptos").
-  Skin navy, Chart.js, trilingüe, SEO completo + `forecast/og.jpg`. Cálculo: aportaciones
-  a fin de año, `patrimonio_t = patrimonio_{t-1}·(1+r) + flujo_neto_t`. **Integrada** en
-  `shared/brand.js`, `shared/header.js` (ICONS+regex), `shared/feedback.js` (regex),
-  el `ICONS`/tarjetas del hub y `sitemap.xml`. Verificada en local sin
-  errores de consola; cálculos comprobados a mano. Falta confirmar el push y reenviar
-  `sitemap.xml` por Search Console.
+**Pusheado y en producción (commits `77b5282`, `4f9249f`):**
+- **App AstroForecast** (`forecast/index.html`) — planificador financiero a largo plazo.
+  Entradas: edad inicial/final (def. 100), ahorros iniciales y N flujos de caja
+  (entra/sale, €/mes↔€/año, entre edades). **Slider de rentabilidad 0–12%** (def. 6%,
+  badge "esperado"); el gráfico de patrimonio y toda la tabla reflejan la tasa seleccionada.
+  Gráfico de flujos entra/sale (barras apiladas). Tabla año a año con **7 columnas**:
+  edad/rango, saldo inicio, entradas, salidas, rentabilidad inversión, saldo final,
+  renta disponible (patrimonio × tasa retirada def. 3%); en modo "cada 5 años" la celda
+  de edad muestra el rango, p.ej. "35 – 40". Pestaña "Conceptos": 8 acordeones incluyendo
+  "Renta disponible". Euros nominales, trilingüe ES/CA/EN, SEO completo + `forecast/og.jpg`.
+  Integrada en `brand.js`, `header.js`, `feedback.js`, `sitemap.xml` y hub.
+  **Pendiente manual:** reenviar `sitemap.xml` en Search Console.
 - **Hub reorganizado en 2 secciones** (`index.html`): **"Calculadoras"** (AstroHome,
   AstroPayroll, AstroReturn, AstroForecast) y **"Guías paso a paso"** (AstroSavings, la
   única experiencia guiada/formativa). Cada sección lleva título + subtítulo trilingüe
