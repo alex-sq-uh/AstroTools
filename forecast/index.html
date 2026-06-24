@@ -66,7 +66,7 @@
     {
       "@type": "Question",
       "name": "¿Qué es una cartera de fondos indexados y por qué suponemos un 6%?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Un fondo indexado compra un poquito de miles de empresas de todo el mundo a la vez, con comisiones muy bajas, en lugar de intentar adivinar qué acción subirá. La filosofía Bogleheads consiste en invertir así, de forma sencilla, barata y a largo plazo. La bolsa mundial ha rentado de media en torno al 8% anual antes de inflación; usamos un 6% como cifra prudente y realista para no pintar las cosas de color de rosa. Es la columna que resaltamos, pero verás también del 0% al 12% para que entiendas el abanico." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Un fondo indexado compra un poquito de miles de empresas de todo el mundo a la vez, con comisiones muy bajas, en lugar de intentar adivinar qué acción subirá. La filosofía Bogleheads consiste en invertir así, de forma sencilla, barata y a largo plazo. La bolsa mundial ha rentado de media en torno al 8% anual antes de inflación; usamos un 6% como cifra prudente y realista para no pintar las cosas de color de rosa. Es el valor por defecto del slider, que puedes ajustar del 0% al 12% para ver distintos escenarios." }
     },
     {
       "@type": "Question",
@@ -197,10 +197,6 @@
   /* ---------- Resultado ---------- */
   #results{display:none}
   #results.show{display:block}
-  .hero{background:linear-gradient(135deg,var(--primary) 0%,#2563a8 100%);color:#fff;border-radius:var(--radius-lg);padding:1.9rem 1.75rem;margin-bottom:1.25rem;box-shadow:var(--shadow);text-align:center}
-  .hero .eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;opacity:.82;margin:0 0 6px}
-  .hero .big{font-size:2.7rem;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.05;color:var(--accent)}
-  .hero .say{font-size:.95rem;opacity:.95;margin:.9rem auto 0;max-width:520px}
 
   .kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem}
   @media(max-width:600px){.kpis{grid-template-columns:1fr}}
@@ -209,15 +205,10 @@
   .kpi .val{font-size:1.5rem;font-weight:800;color:var(--primary);margin:0}
   .kpi .val.neg{color:var(--danger)}
   .kpi .sub{font-size:.74rem;color:var(--text-muted);margin:.25rem 0 0;font-weight:600}
+  .kpi.empty{opacity:.5}
 
   .chart-box{position:relative;height:300px}
   .caption{font-size:.82rem;color:var(--text-muted);margin:.9rem 0 0;text-align:center}
-
-  .verdict{border-radius:var(--radius);padding:.95rem 1.1rem;font-size:.9rem;margin-bottom:1.25rem;line-height:1.5}
-  .verdict b{font-weight:700}
-  .verdict.good{background:var(--success-bg);border:1px solid #a7d8bd;color:#114b2a}
-  .verdict.bad{background:var(--danger-bg);border:1px solid #f3c6bf;color:#9b271a}
-  .verdict.neu{background:#eef4fc;border:1px solid #cfe0f5;color:var(--primary)}
 
   /* ---------- Tabla ---------- */
   .table-tools{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin-bottom:1rem}
@@ -289,17 +280,12 @@
       <div class="field">
         <label data-i18n="lbl_startAge">¿Qué edad tienes ahora?</label>
         <div class="input-wrap"><input id="startAge" type="text" inputmode="numeric" placeholder="35"><span class="unit" data-i18n="u_years">años</span></div>
-        <div class="hint" data-i18n="hint_startAge">Es la edad en la que empieza tu plan.</div>
+        <div class="hint" data-i18n="hint_startAge">Planificamos desde tu edad actual hasta los 100 años.</div>
       </div>
       <div class="field">
-        <label data-i18n="lbl_endAge">¿Hasta qué edad planificas?</label>
-        <div class="input-wrap"><input id="endAge" type="text" inputmode="numeric" value="100"><span class="unit" data-i18n="u_years">años</span></div>
-        <div class="hint" data-i18n="hint_endAge">Mejor pasarse: planificar hasta los 100 es lo prudente.</div>
+        <label class="lbl-row"><span data-i18n="lbl_initial">Ahorros que ya tienes hoy</span> <span class="info-icon" style="margin-left:4px">i<span class="tooltip-box" data-i18n="tip_initial">El dinero ya invertido o ahorrado con el que empiezas. Si empiezas de cero, déjalo vacío.</span></span></label>
+        <div class="input-wrap"><input id="initial" type="text" inputmode="decimal" placeholder="0"><span class="unit">€</span></div>
       </div>
-    </div>
-    <div class="field" style="margin-top:1rem">
-      <label class="lbl-row"><span data-i18n="lbl_initial">Ahorros que ya tienes hoy</span> <span class="info-icon" style="margin-left:4px">i<span class="tooltip-box" data-i18n="tip_initial">El dinero ya invertido o ahorrado con el que empiezas. Si empiezas de cero, déjalo vacío.</span></span></label>
-      <div class="input-wrap"><input id="initial" type="text" inputmode="decimal" placeholder="0"><span class="unit">€</span></div>
     </div>
   </div>
 
@@ -326,62 +312,49 @@
     </div>
   </div>
 
-  <!-- Slider de rentabilidad -->
-  <div class="card rate-card">
-    <div class="card-title"><div class="icon">📊</div> <span data-i18n="card_rate">Rentabilidad anual estimada</span></div>
-    <div class="rate-row">
-      <input type="range" id="rateSlider" min="0" max="12" step="1" value="6" aria-label="Rentabilidad anual">
-      <span class="rate-num" id="rateVal">6</span><span class="rate-pct">%</span>
-    </div>
-    <p class="rate-desc" id="rateDesc"></p>
-  </div>
-
   <!-- Avisos -->
   <div class="notice err" id="errBox" style="margin-top:1.25rem"></div>
   <div class="notice warn" id="warnBox"></div>
 
   <!-- Resultado -->
   <div id="results">
-    <div class="hero">
-      <p class="eyebrow" id="heroEyebrow">Tu patrimonio podría llegar a (al 6%)</p>
-      <p class="big" id="heroBig">—</p>
-      <p class="say" id="heroSay"></p>
+    <!-- Hitos: patrimonio dentro de 10 / 20 / 30 años -->
+    <div class="kpis" id="milestones">
+      <div class="kpi" id="ms10">
+        <p class="lab" data-i18n="ms_10">Dentro de 10 años</p>
+        <p class="val">—</p>
+        <p class="sub"></p>
+      </div>
+      <div class="kpi" id="ms20">
+        <p class="lab" data-i18n="ms_20">Dentro de 20 años</p>
+        <p class="val">—</p>
+        <p class="sub"></p>
+      </div>
+      <div class="kpi" id="ms30">
+        <p class="lab" data-i18n="ms_30">Dentro de 30 años</p>
+        <p class="val">—</p>
+        <p class="sub"></p>
+      </div>
     </div>
 
-    <div class="verdict" id="verdict"></div>
-
-    <div class="kpis">
-      <div class="kpi">
-        <p class="lab" id="kpiFinalLab">Patrimonio al final</p>
-        <p class="val" id="kpiFinal">—</p>
-        <p class="sub" id="kpiFinalSub"></p>
+    <!-- Slider de rentabilidad (antes del gráfico) -->
+    <div class="card rate-card">
+      <div class="card-title"><div class="icon">📊</div> <span data-i18n="card_rate">Rentabilidad anual estimada</span></div>
+      <div class="rate-row">
+        <input type="range" id="rateSlider" min="0" max="12" step="1" value="6" aria-label="Rentabilidad anual">
+        <span class="rate-num" id="rateVal">6</span><span class="rate-pct">%</span>
       </div>
-      <div class="kpi">
-        <p class="lab" data-i18n="kpi_peak">Patrimonio máximo</p>
-        <p class="val" id="kpiPeak">—</p>
-        <p class="sub" id="kpiPeakSub"></p>
-      </div>
-      <div class="kpi">
-        <p class="lab" id="kpiIncomeLab">Renta disponible</p>
-        <p class="val" id="kpiIncome">—</p>
-        <p class="sub" id="kpiIncomeSub"></p>
-      </div>
+      <p class="rate-desc" id="rateDesc"></p>
     </div>
 
     <div class="card">
       <div class="card-title"><div class="icon">📈</div> <span data-i18n="chart1_title">Cómo crece tu patrimonio</span></div>
       <div class="chart-box"><canvas id="wealthChart"></canvas></div>
-      <p class="caption" data-i18n="chart1_cap">Cada línea es una rentabilidad anual distinta. La dorada (6%) es nuestra estimación realista con una cartera de fondos indexados.</p>
+      <p class="caption" data-i18n="chart1_cap">Curva de tu patrimonio a lo largo del tiempo con la rentabilidad seleccionada en el slider.</p>
     </div>
 
     <div class="card">
-      <div class="card-title"><div class="icon">🔁</div> <span data-i18n="chart2_title">Lo que entra y sale cada año</span></div>
-      <div class="chart-box"><canvas id="flowChart"></canvas></div>
-      <p class="caption" data-i18n="chart2_cap">En verde, lo que aportas; en rojo, lo que gastas o retiras. Ayuda a ver tus etapas: primero ahorras, luego gastas.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><div class="icon">📋</div> <span data-i18n="table_title">Año a año</span></div>
+      <div class="card-title"><div class="icon">📋</div> <span data-i18n="table_title">Detalle por periodos</span></div>
       <div class="table-tools">
         <div class="pills" id="densPills">
           <button type="button" data-d="5" class="on" data-i18n="dens_5">Cada 5 años</button>
@@ -393,6 +366,12 @@
     </div>
 
     <div class="assump" id="assump"></div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">🔁</div> <span data-i18n="chart2_title">Lo que entra y sale cada año</span></div>
+      <div class="chart-box"><canvas id="flowChart"></canvas></div>
+      <p class="caption" data-i18n="chart2_cap">En verde, lo que aportas; en rojo, lo que gastas o retiras. Ayuda a ver tus etapas: primero ahorras, luego gastas.</p>
+    </div>
 
     <div class="btn-row">
       <button class="btn btn-accent" id="shareBtn" type="button" data-tag="share"><span data-i18n="share_btn">🔗 Compartir mi plan</span></button>
@@ -490,8 +469,7 @@
       calc_title:'Planifica tu futuro financiero',
       calc_subtitle:'Dinos lo que ahorras y lo que gastarás a cada edad. Te dibujamos cómo crece tu patrimonio y cuánto podrías retirar, en cristiano.',
       card_plan:'Tu plan', u_years:'años',
-      lbl_startAge:'¿Qué edad tienes ahora?', hint_startAge:'Es la edad en la que empieza tu plan.',
-      lbl_endAge:'¿Hasta qué edad planificas?', hint_endAge:'Mejor pasarse: planificar hasta los 100 es lo prudente.',
+      lbl_startAge:'¿Qué edad tienes ahora?', hint_startAge:'Planificamos desde tu edad actual hasta los 100 años.',
       lbl_initial:'Ahorros que ya tienes hoy', tip_initial:'El dinero ya invertido o ahorrado con el que empiezas. Si empiezas de cero, déjalo vacío.',
       card_flows:'Tus flujos de caja',
       flows_intro:'Añade lo que <b>entra</b> (ahorras / ingresas) y lo que <b>sale</b> (gastas / retiras), y entre qué edades. Ejemplo: ahorro 500 €/mes de los 35 a los 64; gasto 1.500 €/mes de los 65 a los 100.',
@@ -501,24 +479,17 @@
       flow_add:'Añadir un flujo',
       adv_title:'Ajustes avanzados', adv_sub:'opcional · cuánto retiras',
       lbl_wrate:'Tasa de retirada anual', tip_wrate:'Qué parte de tu patrimonio sacarías cada año para vivir. El 3% es conservador y prudente para planes largos (la conocida "regla del 4%" es algo más agresiva).',
-      ex_btn:'Ver un ejemplo',
-      hero_eyebrow:'Tu patrimonio podría llegar a (al {r}%)',
-      kpi_final:'Patrimonio a los {age}', kpi_peak:'Patrimonio máximo', kpi_income:'Renta al {w}% (al año)',
-      kpi_peak_sub:'a los {age} años', kpi_income_sub:'≈ {m}/mes · a los {age} años',
-      show_lbl:'Mostrar', metric_wealth:'Patrimonio', metric_income:'Renta disponible',
+      ms_10:'Dentro de 10 años', ms_20:'Dentro de 20 años', ms_30:'Dentro de 30 años', ms_sub:'a los {age} años',
       dens_5:'Cada 5 años', dens_all:'Todos los años',
       chart1_title:'Cómo crece tu patrimonio',
       chart1_cap:'Curva de tu patrimonio a lo largo del tiempo con la rentabilidad seleccionada en el slider.',
       chart2_title:'Lo que entra y sale cada año',
       chart2_cap:'En verde, lo que aportas; en rojo, lo que gastas o retiras. Ayuda a ver tus etapas: primero ahorras, luego gastas.',
-      table_title:'Año a año',
-      table_cap_wealth:'Patrimonio acumulado a cada edad según la rentabilidad anual. La columna del 6% va resaltada.',
-      table_cap_income:'Renta que podrías retirar cada año (al {w}%) según tu patrimonio. La columna del 6% va resaltada.',
-      th_age:'Edad', th_in:'Entra/año', th_out:'Sale/año', col6_flag:'esperado',
+      table_title:'Detalle por periodos',
+      th_age:'Edad',
       share_btn:'🔗 Compartir mi plan', copied:'¡Enlace copiado!',
       disclaimer:'Estimaciones en euros de hoy sin descontar inflación; no es asesoramiento financiero. Las rentabilidades son supuestos y rentabilidades pasadas no garantizan rentabilidades futuras.',
-      g_in:'Entra', g_out:'Sale', ax_age:'Edad', ax_eur:'Patrimonio (€)', leg6:'6% (esperado)',
-      /* hero / verdict dinámicos */
+      g_in:'Entra', g_out:'Sale', ax_age:'Edad',
       concepts_title:'Conceptos clave', concepts_subtitle:'Lo justo para entender tu plan, en cristiano y sin tecnicismos.',
       c_q1:'¿Qué es el interés compuesto y por qué importa tanto?',
       c_a1a:'Es ganar intereses sobre tus intereses. El primer año tu dinero crece; el segundo crece lo que tenías <b>más</b> lo que ganaste, y así una y otra vez. Es una bola de nieve.',
@@ -557,7 +528,6 @@
       ],
       card_rate:'Rentabilidad anual estimada',
       hint_rate:'El 6% es nuestra estimación realista con fondos indexados (filosofía Bogleheads). Ajusta para ver distintos escenarios.',
-      rate_ok:'esperado',
       th_start_bal:'Saldo inicio',
       th_entradas:'Entradas',
       th_salidas:'Salidas',
@@ -575,8 +545,7 @@
       calc_title:'Planifica el teu futur financer',
       calc_subtitle:'Digues-nos què estalvies i què gastaràs a cada edat. Et dibuixem com creix el teu patrimoni i quant podries retirar, en cristià.',
       card_plan:'El teu pla', u_years:'anys',
-      lbl_startAge:'Quina edat tens ara?', hint_startAge:'És l\'edat en què comença el teu pla.',
-      lbl_endAge:'Fins a quina edat planifiques?', hint_endAge:'Millor passar-se: planificar fins als 100 és el prudent.',
+      lbl_startAge:'Quina edat tens ara?', hint_startAge:'Planifiquem des de la teva edat actual fins als 100 anys.',
       lbl_initial:'Estalvis que ja tens avui', tip_initial:'Els diners ja invertits o estalviats amb què comences. Si comences de zero, deixa-ho buit.',
       card_flows:'Els teus fluxos de caixa',
       flows_intro:'Afegeix el que <b>entra</b> (estalvies / ingresses) i el que <b>surt</b> (gastes / retires), i entre quines edats. Exemple: estalvi 500 €/mes dels 35 als 64; despesa 1.500 €/mes dels 65 als 100.',
@@ -586,23 +555,17 @@
       flow_add:'Afegir un flux',
       adv_title:'Ajustos avançats', adv_sub:'opcional · quant retires',
       lbl_wrate:'Taxa de retirada anual', tip_wrate:'Quina part del teu patrimoni trauries cada any per viure. El 3% és conservador i prudent per a plans llargs (la coneguda "regla del 4%" és una mica més agressiva).',
-      ex_btn:'Veure un exemple',
-      hero_eyebrow:'El teu patrimoni podria arribar a (al {r}%)',
-      kpi_final:'Patrimoni als {age}', kpi_peak:'Patrimoni màxim', kpi_income:'Renda al {w}% (a l\'any)',
-      kpi_peak_sub:'als {age} anys', kpi_income_sub:'≈ {m}/mes · als {age} anys',
-      show_lbl:'Mostrar', metric_wealth:'Patrimoni', metric_income:'Renda disponible',
+      ms_10:'D\'aquí a 10 anys', ms_20:'D\'aquí a 20 anys', ms_30:'D\'aquí a 30 anys', ms_sub:'als {age} anys',
       dens_5:'Cada 5 anys', dens_all:'Tots els anys',
       chart1_title:'Com creix el teu patrimoni',
       chart1_cap:'Corba del teu patrimoni al llarg del temps amb la rendibilitat seleccionada al slider.',
       chart2_title:'El que entra i surt cada any',
       chart2_cap:'En verd, el que aportes; en vermell, el que gastes o retires. Ajuda a veure les teves etapes: primer estalvies, després gastes.',
-      table_title:'Any a any',
-      table_cap_wealth:'Patrimoni acumulat a cada edat segons la rendibilitat anual. La columna del 6% va ressaltada.',
-      table_cap_income:'Renda que podries retirar cada any (al {w}%) segons el teu patrimoni. La columna del 6% va ressaltada.',
-      th_age:'Edat', th_in:'Entra/any', th_out:'Surt/any', col6_flag:'esperat',
+      table_title:'Detall per períodes',
+      th_age:'Edat',
       share_btn:'🔗 Compartir el meu pla', copied:'Enllaç copiat!',
       disclaimer:'Estimacions en euros d\'avui sense descomptar la inflació; no és assessorament financer. Les rendibilitats són supòsits i rendibilitats passades no garanteixen rendibilitats futures.',
-      g_in:'Entra', g_out:'Surt', ax_age:'Edat', ax_eur:'Patrimoni (€)', leg6:'6% (esperat)',
+      g_in:'Entra', g_out:'Surt', ax_age:'Edat',
       concepts_title:'Conceptes clau', concepts_subtitle:'El just per entendre el teu pla, en cristià i sense tecnicismes.',
       c_q1:'Què és l\'interès compost i per què importa tant?',
       c_a1a:'És guanyar interessos sobre els teus interessos. El primer any els teus diners creixen; el segon creix el que tenies <b>més</b> el que vas guanyar, i així una vegada i una altra. És una bola de neu.',
@@ -641,10 +604,9 @@
       ],
       card_rate:'Rendibilitat anual estimada',
       hint_rate:'El 6% és la nostra estimació realista amb fons indexats (filosofia Bogleheads). Ajusta per veure escenaris diferents.',
-      rate_ok:'esperat',
       th_start_bal:'Saldo inici',
-      th_entrades:'Entrades',
-      th_sortides:'Sortides',
+      th_entradas:'Entrades',
+      th_salidas:'Sortides',
       th_invest:'Rend. inversió',
       th_end_bal:'Saldo final',
       th_renta:'Renda disponible',
@@ -659,8 +621,7 @@
       calc_title:'Plan your financial future',
       calc_subtitle:'Tell us what you save and what you will spend at each age. We chart how your wealth grows and how much you could withdraw, in plain words.',
       card_plan:'Your plan', u_years:'years',
-      lbl_startAge:'How old are you now?', hint_startAge:'The age your plan starts.',
-      lbl_endAge:'Until what age do you plan?', hint_endAge:'Better to overshoot: planning to 100 is the safe choice.',
+      lbl_startAge:'How old are you now?', hint_startAge:'We plan from your current age up to age 100.',
       lbl_initial:'Savings you already have today', tip_initial:'The money already invested or saved that you start with. If you start from zero, leave it empty.',
       card_flows:'Your cash flows',
       flows_intro:'Add what comes <b>in</b> (you save / earn) and what goes <b>out</b> (you spend / withdraw), and between which ages. Example: save €500/mo from 35 to 64; spend €1,500/mo from 65 to 100.',
@@ -670,23 +631,17 @@
       flow_add:'Add a flow',
       adv_title:'Advanced settings', adv_sub:'optional · how much you withdraw',
       lbl_wrate:'Yearly withdrawal rate', tip_wrate:'How much of your wealth you would take each year to live on. 3% is conservative and prudent for long plans (the well-known "4% rule" is a bit more aggressive).',
-      ex_btn:'See an example',
-      hero_eyebrow:'Your wealth could reach (at {r}%)',
-      kpi_final:'Wealth at {age}', kpi_peak:'Peak wealth', kpi_income:'Income at {w}% (per year)',
-      kpi_peak_sub:'at age {age}', kpi_income_sub:'≈ {m}/mo · at age {age}',
-      show_lbl:'Show', metric_wealth:'Wealth', metric_income:'Available income',
+      ms_10:'In 10 years', ms_20:'In 20 years', ms_30:'In 30 years', ms_sub:'at age {age}',
       dens_5:'Every 5 years', dens_all:'Every year',
       chart1_title:'How your wealth grows',
       chart1_cap:'Wealth curve over time using the return rate selected on the slider.',
       chart2_title:'What comes in and out each year',
       chart2_cap:'Green: what you contribute; red: what you spend or withdraw. It helps you see your stages: first you save, then you spend.',
-      table_title:'Year by year',
-      table_cap_wealth:'Accumulated wealth at each age by yearly return. The 6% column is highlighted.',
-      table_cap_income:'Income you could withdraw each year (at {w}%) based on your wealth. The 6% column is highlighted.',
-      th_age:'Age', th_in:'In/yr', th_out:'Out/yr', col6_flag:'expected',
+      table_title:'Period breakdown',
+      th_age:'Age',
       share_btn:'🔗 Share my plan', copied:'Link copied!',
       disclaimer:'Estimates in nominal euros, not adjusted for inflation; not financial advice. Returns are assumptions and past returns do not guarantee future returns.',
-      g_in:'In', g_out:'Out', ax_age:'Age', ax_eur:'Wealth (€)', leg6:'6% (expected)',
+      g_in:'In', g_out:'Out', ax_age:'Age',
       concepts_title:'Key concepts', concepts_subtitle:'Just enough to understand your plan, in plain words.',
       c_q1:'What is compound interest and why does it matter so much?',
       c_a1a:'It is earning interest on your interest. The first year your money grows; the second year it grows what you had <b>plus</b> what you earned, again and again. It is a snowball.',
@@ -725,7 +680,6 @@
       ],
       card_rate:'Estimated yearly return',
       hint_rate:'6% is our realistic estimate with index funds (Bogleheads philosophy). Adjust to explore different scenarios.',
-      rate_ok:'expected',
       th_start_bal:'Opening balance',
       th_entradas:'Inflows',
       th_salidas:'Outflows',
@@ -894,7 +848,7 @@
     return {
       saRaw:$('startAge').value.trim(),
       sa:Math.round(parseNum($('startAge').value)),
-      ea:Math.round(parseNum($('endAge').value))||100,
+      ea:100,
       initial:parseNum($('initial').value),
       wRate:parseNum($('wRate').value),
       flows:fl
@@ -907,8 +861,7 @@
 
     // ¿listo para calcular?
     if(!inp.saRaw || inp.sa<=0){ $('results').classList.remove('show'); last=null; return; }
-    if(inp.ea<=inp.sa){ showErr(errMsg('order')); $('results').classList.remove('show'); last=null; return; }
-    if(inp.sa>120 || inp.ea>121){ showErr(errMsg('range')); $('results').classList.remove('show'); last=null; return; }
+    if(inp.sa>=100){ showErr(errMsg('range')); $('results').classList.remove('show'); last=null; return; }
     if(inp.flows.length===0 && inp.initial<=0){ $('results').classList.remove('show'); last=null; return; }
 
     var sa=inp.sa, ea=inp.ea, wRate=inp.wRate;
@@ -920,20 +873,19 @@
     if(inp.flows.some(function(f){ return f.to<sa || f.from>ea; })) warns.push(warnMsg('outside'));
     if(wRate<=0 || wRate>10) warns.push(warnMsg('wrate'));
 
-    var inflow=[], outflow=[], keyAges={};
-    ages.forEach(function(age,i){
+    var inflow=[], outflow=[];
+    ages.forEach(function(age){
       var inA=0,outA=0;
       inp.flows.forEach(function(f){
         var lo=Math.min(f.from,f.to), hi=Math.max(f.from,f.to);
         if(age>=lo && age<=hi){ if(f.type==='in') inA+=f.annual; else outA+=f.annual; }
-        if(age===lo||age===hi) keyAges[age]=1;
       });
       inflow.push(inA); outflow.push(outA);
     });
 
     showWarn(warns.length? warns.filter(function(v,i,arr){ return arr.indexOf(v)===i; }).join('<br>') : '');
 
-    last={ages:ages,inflow:inflow,outflow:outflow,initial:inp.initial,sa:sa,ea:ea,wRate:wRate,keyAges:keyAges};
+    last={ages:ages,inflow:inflow,outflow:outflow,initial:inp.initial,sa:sa,ea:ea,wRate:wRate};
     renderResults();
     $('results').classList.add('show');
     try{ if(window.umami) window.umami.track('forecast_done',{years:ea-sa,flows:inp.flows.length}); }catch(e){}
@@ -943,38 +895,23 @@
     if(!last) return;
     var r=sliderRate;
     var w=computeWealth(r), ages=last.ages, wRate=last.wRate;
-    var finalW=w[w.length-1];
-    var peakW=-Infinity, peakAge=last.sa;
-    w.forEach(function(v,i){ if(v>peakW){ peakW=v; peakAge=ages[i]; } });
-    var incomeIdx=null;
-    for(var ii=0;ii<ages.length;ii++){ if(last.outflow[ii]>last.inflow[ii]){ incomeIdx=ii; break; } }
-    if(incomeIdx===null) incomeIdx=ages.indexOf(peakAge);
-    var incomeAge=ages[incomeIdx];
-    var income=(w[incomeIdx]>0?w[incomeIdx]:0)*wRate/100;
 
-    var ey=$('heroEyebrow'); if(ey) ey.textContent=tpl(L().hero_eyebrow,{r:r});
-    $('heroBig').textContent=e0(Math.max(peakW,0));
-    $('heroSay').textContent=heroSentence(peakW,peakAge,last.sa,last.ea,r);
-
-    var deplete=null;
-    for(var i=0;i<w.length;i++){ if(w[i]<-1){ deplete=ages[i]; break; } }
-    var vb=$('verdict');
-    if(deplete===null){
-      vb.className='verdict good';
-      vb.innerHTML=verdictText('ok',{end:last.ea,left:e0(Math.max(finalW,0)),r:r});
-    } else {
-      vb.className='verdict bad';
-      vb.innerHTML=verdictText('out',{age:deplete,r:r});
-    }
-
-    $('kpiFinalLab').textContent=tpl(L().kpi_final,{age:last.ea});
-    var kf=$('kpiFinal'); kf.textContent=e0(finalW); kf.className='val'+(finalW<0?' neg':'');
-    $('kpiFinalSub').textContent='@ '+r+'%';
-    $('kpiPeak').textContent=e0(Math.max(peakW,0));
-    $('kpiPeakSub').textContent=tpl(L().kpi_peak_sub,{age:peakAge});
-    $('kpiIncomeLab').textContent=tpl(L().kpi_income,{w:fmtPct(wRate)});
-    $('kpiIncome').textContent=e0(income);
-    $('kpiIncomeSub').textContent=tpl(L().kpi_income_sub,{m:e0(income/12),age:incomeAge});
+    // Hitos: patrimonio dentro de 10 / 20 / 30 años (vacío si supera los 100)
+    [10,20,30].forEach(function(yrs){
+      var box=$('ms'+yrs);
+      var valEl=box.querySelector('.val'), subEl=box.querySelector('.sub');
+      var age=last.sa+yrs;
+      var idx=ages.indexOf(age);
+      if(age>last.ea || idx<0){
+        valEl.textContent='—'; valEl.className='val'; subEl.textContent='';
+        box.classList.add('empty');
+      } else {
+        var v=w[idx];
+        valEl.textContent=e0(v); valEl.className='val'+(v<0?' neg':'');
+        subEl.textContent=tpl(L().ms_sub,{age:age});
+        box.classList.remove('empty');
+      }
+    });
 
     buildWealthChart(r,w);
     buildFlowChart(ages,last.inflow,last.outflow);
@@ -984,49 +921,51 @@
 
   function fmtPct(x){ var s=(Math.round(x*10)/10).toFixed(1).replace(/\.0$/,''); return currentLang==='en'? s : s.replace('.',','); }
 
+  // Construye los periodos (bloques de edades contiguos, sin solapar).
+  // "all": un periodo por año. "5": bloques que terminan en múltiplos de 5,
+  // p.ej. con inicio en 38 → 38–40, 41–45, 46–50, … 96–100.
+  function buildPeriods(){
+    var sa=last.sa, ea=last.ea, blocks=[];
+    if(tableDens==='all'){
+      for(var a=sa;a<=ea;a++) blocks.push([a,a]);
+    } else {
+      var a=sa;
+      while(a<=ea){
+        var b=Math.min((Math.floor(a/5)+1)*5, ea);
+        blocks.push([a,b]);
+        a=b+1;
+      }
+    }
+    return blocks;
+  }
+
   function renderTable(){
     if(!last) return;
     var r=sliderRate, wRate=last.wRate, ages=last.ages;
     var w=computeWealth(r);
     var l=L();
-    var th_in  = l.th_entradas||l.th_entrades||l.th_in||'Entradas';
-    var th_out = l.th_salidas||l.th_sortides||l.th_out||'Salidas';
     var th='<thead><tr>'+
       '<th class="age">'+l.th_age+'</th>'+
       '<th>'+l.th_start_bal+'</th>'+
-      '<th class="in">'+th_in+'</th>'+
-      '<th class="out">'+th_out+'</th>'+
+      '<th class="in">'+l.th_entradas+'</th>'+
+      '<th class="out">'+l.th_salidas+'</th>'+
       '<th>'+l.th_invest+'</th>'+
       '<th>'+l.th_end_bal+'</th>'+
       '<th>'+l.th_renta+'</th>'+
       '</tr></thead>';
 
-    var allRows=ages.map(function(age,i){ return {age:age,i:i}; });
-    var rows=allRows.filter(function(o){
-      if(tableDens==='all') return true;
-      if(o.age===last.sa||o.age===last.ea) return true;
-      if(o.age%5===0) return true;
-      return !!last.keyAges[o.age];
-    });
-
-    var body=''; var prevIdx=-1;
-    rows.forEach(function(o){
-      var i=o.i;
-      var ageLabel, startBal, inSum, outSum;
-      if(tableDens==='all'||prevIdx===-1){
-        ageLabel=''+o.age;
-        startBal=(i===0)?last.initial:w[i-1];
-        inSum=last.inflow[i]; outSum=last.outflow[i];
-      } else {
-        var prevAge=ages[prevIdx];
-        ageLabel=(prevIdx<i-1)?(prevAge+' – '+o.age):(''+o.age);
-        startBal=w[prevIdx];
-        inSum=0; outSum=0;
-        for(var j=prevIdx+1;j<=i;j++){ inSum+=last.inflow[j]; outSum+=last.outflow[j]; }
-      }
-      var endBal=w[i];
+    var idxOf=function(age){ return age-last.sa; }; // ages es contiguo desde sa
+    var body='';
+    buildPeriods().forEach(function(blk){
+      var a=blk[0], b=blk[1];
+      var ia=idxOf(a), ib=idxOf(b);
+      var startBal=(a===last.sa)?last.initial:w[idxOf(a-1)];
+      var endBal=w[ib];
+      var inSum=0, outSum=0;
+      for(var j=ia;j<=ib;j++){ inSum+=last.inflow[j]; outSum+=last.outflow[j]; }
       var investGrowth=endBal-startBal-inSum+outSum;
       var renta=endBal>0?endBal*wRate/100:0;
+      var ageLabel=(a===b)?(''+a):(a+' – '+b);
       body+='<tr>'+
         '<td class="age">'+ageLabel+'</td>'+
         '<td class="'+(startBal<0?'neg':'')+'">'+e0(startBal)+'</td>'+
@@ -1036,35 +975,11 @@
         '<td class="'+(endBal<0?'neg':'')+'">'+e0(endBal)+'</td>'+
         '<td>'+e0(renta)+'</td>'+
         '</tr>';
-      prevIdx=i;
     });
     $('fcTable').innerHTML=th+'<tbody>'+body+'</tbody>';
     $('tableCap').textContent=tpl(l.table_cap,{w:fmtPct(wRate)});
   }
 
-  /* frases dinámicas */
-  function heroSentence(peakW,peakAge,sa,ea,r){
-    var p=e0(Math.max(peakW,0));
-    if(currentLang==='ca') return 'Amb una rendibilitat del '+r+'% anual, el teu patrimoni podria arribar al voltant de '+p+' cap als '+peakAge+' anys.';
-    if(currentLang==='en') return 'At a '+r+'% yearly return, your wealth could reach around '+p+' by about age '+peakAge+'.';
-    return 'Con una rentabilidad del '+r+'% anual, tu patrimonio podría llegar a unos '+p+' hacia los '+peakAge+' años.';
-  }
-  function verdictText(kind,o){
-    var r=o.r;
-    if(currentLang==='ca'){
-      return kind==='ok'
-        ? '✅ <b>El teu pla aguanta fins als '+o.end+' anys</b> amb una rendibilitat del '+r+'%. Fins i tot et quedarien uns '+o.left+'.'
-        : '⚠️ <b>Amb un '+r+'% anual, els teus diners s\'esgotarien als '+o.age+' anys.</b> Prova d\'estalviar més, gastar menys o allargar l\'etapa d\'estalvi.';
-    }
-    if(currentLang==='en'){
-      return kind==='ok'
-        ? '✅ <b>Your plan lasts until age '+o.end+'</b> at a '+r+'% return. You would even have about '+o.left+' left.'
-        : '⚠️ <b>At '+r+'% a year, your money would run out at age '+o.age+'.</b> Try saving more, spending less, or extending your saving years.';
-    }
-    return kind==='ok'
-      ? '✅ <b>Tu plan aguanta hasta los '+o.end+' años</b> con una rentabilidad del '+r+'%. Incluso te sobrarían unos '+o.left+'.'
-      : '⚠️ <b>Con un '+r+'% anual, tu dinero se agotaría a los '+o.age+' años.</b> Prueba a ahorrar más, gastar menos o alargar la etapa de ahorro.';
-  }
   function assumpText(wRate){
     var w=fmtPct(wRate);
     if(currentLang==='ca') return '<b>Supòsits:</b> rendibilitat constant cada any · aportacions a final d\'any · euros nominals (sense descomptar inflació) · taxa de retirada del '+w+'%. Mira la pestanya <b>Conceptes</b> per entendre cada peça.';
@@ -1073,12 +988,9 @@
   }
   function errMsg(k){
     var M={
-      es:{order:'La edad final debe ser mayor que la edad inicial. Revísalas.',
-          range:'Usa edades realistas (entre 0 y 120 años).'},
-      ca:{order:'L\'edat final ha de ser més gran que l\'edat inicial. Revisa-les.',
-          range:'Fes servir edats realistes (entre 0 i 120 anys).'},
-      en:{order:'The end age must be greater than the start age. Please check them.',
-          range:'Use realistic ages (between 0 and 120 years).'}
+      es:{range:'Pon una edad actual realista, menor de 100 años.'},
+      ca:{range:'Posa una edat actual realista, menor de 100 anys.'},
+      en:{range:'Enter a realistic current age, under 100.'}
     };
     return (M[currentLang]||M.es)[k];
   }
@@ -1101,7 +1013,6 @@
   function buildShareURL(){
     var q=[];
     if($('startAge').value.trim()) q.push('sa='+Math.round(parseNum($('startAge').value)));
-    if(Math.round(parseNum($('endAge').value))!==100) q.push('ea='+Math.round(parseNum($('endAge').value)));
     if(parseNum($('initial').value)) q.push('in='+Math.round(parseNum($('initial').value)));
     if(parseNum($('wRate').value)!==3) q.push('w='+(''+parseNum($('wRate').value)).replace('.',','));
     if(sliderRate!==6) q.push('r='+sliderRate);
@@ -1119,7 +1030,6 @@
     var p={}; qs.split('&').forEach(function(kv){ var i=kv.indexOf('='); if(i<0) return; p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1)); });
     var any=false;
     if(p.sa){ $('startAge').value=Math.round(parseNum(p.sa)); any=true; }
-    if(p.ea){ $('endAge').value=Math.round(parseNum(p.ea)); any=true; }
     if(p.in){ $('initial').value=groupThousands(Math.round(parseNum(p.in))); any=true; }
     if(p.w){ $('wRate').value=p.w.replace('.',','); }
     if(p.r){ sliderRate=Math.min(12,Math.max(0,Math.round(+p.r))); var sl=$('rateSlider'); if(sl){ sl.value=sliderRate; $('rateVal').textContent=sliderRate; } }
@@ -1179,7 +1089,7 @@
   });
 
   /* ===================== Listeners de inputs ===================== */
-  ['startAge','endAge','initial','wRate'].forEach(function(id){ $(id).addEventListener('input',calcAll); });
+  ['startAge','initial','wRate'].forEach(function(id){ $(id).addEventListener('input',calcAll); });
   $('initial').addEventListener('blur',function(){ var n=parseNum($('initial').value); $('initial').value=n?groupThousands(Math.round(n)):''; });
 
   /* ===================== i18n apply ===================== */
@@ -1192,7 +1102,6 @@
     var cr=document.querySelector('.cross');
     if(cr) cr.innerHTML = L().cross + '<a href="../ahorro/">'+L().cross_a+'</a>' + L().cross_mid + '<a href="../rentabilidad/">'+L().cross_b+'</a>' + L().cross_end;
     var d=$('densPills'); if(d){ d.querySelector('[data-d="5"]').textContent=L().dens_5; d.querySelector('[data-d="all"]').textContent=L().dens_all; }
-    var ey=$('heroEyebrow'); if(ey) ey.textContent=tpl(L().hero_eyebrow,{r:sliderRate});
     updateRateDesc();
   }
   window.setLang=function(l){
@@ -1204,7 +1113,7 @@
 
   /* ===================== Reiniciar (logo) ===================== */
   window.restartApp=function(){
-    $('startAge').value=''; $('endAge').value='100'; $('initial').value=''; $('wRate').value='3';
+    $('startAge').value=''; $('initial').value=''; $('wRate').value='3';
     flows=[{type:'in',amt:'',unit:'year',from:'',to:''}];
     renderFlows();
     $('results').classList.remove('show'); showErr(''); showWarn(''); last=null;
