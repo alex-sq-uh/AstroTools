@@ -238,15 +238,12 @@
   table.fc td.neg{color:var(--danger)}
   table.fc td.in{color:#15784a}
   table.fc td.out{color:#b23120}
-  /* ---------- Selector de rentabilidad (tira de botones) ---------- */
-  .rate-steps{display:grid;grid-template-columns:repeat(13,1fr);gap:3px}
-  @media(max-width:540px){.rate-steps{grid-template-columns:repeat(7,1fr)}}
-  .rate-step{text-align:center;border:1.5px solid var(--border);border-radius:5px;padding:.4rem 2px;cursor:pointer;font-weight:700;font-size:.76rem;background:var(--surface);color:var(--text-muted);transition:all .12s;line-height:1.2;user-select:none;font-family:inherit;border-bottom-width:3px}
-  .rate-step:hover{border-color:var(--secondary);color:var(--primary);background:#eef4fc}
-  .rate-step.on{background:var(--primary);color:#fff;border-color:var(--primary)}
-  .rate-step[data-cat="rec"]{border-bottom-color:var(--accent)}
-  .rate-step[data-cat="rec"].on{background:var(--accent);color:var(--primary-deep);border-color:var(--accent);border-bottom-color:var(--accent)}
-  .rate-desc{font-size:.85rem;color:var(--text-muted);margin-top:.65rem;min-height:1.5em;line-height:1.4}
+  /* ---------- Slider de rentabilidad ---------- */
+  .rate-row{display:flex;align-items:center;gap:1.2rem;margin-bottom:.5rem}
+  .rate-row input[type=range]{flex:1;accent-color:var(--accent);height:6px;cursor:pointer;outline:none}
+  .rate-num{font-size:2rem;font-weight:800;color:var(--primary);min-width:60px;text-align:right;letter-spacing:-.02em;line-height:1}
+  .rate-pct{font-size:1.1rem;font-weight:700;color:var(--primary);margin-left:1px}
+  .rate-desc{font-size:.85rem;color:var(--text-muted);margin-top:.1rem;min-height:2.4em;line-height:1.4}
   .rate-desc strong{color:var(--primary)}
 
   .disclaimer{font-size:.76rem;color:var(--text-muted);text-align:center;margin:1.4rem auto 0;max-width:600px;line-height:1.5}
@@ -329,10 +326,13 @@
     </div>
   </div>
 
-  <!-- Selector de rentabilidad -->
+  <!-- Slider de rentabilidad -->
   <div class="card rate-card">
     <div class="card-title"><div class="icon">📊</div> <span data-i18n="card_rate">Rentabilidad anual estimada</span></div>
-    <div class="rate-steps" id="rateSteps"></div>
+    <div class="rate-row">
+      <input type="range" id="rateSlider" min="0" max="12" step="1" value="6" aria-label="Rentabilidad anual">
+      <span class="rate-num" id="rateVal">6</span><span class="rate-pct">%</span>
+    </div>
     <p class="rate-desc" id="rateDesc"></p>
   </div>
 
@@ -553,7 +553,7 @@
         {tag:'Small caps / sectorial',desc:'Apuesta por empresas pequeñas o sectores concretos. Alto riesgo.'},
         {tag:'Mercados emergentes',   desc:'Alta exposición a volatilidad geopolítica y económica.'},
         {tag:'Acciones individuales', desc:'Sin diversificación. El resultado depende del acierto en la selección.'},
-        {tag:'Criptomonedas',         desc:'Muy especulativo. Puede multiplicar o perderlo todo en poco tiempo.'}
+        {tag:'Alto riesgo',           desc:'Criptomonedas, derivados o apuestas muy concentradas. Puede multiplicar o perderlo todo.'}
       ],
       card_rate:'Rentabilidad anual estimada',
       hint_rate:'El 6% es nuestra estimación realista con fondos indexados (filosofía Bogleheads). Ajusta para ver distintos escenarios.',
@@ -637,7 +637,7 @@
         {tag:'Small caps / sectorial',desc:'Aposta per empreses petites o sectors concrets. Alt risc.'},
         {tag:'Mercats emergents',     desc:'Alta exposició a la volatilitat geopolítica i econòmica.'},
         {tag:'Accions individuals',   desc:"Sense diversificació. El resultat depèn de l'encert en la selecció."},
-        {tag:'Criptomonedes',         desc:'Molt especulatiu. Pot multiplicar o perdre-ho tot en poc temps.'}
+        {tag:'Alt risc',              desc:'Criptomonedes, derivats o apostes molt concentrades. Pot multiplicar o perdre-ho tot.'}
       ],
       card_rate:'Rendibilitat anual estimada',
       hint_rate:'El 6% és la nostra estimació realista amb fons indexats (filosofia Bogleheads). Ajusta per veure escenaris diferents.',
@@ -721,7 +721,7 @@
         {tag:'Small caps / thematic', desc:'Bet on small companies or specific sectors. High risk.'},
         {tag:'Emerging markets',      desc:'High exposure to geopolitical and economic volatility.'},
         {tag:'Individual stocks',     desc:'No diversification. Returns depend on stock-picking skill.'},
-        {tag:'Crypto / derivatives',  desc:'Highly speculative. Can multiply or lose everything quickly.'}
+        {tag:'High risk',             desc:'Crypto, derivatives or highly concentrated bets. Can multiply or lose everything.'}
       ],
       card_rate:'Estimated yearly return',
       hint_rate:'6% is our realistic estimate with index funds (Bogleheads philosophy). Adjust to explore different scenarios.',
@@ -1122,7 +1122,7 @@
     if(p.ea){ $('endAge').value=Math.round(parseNum(p.ea)); any=true; }
     if(p.in){ $('initial').value=groupThousands(Math.round(parseNum(p.in))); any=true; }
     if(p.w){ $('wRate').value=p.w.replace('.',','); }
-    if(p.r){ sliderRate=Math.min(12,Math.max(0,Math.round(+p.r))); }
+    if(p.r){ sliderRate=Math.min(12,Math.max(0,Math.round(+p.r))); var sl=$('rateSlider'); if(sl){ sl.value=sliderRate; $('rateVal').textContent=sliderRate; } }
     if(p.f){
       flows=p.f.split('!').map(function(s){
         var x=s.split('~');
@@ -1140,31 +1140,22 @@
   });
   function fallbackCopy(text){ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); }
 
-  /* ===================== Selector de rentabilidad ===================== */
-  var RATE_CATS=['safe','safe','safe','bond','bond','mixed','rec','growth','growth','bold','bold','spec','spec'];
-  function renderRateSteps(){
-    var c=$('rateSteps'); if(!c) return;
-    c.innerHTML='';
-    for(var rv=0;rv<=12;rv++){
-      var btn=document.createElement('button');
-      btn.type='button';
-      btn.className='rate-step'+(rv===sliderRate?' on':'');
-      btn.setAttribute('data-r',rv);
-      btn.setAttribute('data-cat',RATE_CATS[rv]);
-      btn.textContent=rv+'%';
-      (function(r){ btn.addEventListener('click',function(){
-        sliderRate=r; renderRateSteps(); if(last) renderResults();
-      }); })(rv);
-      c.appendChild(btn);
-    }
-    updateRateDesc();
-  }
+  /* ===================== Slider de rentabilidad ===================== */
   function updateRateDesc(){
     var d=$('rateDesc'); if(!d) return;
     var labels=L().rate_labels; if(!labels||!labels[sliderRate]) return;
     var lbl=labels[sliderRate];
     d.innerHTML='<strong>'+lbl.tag+'</strong> — '+lbl.desc;
   }
+  (function(){
+    var sl=$('rateSlider'), rv=$('rateVal');
+    sl.addEventListener('input',function(){
+      sliderRate=+sl.value;
+      rv.textContent=sliderRate;
+      updateRateDesc();
+      if(last) renderResults();
+    });
+  })();
 
   /* ===================== UI: páginas, plegables, tooltips, toggles ===================== */
   window.showPage=function(p){
@@ -1202,7 +1193,7 @@
     if(cr) cr.innerHTML = L().cross + '<a href="../ahorro/">'+L().cross_a+'</a>' + L().cross_mid + '<a href="../rentabilidad/">'+L().cross_b+'</a>' + L().cross_end;
     var d=$('densPills'); if(d){ d.querySelector('[data-d="5"]').textContent=L().dens_5; d.querySelector('[data-d="all"]').textContent=L().dens_all; }
     var ey=$('heroEyebrow'); if(ey) ey.textContent=tpl(L().hero_eyebrow,{r:sliderRate});
-    renderRateSteps();
+    updateRateDesc();
   }
   window.setLang=function(l){
     if(!T[l]) l='es';
@@ -1218,7 +1209,8 @@
     renderFlows();
     $('results').classList.remove('show'); showErr(''); showWarn(''); last=null;
     tableDens='5'; sliderRate=6;
-    renderRateSteps();
+    var sl=$('rateSlider'); if(sl){ sl.value=6; $('rateVal').textContent=6; }
+    updateRateDesc();
     $('densPills').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on',x.dataset.d==='5'); });
     try{ history.replaceState(null,'',location.href.split('?')[0]); }catch(e){}
     showPage('calc');
@@ -1229,7 +1221,7 @@
   currentLang=lang0;
   applyStatic();
   var hadURL=loadFromURL();
-  if(hadURL) renderRateSteps(); // re-render if URL changed sliderRate
+  if(hadURL) updateRateDesc(); // re-render desc if URL changed sliderRate
   if(!hadURL) flows=[{type:'in',amt:'',unit:'year',from:'',to:''}];
   renderFlows();
   if(hadURL) calcAll();
