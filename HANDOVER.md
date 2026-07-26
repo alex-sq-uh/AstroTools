@@ -261,6 +261,52 @@ posiciones y colores idénticos.
 - Logo planeta con el aro corregido (delante/detrás) y centrado en el ecuador (cy=30).
 - Hub sin footer ni planeta flotante del hero.
 
+**🚧 EN CURSO · Rediseño de la pantalla de entrada (commits `1151f42`, `7d9267a`)**
+
+Objetivo: que quien abra una calculadora **llegue a introducir al menos un dato**. Patrón
+"gancho": pantalla inicial mínima que cabe **sin scroll** (ref. 360×640) con **un solo botón
+sólido**, `Calcular`.
+
+Reglas del patrón (decididas por el dueño, no re-discutir):
+1. Los campos avanzados se revelan **debajo, en la misma página**, al pulsar un toggle.
+   **Nunca** saltos de pantalla estilo AstroSavings.
+2. Tras el primer `Calcular`, cualquier cambio **recalcula en vivo** (sin re-pulsar, sin
+   repetir scroll y **sin volver a disparar analítica**).
+3. **Un único botón sólido** por pantalla y siempre es `Calcular`. Lo demás son enlaces/toggles.
+4. **AstroHome es la excepción**: dos pasos → (1) elegir uno de los dos modos, (2) datos + Calcular.
+5. Si la **URL trae parámetros** (planes compartidos de `casa`, `rentabilidad`, `forecast`), hay
+   que **saltarse el gancho** y abrir directo en resultados. `nomina` no aplica (comparte texto).
+
+Hecho:
+- **Cabecera fusionada** (`shared/header.js`, afecta a las 5 apps): las dos filas pasan a una
+  barra de 46px → `🪐 AstroTools · Forecast`. Recupera ~48px. Usa el **sufijo corto** de marca
+  (Payroll, Home, Return, Forecast, Savings) en oro. *Pendiente de confirmar si se prefiere en
+  español (Nómina, Casa…), lo que obligaría a traducir por idioma.*
+- **AstroPayroll, piloto** (`nomina/index.html`): salario → `[Calcular mi neto]` → toggle
+  `＋ Añadir complementos` → `#moreFields` (oculto) → `#results` → `#postActions`
+  (reset/compartir, ocultos hasta el 1er cálculo). `calculate(live)` + flag `calcDone`,
+  `toggleMore()`, listener `input`/`change` en `#page-calc`, `resetForm()` vuelve al gancho.
+  Clave i18n nueva: `more_add`.
+
+⏳ Siguiente tarea inmediata (en `nomina/index.html`):
+- Mover el bloque de **subida salarial** (toggle `#hasRaise` + div `#salaryRaise`) **dentro de
+  `#moreFields`**, para que el gancho deje solo el salario base.
+- Renombrar **"tickets" → "retribución flexible"** en el texto de cara al usuario (empezando por
+  `more_add` en los 3 idiomas). Confirmar alcance antes de tocar IDs o lógica.
+
+Luego, en orden y validando con el dueño entre cada una: **AstroHome → AstroReturn → AstroForecast**.
+
+⚠️ **Sin verificar en navegador**: en la máquina del dueño no hay node ni python y el navegador
+integrado no abre `file://`. La validación visual la hace él en su Live Server.
+
+**Dirección visual — decisión pendiente.** El dueño no está satisfecho con el look actual. Hay un
+pitch con 5 direcciones; la favorita es **"A2 · Medianoche angular"**: navy muy profundo
+(`#070C22`/`#0E1738`), oro `#F5C84B`, **cero border-radius**, CTA con esquina en bisel, input con
+esquinas de visor doradas, etiquetas/pestañas en monoespaciada. Disciplina: bisel **solo** en el
+CTA, visores **solo** en el campo activo. **Aún no aplicada a ninguna app.**
+
+---
+
 **Pusheado y en producción (último commit relevante `b3d4121`):**
 - **App AstroForecast** (`forecast/index.html`) — planificador financiero a largo plazo.
   Entradas: **edad actual** (el plan llega SIEMPRE hasta los 100, no hay campo de edad
