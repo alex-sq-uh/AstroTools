@@ -261,7 +261,7 @@ posiciones y colores idénticos.
 - Logo planeta con el aro corregido (delante/detrás) y centrado en el ecuador (cy=30).
 - Hub sin footer ni planeta flotante del hero.
 
-**🚧 EN CURSO · Rediseño de la pantalla de entrada (último commit `6d1130c`)**
+**✅ Rediseño de la pantalla de entrada · las 4 calculadoras (último commit `22d36fd`)**
 
 Objetivo: que quien abra una calculadora **llegue a introducir al menos un dato**. Patrón
 "gancho": pantalla inicial mínima que cabe **sin scroll** (ref. 360×640) con **un solo botón
@@ -274,8 +274,13 @@ Reglas del patrón (decididas por el dueño, no re-discutir):
    repetir scroll y **sin volver a disparar analítica**).
 3. **Un único botón sólido** por pantalla y siempre es `Calcular`. Lo demás son enlaces/toggles.
 4. **AstroHome es la excepción**: dos pasos → (1) elegir uno de los dos modos, (2) datos + Calcular.
-5. Si la **URL trae parámetros** (planes compartidos de `casa`, `rentabilidad`, `forecast`), hay
-   que **saltarse el gancho** y abrir directo en resultados. `nomina` no aplica (comparte texto).
+5. Si la **URL trae parámetros**, hay que **saltarse el gancho** y abrir directo en resultados.
+   Solo aplica a `rentabilidad` y `forecast`: son las únicas que comparten estado por URL
+   (`nomina` comparte un resumen de texto y `casa` no comparte).
+
+Implementación común: flag `calculated` (en `nomina` se llama `calcDone`) + `doCalculate()` para
+el botón + `onEdit()` que solo recalcula si ya se calculó una vez. Los recálculos en vivo **no**
+repiten scroll ni analítica. `restartApp()`/`resetForm()` devuelven el flag a `false`.
 
 Hecho:
 - **Cabecera fusionada** (`shared/header.js`, afecta a las 5 apps): las dos filas pasan a una
@@ -298,10 +303,23 @@ Hecho:
   refresca la ayuda "al mes"; después, todo en vivo. Ni el arranque ni `setLang()` fuerzan
   cálculo. Clave i18n nueva: `btn_calc`.
 
-⏳ Siguiente: **AstroReturn** (`rentabilidad/`) y luego **AstroForecast** (`forecast/`), validando
-con el dueño entre cada una. Recordatorio para esas dos: **sí comparten estado por URL**, así que
-hay que aplicar la regla 5 (si hay parámetros, saltarse el gancho y abrir en resultados).
-`nomina` y `casa` no comparten por URL, por eso no la necesitaron.
+- **AstroReturn ✅** (`rentabilidad/index.html`): compra y venta a la vista; los dividendos salen
+  de la tarjeta "Tu inversión" a `#divWrap`, oculto tras el toggle `#divToggle`. Botón
+  `[Calcular rentabilidad]` entre medias. `calc()` salía en silencio si faltaban compra o venta
+  (clic mudo), así que `doCalculate()` muestra `errMsg('incomplete')`. El init aplica la regla 5
+  y además **despliega los dividendos** si venían en la URL. "Ver un ejemplo" marca `calculated`.
+  Claves i18n nuevas: `btn_calc`, `div_toggle`, `errMsg.incomplete`.
+- **AstroForecast ✅** (`forecast/index.html`): plan + primer flujo a la vista, botón `[Calcular]`
+  entre la tarjeta de flujos y los ajustes avanzados (`#addFlow` sigue siendo punteado, no sólido).
+  Las tres guardas de `calcAll()` ocultaban resultados en silencio → `doCalculate()` responde con
+  `errMsg('incomplete')`. Init aplica la regla 5. Claves i18n nuevas: `btn_calc`,
+  `errMsg.incomplete`.
+
+⚠️ **Sin verificar en navegador** (ver aviso más abajo): las cuatro apps están pendientes de que
+el dueño las valide en su Live Server.
+
+⏳ Siguiente decisión abierta: la **dirección visual** (ver más abajo). El dueño la aparcó
+deliberadamente para cerrar antes toda la estructura.
 
 ⚠️ **Sin verificar en navegador**: en la máquina del dueño no hay node ni python y el navegador
 integrado no abre `file://`. La validación visual la hace él en su Live Server.
