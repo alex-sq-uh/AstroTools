@@ -261,7 +261,7 @@ posiciones y colores idénticos.
 - Logo planeta con el aro corregido (delante/detrás) y centrado en el ecuador (cy=30).
 - Hub sin footer ni planeta flotante del hero.
 
-**🚧 EN CURSO · Rediseño de la pantalla de entrada (commits `1151f42`, `7d9267a`)**
+**🚧 EN CURSO · Rediseño de la pantalla de entrada (último commit `6d1130c`)**
 
 Objetivo: que quien abra una calculadora **llegue a introducir al menos un dato**. Patrón
 "gancho": pantalla inicial mínima que cabe **sin scroll** (ref. 360×640) con **un solo botón
@@ -282,19 +282,26 @@ Hecho:
   barra de 46px → `🪐 AstroTools · Forecast`. Recupera ~48px. Usa el **sufijo corto** de marca
   (Payroll, Home, Return, Forecast, Savings) en oro. *Pendiente de confirmar si se prefiere en
   español (Nómina, Casa…), lo que obligaría a traducir por idioma.*
-- **AstroPayroll, piloto** (`nomina/index.html`): salario → `[Calcular mi neto]` → toggle
+- **AstroPayroll ✅** (`nomina/index.html`): salario → `[Calcular mi neto]` → toggle
   `＋ Añadir complementos` → `#moreFields` (oculto) → `#results` → `#postActions`
   (reset/compartir, ocultos hasta el 1er cálculo). `calculate(live)` + flag `calcDone`,
   `toggleMore()`, listener `input`/`change` en `#page-calc`, `resetForm()` vuelve al gancho.
-  Clave i18n nueva: `more_add`.
+  La **subida salarial** vive dentro de `#moreFields` (bloque `blk_raise`, sección `#raiseSec`):
+  el campo del gancho (`salaryBase`) es el salario **después** de la subida y `oldSalary` el de
+  antes. En el texto de cara al usuario se dice **"retribución flexible"**, no "tickets".
+  Claves i18n nuevas: `more_add`, `blk_raise`, `help_old_salary`.
+- **AstroHome ✅** (`casa/index.html`): flujo en **dos pasos**. Paso 1, solo las dos tarjetas de
+  modo (ninguna preseleccionada, `mode=null`). Al elegir se revela `#stepData` (datos + piso +
+  condiciones) con scroll suave; las tarjetas siguen visibles para poder cambiar de modo sin
+  perder lo escrito. Los resultados (`#viewExplore`/`#viewKnown`) van envueltos en `#results`,
+  oculto hasta `doCalculate()`. Flag `calculated` + `onEdit()`: antes de calcular solo se
+  refresca la ayuda "al mes"; después, todo en vivo. Ni el arranque ni `setLang()` fuerzan
+  cálculo. Clave i18n nueva: `btn_calc`.
 
-⏳ Siguiente tarea inmediata (en `nomina/index.html`):
-- Mover el bloque de **subida salarial** (toggle `#hasRaise` + div `#salaryRaise`) **dentro de
-  `#moreFields`**, para que el gancho deje solo el salario base.
-- Renombrar **"tickets" → "retribución flexible"** en el texto de cara al usuario (empezando por
-  `more_add` en los 3 idiomas). Confirmar alcance antes de tocar IDs o lógica.
-
-Luego, en orden y validando con el dueño entre cada una: **AstroHome → AstroReturn → AstroForecast**.
+⏳ Siguiente: **AstroReturn** (`rentabilidad/`) y luego **AstroForecast** (`forecast/`), validando
+con el dueño entre cada una. Recordatorio para esas dos: **sí comparten estado por URL**, así que
+hay que aplicar la regla 5 (si hay parámetros, saltarse el gancho y abrir en resultados).
+`nomina` y `casa` no comparten por URL, por eso no la necesitaron.
 
 ⚠️ **Sin verificar en navegador**: en la máquina del dueño no hay node ni python y el navegador
 integrado no abre `file://`. La validación visual la hace él en su Live Server.

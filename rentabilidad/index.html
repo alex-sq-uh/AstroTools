@@ -192,6 +192,15 @@
   /* ---------- Resultado ---------- */
   #results{display:none}
   #results.show{display:block}
+
+  /* Patrón "gancho": acción principal y revelado de campos extra */
+  .hidden{display:none!important}
+  .btn-calc{display:block;width:100%;background:var(--accent);color:#4a3800;border:none;border-radius:var(--radius);padding:.85rem 1.2rem;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:var(--shadow);transition:background .15s}
+  .btn-calc:hover{background:#e9b933}
+  .more-toggle{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:none;border:1.5px dashed var(--border);color:var(--secondary);font-family:inherit;font-weight:600;font-size:.88rem;padding:.7rem 1rem;border-radius:10px;cursor:pointer;transition:background .15s,border-color .15s;margin-bottom:1.25rem}
+  .more-toggle:hover{background:var(--bg);border-color:var(--secondary)}
+  .more-toggle .mt-chev{font-size:.7rem;transition:transform .2s}
+  .more-toggle.open .mt-chev{transform:rotate(180deg)}
   .hero{background:linear-gradient(135deg,var(--primary) 0%,#2563a8 100%);color:#fff;border-radius:var(--radius-lg);padding:1.9rem 1.75rem;margin-bottom:1.25rem;box-shadow:var(--shadow);text-align:center}
   .hero .eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;opacity:.82;margin:0 0 6px}
   .hero .big{font-size:3rem;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.05}
@@ -280,6 +289,19 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- ACCIÓN PRINCIPAL (gancho): con compra y venta ya se puede calcular -->
+  <div class="btn-row" style="margin-top:0;margin-bottom:.6rem;">
+    <button type="button" class="btn-calc" id="calcBtn" onclick="doCalculate()" data-i18n="btn_calc">Calcular rentabilidad</button>
+  </div>
+  <button type="button" class="more-toggle" id="divToggle" onclick="toggleDivs()">
+    <span data-i18n="div_toggle">Cobré dividendos o rentas por el camino</span>
+    <span class="mt-chev" aria-hidden="true">▾</span>
+  </button>
+
+  <!-- Dividendos (ocultos hasta que se piden) -->
+  <div class="card hidden" id="divWrap">
     <div class="block">
       <div class="block-h"><span class="bic">🪙</span> <span data-i18n="div_h">Dividendos o cobros</span>
         <span class="info-icon" style="margin-left:2px">i<span class="tooltip-box" data-i18n="tip_div">Dinero que te fue pagando la inversión mientras la tenías (dividendos, cupones, rentas...). Si no cobraste nada, déjalo vacío.</span></span>
@@ -434,6 +456,7 @@
       tip_div:'Dinero que te fue pagando la inversión mientras la tenías (dividendos, cupones, rentas...). Si no cobraste nada, déjalo vacío.',
       div_empty:'¿Cobraste dividendos o rentas por el camino? Añádelos para afinar el cálculo. (Opcional)',
       div_add:'Añadir un cobro', div_amt:'Importe', div_date:'Fecha', div_del:'Eliminar',
+      btn_calc:'Calcular rentabilidad', div_toggle:'Cobré dividendos o rentas por el camino',
       adv_title:'Ajustes avanzados', adv_sub:'opcional · con qué te comparamos',
       adv_intro:'Para compararte, suponemos estas rentabilidades anuales de cada alternativa. Son estimaciones; puedes cambiarlas.',
       lbl_inf:'Inflación', tip_inf:'Cuánto suben los precios al año, de media. Es la línea de "no perder poder de compra".',
@@ -479,6 +502,7 @@
       tip_div:'Diners que t\'anava pagant la inversió mentre la tenies (dividends, cupons, rendes...). Si no vas cobrar res, deixa-ho buit.',
       div_empty:'Vas cobrar dividends o rendes pel camí? Afegeix-los per afinar el càlcul. (Opcional)',
       div_add:'Afegir un cobrament', div_amt:'Import', div_date:'Data', div_del:'Eliminar',
+      btn_calc:'Calcular rendibilitat', div_toggle:'Vaig cobrar dividends o rendes pel camí',
       adv_title:'Ajustos avançats', adv_sub:'opcional · amb què et comparem',
       adv_intro:'Per comparar-te, suposem aquestes rendibilitats anuals de cada alternativa. Són estimacions; les pots canviar.',
       lbl_inf:'Inflació', tip_inf:'Quant pugen els preus a l\'any, de mitjana. És la línia de "no perdre poder de compra".',
@@ -522,6 +546,7 @@
       tip_div:'Money the investment paid you while you held it (dividends, coupons, rents...). If you got nothing, leave it empty.',
       div_empty:'Did you receive any dividends or payouts along the way? Add them to fine-tune the result. (Optional)',
       div_add:'Add a payout', div_amt:'Amount', div_date:'Date', div_del:'Remove',
+      btn_calc:'Calculate return', div_toggle:'I received dividends or payouts along the way',
       adv_title:'Advanced settings', adv_sub:'optional · what we compare you to',
       adv_intro:'To compare, we assume these yearly returns for each alternative. They are estimates; you can change them.',
       lbl_inf:'Inflation', tip_inf:'How much prices rise per year, on average. It is the "don\'t lose buying power" line.',
@@ -633,9 +658,9 @@
         '<button class="div-del" type="button" title="'+L().div_del+'" aria-label="'+L().div_del+'" data-i="'+idx+'">×</button>';
       list.appendChild(row);
     });
-    list.querySelectorAll('.dAmt').forEach(function(el){ el.addEventListener('input',function(){ divs[+el.dataset.i].amt=el.value; calc(); }); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; divs[+el.dataset.i].amt=el.value; }); });
-    list.querySelectorAll('.dDate').forEach(function(el){ el.addEventListener('input',function(){ divs[+el.dataset.i].date=el.value; calc(); }); });
-    list.querySelectorAll('.div-del').forEach(function(el){ el.addEventListener('click',function(){ divs.splice(+el.dataset.i,1); renderDivs(); calc(); }); });
+    list.querySelectorAll('.dAmt').forEach(function(el){ el.addEventListener('input',function(){ divs[+el.dataset.i].amt=el.value; onEdit(); }); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; divs[+el.dataset.i].amt=el.value; }); });
+    list.querySelectorAll('.dDate').forEach(function(el){ el.addEventListener('input',function(){ divs[+el.dataset.i].date=el.value; onEdit(); }); });
+    list.querySelectorAll('.div-del').forEach(function(el){ el.addEventListener('click',function(){ divs.splice(+el.dataset.i,1); renderDivs(); onEdit(); }); });
   }
   $('addDiv').addEventListener('click',function(){ divs.push({amt:'',date:''}); renderDivs(); });
 
@@ -685,6 +710,30 @@
   var last=null; // resultado para re-render al cambiar idioma
   function showErr(msg){ var b=$('errBox'); if(msg){ b.textContent=msg; b.classList.add('show'); } else b.classList.remove('show'); }
   function showWarn(msg){ var b=$('warnBox'); if(msg){ b.innerHTML=msg; b.classList.add('show'); } else b.classList.remove('show'); }
+
+  /* ===================== Patrón "gancho" =====================
+     De primeras solo se ven compra y venta. Los dividendos se piden aparte y
+     los resultados no aparecen hasta pulsar Calcular; a partir de ahí, todo
+     cambio recalcula en vivo.                                                */
+  var calculated=false;
+  window.toggleDivs=function(){
+    var w=$('divWrap'), show=w.classList.contains('hidden');
+    w.classList.toggle('hidden',!show);
+    $('divToggle').classList.toggle('open',show);
+  };
+  window.doCalculate=function(){
+    calculated=true;
+    calc();
+    if(!$('results').classList.contains('show')){
+      // Faltan datos: respondemos al clic en vez de dejarlo mudo.
+      if(!$('errBox').classList.contains('show')) showErr(errMsg('incomplete'));
+      return;
+    }
+    $('results').scrollIntoView({behavior:'smooth',block:'start'});
+    try{ if(window.umami) window.umami.track('calculate'); }catch(e){}
+  };
+  // Antes del primer Calcular no se recalcula nada; después, en vivo.
+  function onEdit(){ if(calculated) calc(); }
 
   function readInputs(){
     return {
@@ -818,17 +867,20 @@
 
   function errMsg(k){
     var M={
-      es:{order:'La fecha de venta no puede ser anterior a la de compra. Revísalas.',
+      es:{incomplete:'Para calcular necesitamos, como mínimo, cuánto pagaste y cuánto cobraste, con sus fechas.',
+          order:'La fecha de venta no puede ser anterior a la de compra. Revísalas.',
           nosolve:'Con estos datos no podemos calcular una rentabilidad anual fiable. Revisa los importes y las fechas (por ejemplo, que haya una compra y una venta claras).',
           multi:'Tus movimientos cambian de signo varias veces, así que la rentabilidad anual puede tener más de una lectura. Tómala con cautela.',
           short:'El periodo es muy corto, así que la cifra anual puede parecer exagerada. Mira mejor la "ganancia total".',
           huge:'La rentabilidad anual sale altísima (periodo corto o ganancia muy grande). Fíjate también en la "ganancia total".'},
-      ca:{order:'La data de venda no pot ser anterior a la de compra. Revisa-les.',
+      ca:{incomplete:'Per calcular necessitem, com a mínim, quant vas pagar i quant vas cobrar, amb les seves dates.',
+          order:'La data de venda no pot ser anterior a la de compra. Revisa-les.',
           nosolve:'Amb aquestes dades no podem calcular una rendibilitat anual fiable. Revisa els imports i les dates (per exemple, que hi hagi una compra i una venda clares).',
           multi:'Els teus moviments canvien de signe diverses vegades, així que la rendibilitat anual pot tenir més d\'una lectura. Pren-la amb cautela.',
           short:'El període és molt curt, així que la xifra anual pot semblar exagerada. Mira millor el "guany total".',
           huge:'La rendibilitat anual surt altíssima (període curt o guany molt gran). Fixa\'t també en el "guany total".'},
-      en:{order:'The sell date cannot be earlier than the buy date. Please check them.',
+      en:{incomplete:'To calculate we need, at least, how much you paid and how much you got back, with their dates.',
+          order:'The sell date cannot be earlier than the buy date. Please check them.',
           nosolve:'With this data we cannot compute a reliable yearly return. Check the amounts and dates (for example, that there is a clear buy and a clear sale).',
           multi:'Your movements change sign several times, so the yearly return can have more than one reading. Take it with caution.',
           short:'The period is very short, so the yearly figure may look exaggerated. Look at the "total gain" instead.',
@@ -882,6 +934,9 @@
     $('buyAmt').value='10.000'; $('buyDate').value='2021-03-01';
     $('sellAmt').value='14.300'; $('sellDate').value='2024-03-01';
     divs=[{amt:'250',date:'2022-03-01'},{amt:'250',date:'2023-03-01'}];
+    // El ejemplo lleva dividendos: los mostramos y damos por calculado.
+    $('divWrap').classList.remove('hidden'); $('divToggle').classList.add('open');
+    calculated=true;
     renderDivs(); calc(); $('results').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
@@ -903,12 +958,12 @@
   document.addEventListener('click',function(){ document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');}); });
 
   /* ===================== Listeners de inputs ===================== */
-  ['buyAmt','sellAmt','buyDate','sellDate','rInf','rMon','rMsci'].forEach(function(id){ $(id).addEventListener('input',calc); });
-  ['buyAmt','sellAmt'].forEach(function(id){ var el=$(id); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; calc(); }); });
+  ['buyAmt','sellAmt','buyDate','sellDate','rInf','rMon','rMsci'].forEach(function(id){ $(id).addEventListener('input',onEdit); });
+  ['buyAmt','sellAmt'].forEach(function(id){ var el=$(id); el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; onEdit(); }); });
 
   /* Botón "Hoy" en las fechas */
   function todayISO(){ var d=new Date(); var m=('0'+(d.getMonth()+1)).slice(-2); var dd=('0'+d.getDate()).slice(-2); return d.getFullYear()+'-'+m+'-'+dd; }
-  document.querySelectorAll('.today-btn').forEach(function(b){ b.addEventListener('click',function(){ var t=$(b.getAttribute('data-target')); t.value=todayISO(); calc(); }); });
+  document.querySelectorAll('.today-btn').forEach(function(b){ b.addEventListener('click',function(){ var t=$(b.getAttribute('data-target')); t.value=todayISO(); onEdit(); }); });
 
   /* ===================== i18n apply ===================== */
   function applyStatic(){
@@ -921,7 +976,7 @@
   window.setLang=function(l){
     if(!T[l]) l='es';
     currentLang=l; document.documentElement.lang=l;
-    applyStatic(); renderDivs(); calc();
+    applyStatic(); renderDivs(); if(calculated) calc();
   };
 
   /* ===================== Reiniciar (logo) ===================== */
@@ -931,6 +986,9 @@
     $('rInf').value='2,5'; $('rMon').value='3'; $('rMsci').value='8';
     divs=[]; renderDivs();
     $('results').classList.remove('show'); showErr(''); showWarn('');
+    // Volver al estado inicial de "gancho": dividendos recogidos, sin calcular.
+    calculated=false; last=null;
+    $('divWrap').classList.add('hidden'); $('divToggle').classList.remove('open');
     try{ history.replaceState(null,'',location.href.split('?')[0]); }catch(e){}
     showPage('calc');
   };
@@ -941,7 +999,12 @@
   applyStatic();
   var hadURL=loadFromURL();
   renderDivs();
-  if(hadURL) calc();
+  // Enlace compartido: nos saltamos el gancho y abrimos directamente en resultados.
+  if(hadURL){
+    calculated=true;
+    if(divs.length){ $('divWrap').classList.remove('hidden'); $('divToggle').classList.add('open'); }
+    calc();
+  }
 })();
 </script>
 </body>
