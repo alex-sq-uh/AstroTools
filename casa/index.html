@@ -232,6 +232,11 @@
   .knsub .v{color:var(--text-muted);font-weight:600}
 
   .hidden{display:none!important}
+
+  /* Acción principal del patrón "gancho" */
+  .btn-row{margin:0 0 1.5rem}
+  .btn-calc{display:block;width:100%;background:var(--accent);color:#4a3800;border:none;border-radius:var(--radius);padding:.85rem 1.2rem;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:var(--shadow);transition:background .15s}
+  .btn-calc:hover{background:#e9b933}
 </style>
 <script src="../shared/brand.js"></script>
 <script src="../shared/header.js" defer></script>
@@ -302,9 +307,9 @@
     <p data-i18n="calc_subtitle">Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar.</p>
   </div>
 
-  <!-- Selector de modo -->
+  <!-- PASO 1 · Selector de modo (nada más hasta elegir) -->
   <div class="modes" id="modeSelector">
-    <button type="button" class="mode-btn active" id="mode-explore" onclick="setMode('explore')">
+    <button type="button" class="mode-btn" id="mode-explore" onclick="setMode('explore')">
       <span class="mt"><span class="mic">🔭</span> <span data-i18n="mode_explore_t">Aún no sé qué piso compraré</span></span>
       <span class="md" data-i18n="mode_explore_d">Descubre a qué piso puedes aspirar con tu sueldo y tus ahorros.</span>
     </button>
@@ -313,6 +318,9 @@
       <span class="md" data-i18n="mode_known_d">Calcula cuánto dinero necesitas para comprarlo.</span>
     </button>
   </div>
+
+  <!-- PASO 2 · Datos (aparece al elegir modo) -->
+  <div id="stepData" class="hidden">
 
   <!-- Datos -->
   <div class="card">
@@ -404,6 +412,16 @@
 
     </div><!-- /termsBody -->
   </div>
+
+  <!-- Acción principal -->
+  <div class="btn-row">
+    <button type="button" class="btn-calc" id="calcBtn" onclick="doCalculate()" data-i18n="btn_calc">Calcular</button>
+  </div>
+
+  </div><!-- /stepData -->
+
+  <!-- RESULTADOS (ocultos hasta pulsar Calcular) -->
+  <div id="results" class="hidden">
 
   <!-- ===== Vista: aún no sé qué piso ===== -->
   <div id="viewExplore">
@@ -582,6 +600,8 @@
     </div>
   </div>
 
+  </div><!-- /results -->
+
   <div class="disclaimer" data-i18n="disclaimer">AstroHome es una herramienta orientativa para entender cómo funciona la compra de una vivienda. No es asesoramiento financiero ni fiscal: las condiciones reales dependen de cada banco, de tu comunidad autónoma y de tu situación. Tus datos se calculan en tu navegador y no se guardan; usamos Umami Analytics (sin cookies ni datos personales) solo para contar visitas.</div>
 </div>
 
@@ -649,7 +669,7 @@
       nav_calc:'Calculadora', nav_how:'¿Cómo funciona?',
       calc_title:'¿A qué casa puedes aspirar?',
       calc_subtitle:'Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar.',
-      card_data:'Tus datos',
+      card_data:'Tus datos', btn_calc:'Calcular',
       lbl_salary:'Tu sueldo neto al año', hint_salary:'Lo que cobras limpio al año, todas las pagas incluidas',
       salary_link:'¿No sabes tu sueldo neto? Calcúlalo en AstroPayroll',
       tip_salary:'Lo que cobras limpio en un año, después de impuestos y Seguridad Social, sumando todas las pagas.',
@@ -774,7 +794,7 @@
       nav_calc:'Calculadora', nav_how:'Com funciona?',
       calc_title:'A quin pis pots aspirar?',
       calc_subtitle:'Amb el teu sou i els teus estalvis t’expliquem, en llenguatge clar, quin pis pots comprar.',
-      card_data:'Les teves dades',
+      card_data:'Les teves dades', btn_calc:'Calcular',
       lbl_salary:'El teu sou net a l’any', hint_salary:'El que cobres net a l’any, totes les pagues incloses',
       salary_link:'No saps el teu sou net? Calcula’l a AstroPayroll',
       tip_salary:'El que cobres net en un any, després d’impostos i Seguretat Social, sumant totes les pagues.',
@@ -898,7 +918,7 @@
       nav_calc:'Calculator', nav_how:'How it works',
       calc_title:'What home can you afford?',
       calc_subtitle:'With your salary and savings, we explain in plain language which home you can buy.',
-      card_data:'Your details',
+      card_data:'Your details', btn_calc:'Calculate',
       lbl_salary:'Your net salary per year', hint_salary:'Your take-home pay over a year',
       salary_link:'Don’t know your net salary? Work it out in AstroPayroll',
       tip_salary:'What you earn after tax and social security over a full year.',
@@ -1052,20 +1072,37 @@
   window.setLang=function(l){
     currentLang=l; document.documentElement.lang=l;
     document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l);});
-    applyStatic(); calc();
+    applyStatic(); updateMonthly(); if(calculated) calc();
   };
 
-  /* ===================== Modo (aún no sé / ya sé el piso) ===================== */
-  var mode='explore';
+  /* ===================== Modo (aún no sé / ya sé el piso) =====================
+     Flujo en dos pasos: (1) eliges modo → (2) rellenas datos y pulsas Calcular.
+     Hasta que no hay modo elegido no se muestra nada más.                        */
+  var mode=null;          // null = todavía no ha elegido
+  var calculated=false;   // true tras el primer Calcular → recálculo en vivo
   window.setMode=function(m){
+    var first = (mode===null);
     mode=m;
     $('mode-explore').classList.toggle('active',m==='explore');
     $('mode-known').classList.toggle('active',m==='known');
     $('knownCard').classList.toggle('hidden',m!=='known');
     $('viewExplore').classList.toggle('hidden',m!=='explore');
     $('viewKnown').classList.toggle('hidden',m!=='known');
-    window.scrollTo(0,0);
+    $('stepData').classList.remove('hidden');
+    updateMonthly();
+    // Si ya había resultados, se recalculan para el modo nuevo sin perderlos.
+    if(calculated) calc();
+    if(first) $('stepData').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  /* Botón Calcular: revela los resultados y activa el recálculo en vivo. */
+  window.doCalculate=function(){
+    if(!mode) return;
+    calculated=true;
+    $('results').classList.remove('hidden');
     calc();
+    $('results').scrollIntoView({behavior:'smooth',block:'start'});
+    try{ if(window.umami) window.umami.track('calculate',{mode:mode}); }catch(e){}
   };
   function applyStatic(){
     document.querySelectorAll('[data-i18n]').forEach(function(el){
@@ -1099,14 +1136,16 @@
   document.addEventListener('click',function(){ document.querySelectorAll('.info-icon.show').forEach(function(o){o.classList.remove('show');}); });
 
   /* ===================== Inputs ===================== */
+  // Antes del primer Calcular solo refrescamos la ayuda "al mes"; después, todo en vivo.
+  function onEdit(){ updateMonthly(); if(calculated) calc(); }
   var ids=['salary','salary2','savings','tae','years','ltv','dti','itp','otros','priceKnown','knownReform','saveYear','targetPrice','moreYears','betterRate'];
-  ids.forEach(function(id){ $(id).addEventListener('input',calc); });
+  ids.forEach(function(id){ $(id).addEventListener('input',onEdit); });
   ['salary','salary2','savings','priceKnown','knownReform','saveYear','targetPrice'].forEach(function(id){
     var el=$(id);
-    el.addEventListener('blur',function(){ var n=Math.round(parseNum(el.value)); el.value=n?groupThousands(''+n):''; calc(); });
+    el.addEventListener('blur',function(){ var n=Math.round(parseNum(el.value)); el.value=n?groupThousands(''+n):''; onEdit(); });
   });
-  $('couple').addEventListener('change',function(){ $('partnerWrap').classList.toggle('hidden',!this.checked); calc(); });
-  $('knownReformChk').addEventListener('change',function(){ $('knownReformWrap').classList.toggle('hidden',!this.checked); calc(); });
+  $('couple').addEventListener('change',function(){ $('partnerWrap').classList.toggle('hidden',!this.checked); onEdit(); });
+  $('knownReformChk').addEventListener('change',function(){ $('knownReformWrap').classList.toggle('hidden',!this.checked); onEdit(); });
 
   /* ===================== Cálculo ===================== */
   var I=0,N=360;
@@ -1336,7 +1375,7 @@
   }
 
   applyStatic();
-  calc();
+  updateMonthly();   // sin calcular: esperamos a que elija modo y pulse Calcular
 })();
 </script>
 </body>
