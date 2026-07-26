@@ -197,6 +197,10 @@
   #results{display:none}
   #results.show{display:block}
 
+  /* Patrón "gancho": acción principal */
+  .btn-calc{display:block;width:100%;background:var(--accent);color:#4a3800;border:none;border-radius:var(--radius);padding:.85rem 1.2rem;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:var(--shadow);transition:background .15s}
+  .btn-calc:hover{background:#e9b933}
+
   .kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem}
   @media(max-width:600px){.kpis{grid-template-columns:1fr}}
   .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.2rem;box-shadow:var(--shadow);text-align:center}
@@ -294,6 +298,11 @@
     <p class="hint" id="flowsIntro" style="display:block;margin:-.4rem 0 1rem" data-i18n="flows_intro">Añade lo que <b>entra</b> (ahorras / ingresas) y lo que <b>sale</b> (gastas / retiras), y entre qué edades. Ejemplo: ahorro 500 €/mes de los 35 a los 64; gasto 1.500 €/mes de los 65 a los 100.</p>
     <div id="flowList"></div>
     <button class="add-flow" id="addFlow" type="button" data-tag="add-flow"><span>＋</span> <span data-i18n="flow_add">Añadir un flujo</span></button>
+  </div>
+
+  <!-- ACCIÓN PRINCIPAL (gancho): con el plan y un flujo ya se puede calcular -->
+  <div class="btn-row" style="margin:0 0 1.25rem">
+    <button type="button" class="btn-calc" id="calcBtn" onclick="doCalculate()" data-i18n="btn_calc">Calcular</button>
   </div>
 
   <!-- Ajustes avanzados -->
@@ -475,7 +484,7 @@
       flow_in:'Entra', flow_out:'Sale',
       fl_amount:'Importe', fl_from:'Desde (edad)', fl_to:'Hasta (edad)', fl_del:'Eliminar flujo',
       unit_year:'€/año', unit_month:'€/mes',
-      flow_add:'Añadir un flujo',
+      flow_add:'Añadir un flujo', btn_calc:'Calcular',
       adv_title:'Ajustes avanzados', adv_sub:'opcional · cuánto retiras',
       lbl_wrate:'Tasa de retirada anual', tip_wrate:'Qué parte de tu patrimonio sacarías cada año para vivir. El 3% es conservador y prudente para planes largos (la conocida "regla del 4%" es algo más agresiva).',
       ms_10:'Dentro de 10 años', ms_20:'Dentro de 20 años', ms_30:'Dentro de 30 años', ms_sub:'a los {age} años',
@@ -551,7 +560,7 @@
       flow_in:'Entra', flow_out:'Surt',
       fl_amount:'Import', fl_from:'Des de (edat)', fl_to:'Fins a (edat)', fl_del:'Eliminar flux',
       unit_year:'€/any', unit_month:'€/mes',
-      flow_add:'Afegir un flux',
+      flow_add:'Afegir un flux', btn_calc:'Calcular',
       adv_title:'Ajustos avançats', adv_sub:'opcional · quant retires',
       lbl_wrate:'Taxa de retirada anual', tip_wrate:'Quina part del teu patrimoni trauries cada any per viure. El 3% és conservador i prudent per a plans llargs (la coneguda "regla del 4%" és una mica més agressiva).',
       ms_10:'D\'aquí a 10 anys', ms_20:'D\'aquí a 20 anys', ms_30:'D\'aquí a 30 anys', ms_sub:'als {age} anys',
@@ -627,7 +636,7 @@
       flow_in:'In', flow_out:'Out',
       fl_amount:'Amount', fl_from:'From (age)', fl_to:'To (age)', fl_del:'Remove flow',
       unit_year:'€/yr', unit_month:'€/mo',
-      flow_add:'Add a flow',
+      flow_add:'Add a flow', btn_calc:'Calculate',
       adv_title:'Advanced settings', adv_sub:'optional · how much you withdraw',
       lbl_wrate:'Yearly withdrawal rate', tip_wrate:'How much of your wealth you would take each year to live on. 3% is conservative and prudent for long plans (the well-known "4% rule" is a bit more aggressive).',
       ms_10:'In 10 years', ms_20:'In 20 years', ms_30:'In 30 years', ms_sub:'at age {age}',
@@ -759,18 +768,18 @@
     });
     // listeners
     list.querySelectorAll('.seg button').forEach(function(b){
-      b.addEventListener('click',function(){ var i=+b.parentElement.dataset.i; flows[i].type=b.dataset.t; renderFlows(); calcAll(); });
+      b.addEventListener('click',function(){ var i=+b.parentElement.dataset.i; flows[i].type=b.dataset.t; renderFlows(); onEdit(); });
     });
     list.querySelectorAll('.fUnit').forEach(function(b){
-      b.addEventListener('click',function(){ var i=+b.dataset.i; flows[i].unit=(flows[i].unit==='month'?'year':'month'); b.textContent=(flows[i].unit==='month'?L().unit_month:L().unit_year); calcAll(); });
+      b.addEventListener('click',function(){ var i=+b.dataset.i; flows[i].unit=(flows[i].unit==='month'?'year':'month'); b.textContent=(flows[i].unit==='month'?L().unit_month:L().unit_year); onEdit(); });
     });
     list.querySelectorAll('.fAmt').forEach(function(el){
-      el.addEventListener('input',function(){ flows[+el.dataset.i].amt=el.value; calcAll(); });
+      el.addEventListener('input',function(){ flows[+el.dataset.i].amt=el.value; onEdit(); });
       el.addEventListener('blur',function(){ var n=parseNum(el.value); el.value=n?groupThousands(Math.round(n)):''; flows[+el.dataset.i].amt=el.value; });
     });
-    list.querySelectorAll('.fFrom').forEach(function(el){ el.addEventListener('input',function(){ flows[+el.dataset.i].from=el.value; calcAll(); }); });
-    list.querySelectorAll('.fTo').forEach(function(el){ el.addEventListener('input',function(){ flows[+el.dataset.i].to=el.value; calcAll(); }); });
-    list.querySelectorAll('.flow-del').forEach(function(el){ el.addEventListener('click',function(){ flows.splice(+el.dataset.i,1); renderFlows(); calcAll(); }); });
+    list.querySelectorAll('.fFrom').forEach(function(el){ el.addEventListener('input',function(){ flows[+el.dataset.i].from=el.value; onEdit(); }); });
+    list.querySelectorAll('.fTo').forEach(function(el){ el.addEventListener('input',function(){ flows[+el.dataset.i].to=el.value; onEdit(); }); });
+    list.querySelectorAll('.flow-del').forEach(function(el){ el.addEventListener('click',function(){ flows.splice(+el.dataset.i,1); renderFlows(); onEdit(); }); });
   }
   $('addFlow').addEventListener('click',function(){ flows.push({type:'in',amt:'',unit:'year',from:'',to:''}); renderFlows(); });
 
@@ -839,6 +848,23 @@
   var tableDens='5';
   function showErr(msg){ var b=$('errBox'); if(msg){ b.textContent=msg; b.classList.add('show'); } else b.classList.remove('show'); }
   function showWarn(msg){ var b=$('warnBox'); if(msg){ b.innerHTML=msg; b.classList.add('show'); } else b.classList.remove('show'); }
+
+  /* ===================== Patrón "gancho" =====================
+     Los resultados no aparecen hasta pulsar Calcular; a partir de ahí,
+     cualquier cambio (plan, flujos, tasa de retirada) recalcula en vivo.   */
+  var calculated=false;
+  window.doCalculate=function(){
+    calculated=true;
+    calcAll();
+    if(!last){
+      // Faltan datos: calcAll() sale en silencio, así que respondemos al clic.
+      if(!$('errBox').classList.contains('show')) showErr(errMsg('incomplete'));
+      return;
+    }
+    $('results').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  // Antes del primer Calcular no se recalcula nada; después, en vivo.
+  function onEdit(){ if(calculated) calcAll(); }
 
   function readInputs(){
     var fl=flows.map(function(f){
@@ -987,9 +1013,12 @@
   }
   function errMsg(k){
     var M={
-      es:{range:'Pon una edad actual realista, menor de 100 años.'},
-      ca:{range:'Posa una edat actual realista, menor de 100 anys.'},
-      en:{range:'Enter a realistic current age, under 100.'}
+      es:{range:'Pon una edad actual realista, menor de 100 años.',
+          incomplete:'Para calcular necesitamos tu edad y, al menos, unos ahorros de partida o un flujo de caja.'},
+      ca:{range:'Posa una edat actual realista, menor de 100 anys.',
+          incomplete:'Per calcular necessitem la teva edat i, com a mínim, uns estalvis de partida o un flux de caixa.'},
+      en:{range:'Enter a realistic current age, under 100.',
+          incomplete:'To calculate we need your age and, at least, some starting savings or one cash flow.'}
     };
     return (M[currentLang]||M.es)[k];
   }
@@ -1088,7 +1117,7 @@
   });
 
   /* ===================== Listeners de inputs ===================== */
-  ['startAge','initial','wRate'].forEach(function(id){ $(id).addEventListener('input',calcAll); });
+  ['startAge','initial','wRate'].forEach(function(id){ $(id).addEventListener('input',onEdit); });
   $('initial').addEventListener('blur',function(){ var n=parseNum($('initial').value); $('initial').value=n?groupThousands(Math.round(n)):''; });
 
   /* ===================== i18n apply ===================== */
@@ -1116,6 +1145,7 @@
     flows=[{type:'in',amt:'',unit:'year',from:'',to:''}];
     renderFlows();
     $('results').classList.remove('show'); showErr(''); showWarn(''); last=null;
+    calculated=false;   // vuelve al estado de "gancho"
     tableDens='5'; sliderRate=6;
     var sl=$('rateSlider'); if(sl){ sl.value=6; $('rateVal').textContent=6; }
     updateRateDesc();
@@ -1132,7 +1162,8 @@
   if(hadURL) updateRateDesc(); // re-render desc if URL changed sliderRate
   if(!hadURL) flows=[{type:'in',amt:'',unit:'year',from:'',to:''}];
   renderFlows();
-  if(hadURL) calcAll();
+  // Enlace compartido: nos saltamos el gancho y abrimos directamente en resultados.
+  if(hadURL){ calculated=true; calcAll(); }
 })();
 </script>
 </body>
