@@ -74,9 +74,8 @@
       var current = null;
       for (var i = 0; i < cfg.apps.length; i++) if (cfg.apps[i].id === app) current = cfg.apps[i];
       var appName = current ? current.name : cfg.brand;
-      var accentName = appName.indexOf("Astro") === 0
-        ? 'Astro<span class="accent">' + appName.slice(5) + "</span>"
-        : appName;
+      var shortName = appName.indexOf("Astro") === 0 ? appName.slice(5) : appName;
+      var accentShort = '<span class="accent">' + shortName + "</span>";
 
       var appLinks = cfg.apps.map(function (a) {
         return '<a href="' + prefix + a.href + '" class="' + (a.id === app ? "current" : "") + '">' +
@@ -93,30 +92,30 @@
         "<style>" +
           ":host{display:block;width:100%;position:sticky;top:0;z-index:100;font-family:'Segoe UI',system-ui,sans-serif}" +
           ".header{position:relative;background:linear-gradient(120deg,#0f1d44,#1a2b5e 60%,#2a3f80);color:#fff;box-shadow:0 3px 14px rgba(15,29,68,.28)}" +
-          /* fila 1 */
-          ".row1{display:flex;align-items:center;gap:.6rem;height:38px;padding:0 1rem;border-bottom:1px solid rgba(255,255,255,.12)}" +
+          /* barra única (filas 1 y 2 fusionadas) */
+          ".bar{display:flex;align-items:center;gap:.5rem;height:46px;padding:0 1rem}" +
           ".menu-btn{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:8px;width:34px;height:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:0;flex-shrink:0}" +
           ".menu-btn span{display:block;width:16px;height:2px;background:#fff;border-radius:2px}" +
           ".menu-btn:hover{background:rgba(255,255,255,.2)}" +
-          ".suite{font-weight:800;font-size:.9rem;letter-spacing:.02em;color:#fff;text-decoration:none;display:inline-flex;align-items:center;border-radius:6px;padding:2px 4px;transition:background .15s}" +
+          ".suite{display:inline-flex;align-items:center;gap:.5rem;color:#fff;text-decoration:none;border-radius:7px;padding:3px 5px;transition:background .15s}" +
           "a.suite:hover{background:rgba(255,255,255,.14)}" +
-          ".suite .dot{color:#f5c84b}" +
-          /* fila 2 */
-          ".row2{display:flex;align-items:center;gap:11px;padding:.55rem 1rem .6rem}" +
-          ".brand{display:flex;align-items:center;gap:11px;min-width:0}" +
+          ".app-logo{width:28px;height:28px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}" +
+          ".suite-name{font-weight:800;font-size:.98rem;letter-spacing:.02em;white-space:nowrap}" +
+          ".appsep{color:#f5c84b;font-weight:800;font-size:1.05rem;line-height:1;opacity:.9;margin:0 -.15rem}" +
+          ".brand{display:inline-flex;align-items:center;min-width:0;border-radius:7px;padding:3px 6px}" +
           ".brand.clickable{cursor:pointer;user-select:none}" +
-          ".app-logo{width:34px;height:34px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}" +
-          ".app-name{font-weight:800;font-size:1.15rem;letter-spacing:.01em;white-space:nowrap}" +
+          ".brand.clickable:hover{background:rgba(255,255,255,.12)}" +
+          ".app-name{font-weight:800;font-size:1rem;letter-spacing:.01em;white-space:nowrap}" +
           ".app-name .accent{color:#f5c84b}" +
-          ".app-ver{font-size:.7rem;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.78);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:1px 9px;flex-shrink:0}" +
-          ".row2-action{margin-left:auto;display:flex;align-items:center;gap:6px}" +
+          ".app-ver{font-size:.66rem;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.78);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:1px 8px;flex-shrink:0}" +
+          ".bar-action{margin-left:auto;display:flex;align-items:center;gap:6px}" +
           'slot[name="action"]{display:flex;align-items:center;gap:6px}' +
           /* fila 3 (pestañas) */
           ".row3{display:flex;padding:0 .65rem .5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}" +
           ".row3::-webkit-scrollbar{display:none}" +
           'slot[name="tabs"]{display:flex;gap:4px}' +
           /* menú desplegable */
-          ".menu{position:absolute;top:34px;left:.6rem;width:230px;background:#fff;color:#1a2733;border:1px solid #dde3ea;border-radius:12px;box-shadow:0 12px 34px rgba(15,29,68,.22);padding:.5rem;display:none;z-index:120}" +
+          ".menu{position:absolute;top:46px;left:.6rem;width:230px;background:#fff;color:#1a2733;border:1px solid #dde3ea;border-radius:12px;box-shadow:0 12px 34px rgba(15,29,68,.22);padding:.5rem;display:none;z-index:120}" +
           ".menu.open{display:block}" +
           ".menu-sec{padding:.3rem .2rem}" +
           ".menu-sec+.menu-sec{border-top:1px solid #dde3ea;margin-top:.2rem;padding-top:.5rem}" +
@@ -128,23 +127,23 @@
           ".lang-row{display:flex;gap:6px;padding:.15rem .55rem}" +
           ".lang-row button{flex:1;background:#fff;border:1px solid #dde3ea;color:#5a6a7a;font:inherit;font-weight:700;font-size:.8rem;padding:6px 0;border-radius:7px;cursor:pointer}" +
           ".lang-row button.active{background:#1a2b5e;color:#fff;border-color:#1a2b5e}" +
-          "@media(max-width:600px){.app-name{font-size:1.05rem}.app-logo{width:30px;height:30px}}" +
+          "@media(max-width:600px){.app-name{font-size:.94rem}.suite-name{font-size:.92rem}}" +
+          "@media(max-width:360px){.app-ver{display:none}}" +
         "</style>" +
         '<header class="header">' +
-          '<div class="row1">' +
+          '<div class="bar">' +
             '<button class="menu-btn" id="mb" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button>' +
-            '<a class="suite" href="' + (prefix || "./") + '" aria-label="' + escAttr(cfg.brand) + '">' + cfg.brand + '<span class="dot">.</span></a>' +
-          "</div>" +
-          (home ? "" :
-          '<div class="row2">' +
-            '<span class="brand' + (brandAction ? " clickable" : "") + '" id="brand">' +
-              LOGO +
-              '<span class="app-name">' + accentName + "</span>" +
+            '<a class="suite" href="' + (prefix || "./") + '" aria-label="' + escAttr(cfg.brand) + '">' + LOGO + '<span class="suite-name">' + cfg.brand + "</span></a>" +
+            (home ? "" :
+              '<span class="appsep" aria-hidden="true">·</span>' +
+              '<span class="brand' + (brandAction ? " clickable" : "") + '" id="brand">' +
+                '<span class="app-name">' + accentShort + "</span>" +
+              "</span>" +
               (version ? '<span class="app-ver">' + escAttr(version) + "</span>" : "") +
-            "</span>" +
-            (hasAction ? '<span class="row2-action"><slot name="action"></slot></span>' : "") +
-          "</div>") +
-          (hasTabs ? '<div class="row3"><slot name="tabs"></slot></div>' : "") +
+              (hasAction ? '<span class="bar-action"><slot name="action"></slot></span>' : "")
+            ) +
+          "</div>" +
+          (home ? "" : hasTabs ? '<div class="row3"><slot name="tabs"></slot></div>' : "") +
           '<div class="menu" id="menu">' +
             '<div class="menu-sec">' +
               '<div class="menu-lbl" id="lbl-apps">' + mt.apps + "</div>" + appLinks +
