@@ -138,6 +138,12 @@
 
   /* RESULTS */
   #results { display: none; margin-top: 2rem; }
+
+  /* Toggle "Añadir complementos" (patrón gancho) */
+  .more-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: none; border: 1.5px dashed var(--border); color: var(--secondary); font-family: inherit; font-weight: 600; font-size: 0.88rem; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; transition: background 0.15s, border-color 0.15s; margin-bottom: 1.5rem; }
+  .more-toggle:hover { background: var(--bg); border-color: var(--secondary); }
+  .more-toggle .mt-chev { font-size: 0.7rem; transition: transform 0.2s; }
+  .more-toggle.open .mt-chev { transform: rotate(180deg); }
   .result-hero { background: linear-gradient(135deg, var(--primary) 0%, #2563a8 100%); color: #fff; border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 1.25rem; }
   .result-hero h2 { font-size: 1rem; opacity: 0.8; margin-bottom: 1rem; }
   .suite-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 0.2rem; color: var(--secondary); text-decoration: none; font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
@@ -430,7 +436,7 @@
       <div class="field">
         <label data-i18n="lbl_salary_base">Salario base bruto anual</label>
         <div class="input-wrap">
-          <input type="text" inputmode="decimal" class="money-input" id="salaryBase" placeholder="50.000">
+          <input type="text" inputmode="decimal" class="money-input" id="salaryBase" placeholder="50.000" oninput="calcRaisePct()">
           <span class="unit">€</span>
         </div>
         <div class="tooltip-wrap" style="margin-top:5px;">
@@ -440,25 +446,39 @@
       </div>
     </div>
 
-    <!-- Con subida: dos campos + mes -->
-    <div id="salaryRaise" style="display:none;">
-      <div class="field-row">
-        <div class="field">
-          <label data-i18n="lbl_old_salary_v2">Salario base bruto anual inicial</label>
-          <div class="input-wrap">
-            <input type="text" inputmode="decimal" class="money-input" id="oldSalary" placeholder="48.000">
-            <span class="unit">€</span>
-          </div>
-        </div>
-        <div class="field">
-          <label data-i18n="lbl_new_salary_v2">Salario después de la subida</label>
-          <div class="input-wrap">
-            <input type="text" inputmode="decimal" class="money-input" id="newSalary" placeholder="50.000" oninput="calcRaisePct()">
-            <span class="unit">€</span>
-          </div>
-        </div>
+  </div>
+
+  <!-- ACCIÓN PRINCIPAL (gancho): con solo el salario ya se puede calcular -->
+  <div class="btn-row" style="margin-bottom:.6rem;">
+    <button class="btn btn-primary btn-full" onclick="calculate()" data-i18n="btn_calc">Calcular mi neto</button>
+  </div>
+  <button type="button" class="more-toggle" id="moreToggle" onclick="toggleMore()">
+    <span data-i18n="more_add">Añadir complementos: subida, bonus, retribución flexible, plan de pensiones…</span>
+    <span class="mt-chev" aria-hidden="true">▾</span>
+  </button>
+
+  <!-- CAMPOS AVANZADOS (ocultos hasta que se piden) -->
+  <div id="moreFields" style="display:none;">
+
+  <!-- BLOQUE 1b: SUBIDA DE SUELDO -->
+  <div class="card">
+    <div class="toggle-row">
+      <div>
+        <div class="card-title" style="margin-bottom:2px;"><div class="icon">📈</div> <span data-i18n="blk_raise">Subida de sueldo</span></div>
+        <div class="toggle-sub" data-i18n="toggle_raise_sub">Recalcularemos mes a mes como lo haría tu empresa</div>
       </div>
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
+      <label class="toggle"><input type="checkbox" id="hasRaise" onchange="toggleRaiseMode(this.checked)"><div class="toggle-slider"></div></label>
+    </div>
+    <div class="toggle-content" id="raiseSec">
+      <div class="field">
+        <label data-i18n="lbl_old_salary_v2">Salario base bruto anual inicial</label>
+        <div class="input-wrap">
+          <input type="text" inputmode="decimal" class="money-input" id="oldSalary" placeholder="48.000" oninput="calcRaisePct()">
+          <span class="unit">€</span>
+        </div>
+        <div class="field-help" data-i18n="help_old_salary">Tu salario bruto anual antes de la subida. El de arriba es el de después.</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin:0.6rem 0 0.75rem;">
         <span style="font-size:0.82rem; color:var(--text-muted);" data-i18n="lbl_raise_pct">Incremento:</span>
         <span class="badge-pct green" id="raisePct">—</span>
       </div>
@@ -467,15 +487,6 @@
         <select id="raiseMonth"></select>
       </div>
       <div class="field-help" data-i18n="help_raise">La retención se recalculará desde ese mes en adelante, igual que lo haría tu empresa.</div>
-    </div>
-
-    <!-- Toggle subida -->
-    <div class="toggle-row" style="margin-top:1rem;">
-      <div>
-        <div class="toggle-label" data-i18n="toggle_raise">¿Tienes subida salarial este año?</div>
-        <div class="toggle-sub" data-i18n="toggle_raise_sub">Recalcularemos mes a mes como lo haría tu empresa</div>
-      </div>
-      <label class="toggle"><input type="checkbox" id="hasRaise" onchange="toggleRaiseMode(this.checked)"><div class="toggle-slider"></div></label>
     </div>
   </div>
 
@@ -818,15 +829,7 @@
     </div>
   </div>
 
-  <!-- BUTTONS -->
-  <div class="btn-row" style="margin-bottom:1rem;">
-    <button class="btn btn-primary btn-full" onclick="calculate()" data-i18n="btn_calc">Calcular mi neto</button>
-  </div>
-  <div class="btn-row" style="justify-content:flex-end;">
-    <button class="btn btn-secondary" onclick="resetForm()" data-i18n="btn_reset">Resetear</button>
-    <button class="btn btn-secondary" onclick="shareResult()" data-i18n="btn_share">Compartir resultado</button>
-    <span class="share-copied" id="shareCopied" data-i18n="share_ok">¡Copiado!</span>
-  </div>
+  </div><!-- /#moreFields -->
 
   <!-- RESULTS -->
   <div id="results">
@@ -890,6 +893,13 @@
       <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:10px;" data-i18n="flex_summary_exp">Cada concepto de retribución flexible aprovecha una exención y te ahorra IRPF al tipo marginal del resto de tu paquete. Si el concepto sale de tu salario base (aportado por el trabajador), además ahorras la cuota a la Seguridad Social.</p>
       <div class="monthly-wrap"><div id="flexSummaryBreakdown"></div></div>
     </div>
+  </div>
+
+  <!-- ACCIONES POST-CÁLCULO (aparecen tras el primer cálculo) -->
+  <div class="btn-row" id="postActions" style="justify-content:flex-end;display:none;">
+    <button class="btn btn-secondary" onclick="resetForm()" data-i18n="btn_reset">Resetear</button>
+    <button class="btn btn-secondary" onclick="shareResult()" data-i18n="btn_share">Compartir resultado</button>
+    <span class="share-copied" id="shareCopied" data-i18n="share_ok">¡Copiado!</span>
   </div>
 
   <!-- DISCLAIMER -->
@@ -1216,6 +1226,9 @@ const T = {
     lbl_pension_t2:'% tramo por encima del tope SS', tip_pension_t2:'La empresa aporta este % sobre la parte de tu salario base que supera el tope de cotización.',
     lbl_ss_cap:'Tope máximo base cotización SS (€/año)', tip_ss_cap:'Límite anual sobre el que cotizas a la SS. Para 2026 es de 61.214,40 €.',
     btn_calc:'Calcular mi neto', btn_reset:'Resetear', btn_share:'Copiar resultados', share_ok:'¡Copiado!',
+    more_add:'Añadir complementos: subida, bonus, retribución flexible, plan de pensiones…',
+    blk_raise:'Subida de sueldo',
+    help_old_salary:'Tu salario bruto anual antes de la subida. El de arriba es el de después.',
     res_title:'Tu resumen anual estimado', hero_gross:'Bruto anual', hero_net:'Neto anual', hero_net_month:'Neto mensual medio', hero_eff_rate:'Tipo efectivo IRPF',
     res_annual:'Del bruto al neto', res_monthly:'Desglose mes a mes', res_bonus:'Tu bonus', res_benefits:'Beneficios y ahorro fiscal', res_pension:'Tu plan de pensiones',
     res_valuation:'Valoración de salario y beneficios', res_info:'Información importante',
@@ -1346,6 +1359,9 @@ const T = {
     lbl_pension_t2:'% tram per sobre del topall SS', tip_pension_t2:"L'empresa aporta aquest % sobre la part del salari que supera el topall.",
     lbl_ss_cap:'Topall màxim base cotització SS (€/any)', tip_ss_cap:'Límit anual sobre el qual cotitzes a la SS. Per al 2026 és de 61.214,40 €.',
     btn_calc:'Calcular el meu net', btn_reset:'Reiniciar', btn_share:'Copiar resultats', share_ok:'Copiat!',
+    more_add:'Afegir complements: pujada, bonus, retribució flexible, pla de pensions…',
+    blk_raise:'Pujada de sou',
+    help_old_salary:'El teu salari brut anual abans de la pujada. El de dalt és el de després.',
     res_title:'El teu resum anual estimat', hero_gross:'Brut anual', hero_net:'Net anual', hero_net_month:'Net mensual mitjà', hero_eff_rate:'Tipus efectiu IRPF',
     res_annual:'Del brut al net', res_monthly:'Desglossament mes a mes', res_bonus:'El teu bonus', res_benefits:'Beneficis i estalvi fiscal', res_pension:'El teu pla de pensions',
     res_valuation:'Valoració de salari i beneficis', res_info:'Informació important',
@@ -1476,6 +1492,9 @@ const T = {
     lbl_pension_t2:'% tier above SS cap', tip_pension_t2:'The company contributes this % on the portion of your base salary that exceeds the cap.',
     lbl_ss_cap:'Max SS contribution base cap (€/year)', tip_ss_cap:'Annual limit on which you contribute to social security. For 2026 it is €61,214.40.',
     btn_calc:'Calculate my take-home', btn_reset:'Reset', btn_share:'Copy results', share_ok:'Copied!',
+    more_add:'Add extras: raise, bonus, flexible benefits, pension plan…',
+    blk_raise:'Pay raise',
+    help_old_salary:'Your gross annual salary before the raise. The one above is after.',
     res_title:'Your estimated annual summary', hero_gross:'Annual gross', hero_net:'Annual net', hero_net_month:'Average monthly net', hero_eff_rate:'Effective tax rate',
     res_annual:'From gross to net', res_monthly:'Month-by-month breakdown', res_bonus:'Your bonus', res_benefits:'Benefits & tax savings', res_pension:'Your pension plan',
     res_valuation:'Salary & benefits valuation', res_info:'Key information',
@@ -1609,28 +1628,22 @@ function toggleCollapsible(id){
 }
 
 function toggleRaiseMode(on){
-  document.getElementById('salarySimple').style.display = on ? 'none' : '';
-  document.getElementById('salaryRaise').style.display  = on ? '' : 'none';
+  const sec = document.getElementById('raiseSec');
+  if(sec) sec.classList.toggle('open', on);
   if(!on){
-    // Clear raise fields when toggled off so they don't interfere
+    // Al desactivar, limpiamos el salario anterior para que no afecte al cálculo.
     document.getElementById('oldSalary').value = '';
-    document.getElementById('newSalary').value = '';
     document.getElementById('raisePct').textContent = '—';
     document.getElementById('raisePct').className = 'badge-pct';
   } else {
-    // Pre-fill oldSalary from the simple field if it has a value
-    const base = document.getElementById('salaryBase').value;
-    if(base && !document.getElementById('oldSalary').value){
-      document.getElementById('oldSalary').value = base;
-    }
-    // Focus new salary
-    setTimeout(() => document.getElementById('newSalary').focus(), 50);
+    calcRaisePct();
+    setTimeout(() => document.getElementById('oldSalary').focus(), 50);
   }
 }
 
 function calcRaisePct(){
   const o = parseAmount(document.getElementById('oldSalary').value);
-  const n = parseAmount(document.getElementById('newSalary').value);
+  const n = parseAmount(document.getElementById('salaryBase').value);
   const el = document.getElementById('raisePct');
   if(o>0 && n>0){
     const pct = ((n-o)/o*100).toFixed(2);
@@ -1965,7 +1978,21 @@ function calcSolidarity(annualSalaryForSS, ssCap){
   return sol;
 }
 
-function calculate(){
+/* ====== Patrón "gancho": revelar campos y recálculo en vivo ====== */
+var calcDone = false;
+function toggleMore(){
+  var mf = document.getElementById('moreFields');
+  var show = getComputedStyle(mf).display === 'none';
+  mf.style.display = show ? 'block' : 'none';
+  document.getElementById('moreToggle').classList.toggle('open', show);
+}
+// Tras el primer cálculo, cualquier cambio recalcula en vivo (sin analítica ni scroll).
+['input','change'].forEach(function(ev){
+  var pc = document.getElementById('page-calc');
+  if(pc) pc.addEventListener(ev, function(){ if(calcDone) calculate(true); });
+});
+
+function calculate(live){
   const ticketsCalc = readMonthlyAnnual('ticketsMonthly','ticketsMonths');
   const ticketsAmt = ticketsCalc.annual;
   if(ticketsAmt > TICKETS_LIMIT){ recalcTicketsAnnual(); return; }
@@ -1987,10 +2014,11 @@ function calculate(){
   const hasPension = document.getElementById('hasPension').checked;
   const hasPensionExtra = document.getElementById('hasPensionExtra').checked;
 
-  // When raise mode is active the card shows oldSalary/newSalary; otherwise salaryBase.
+  // Con subida activa: el salario del gancho (salaryBase) es el de DESPUÉS de la subida,
+  // y el complemento aporta el de ANTES (oldSalary). Sin subida, solo el del gancho.
   let salaryBase = hasRaise ? fieldAmount('oldSalary') : fieldAmount('salaryBase');
   if(!salaryBase) salaryBase = 0;
-  const newSalary = hasRaise ? (fieldAmount('newSalary') || salaryBase) : salaryBase;
+  const newSalary = hasRaise ? (fieldAmount('salaryBase') || salaryBase) : salaryBase;
   const raiseMonth = hasRaise ? parseInt(document.getElementById('raiseMonth').value) : 13;
 
   const bonusAmt   = hasBonus ? fieldAmount('bonusAmt') : 0;
@@ -2353,15 +2381,20 @@ function calculate(){
 
   renderResults(lastResult);
   document.getElementById('results').style.display = 'block';
-  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+  var _pa = document.getElementById('postActions'); if(_pa) _pa.style.display = 'flex';
+  calcDone = true;
 
-  // Analytics — idioma + qué beneficios se activan (agregado y anónimo, SIN importes).
-  utrack('calculate', {
-    lang: currentLang,
-    raise: hasRaise, bonus: hasBonus, car: hasCar,
-    tickets: hasTickets, transporte: hasTrans, guarderia: hasGuard,
-    salud: hasHealth, vida: hasLife, otros: hasOtros, pension: hasPension
-  });
+  // Solo en el cálculo explícito (botón): scroll al resultado + analítica.
+  // En los recálculos en vivo (al editar cualquier campo) no hacemos ninguna de las dos.
+  if(!live){
+    document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+    utrack('calculate', {
+      lang: currentLang,
+      raise: hasRaise, bonus: hasBonus, car: hasCar,
+      tickets: hasTickets, transporte: hasTrans, guarderia: hasGuard,
+      salud: hasHealth, vida: hasLife, otros: hasOtros, pension: hasPension
+    });
+  }
 }
 
 function renderResults(r){
@@ -2563,6 +2596,11 @@ function resetForm(){
   document.getElementById('hasPensionExtra').checked = true;
   document.getElementById('pensionExtraSec').classList.add('open');
   document.getElementById('results').style.display = 'none';
+  // Volver al estado inicial de "gancho": ocultar complementos y acciones, recolapsar.
+  calcDone = false;
+  var mf = document.getElementById('moreFields'); if(mf) mf.style.display = 'none';
+  var mt = document.getElementById('moreToggle'); if(mt) mt.classList.remove('open');
+  var pa = document.getElementById('postActions'); if(pa) pa.style.display = 'none';
   document.getElementById('raisePct').textContent = '—';
   ['ticketsError','transError'].forEach(id => document.getElementById(id) && document.getElementById(id).classList.remove('show'));
   ['ticketsMonthly','transMonthly'].forEach(id => document.getElementById(id) && document.getElementById(id).classList.remove('error'));
