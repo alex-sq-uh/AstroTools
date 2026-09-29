@@ -27,6 +27,9 @@
 <meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/casa/og.jpg">
 
 <link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/casa/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
 <style>
   :root{
@@ -194,6 +197,11 @@
 
   /* ---------- Disclaimer ---------- */
   .disclaimer{background:#fff8e7;border:1px solid #f0d070;border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1.5rem;font-size:.82rem;color:#6b5300}
+  /* Enlace al aviso desde la pantalla de entrada (el disclaimer vive abajo) */
+  .notice-row{text-align:center;margin:.9rem 0 .2rem}
+  .notice-link{background:none;border:none;padding:0;font:inherit;font-size:.78rem;color:var(--text-muted);
+    text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+  .notice-link:hover{color:var(--primary)}
 
   /* ---------- How page ---------- */
   .edu-item{margin-bottom:.75rem}
@@ -238,6 +246,8 @@
   .btn-calc{display:block;width:100%;background:var(--accent);color:#4a3800;border:none;border-radius:var(--radius);padding:.85rem 1.2rem;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:var(--shadow);transition:background .15s}
   .btn-calc:hover{background:#e9b933}
 </style>
+<link rel="stylesheet" href="../shared/skin.css">
+<script src="../shared/ux.js"></script>
 <script src="../shared/brand.js"></script>
 <script src="../shared/header.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
@@ -294,7 +304,7 @@
 </head>
 <body>
 <!-- ================= CABECERA (shared/header.js) ================= -->
-<astro-header app="casa" version="v1.4">
+<astro-header app="casa" version="v1.5">
   <button slot="tabs" class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
   <button slot="tabs" class="nav-btn" id="nav-how" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
 </astro-header>
@@ -317,6 +327,11 @@
       <span class="mt"><span class="mic">🎯</span> <span data-i18n="mode_known_t">Ya sé el piso</span></span>
       <span class="md" data-i18n="mode_known_d">Calcula cuánto dinero necesitas para comprarlo.</span>
     </button>
+  </div>
+
+  <!-- Aviso legal: accesible desde el paso 1, aunque el texto viva abajo -->
+  <div class="notice-row">
+    <button type="button" class="notice-link" onclick="showNotice()" data-i18n="notice_link">⚠️ Aviso: es una herramienta orientativa</button>
   </div>
 
   <!-- PASO 2 · Datos (aparece al elegir modo) -->
@@ -483,6 +498,8 @@
     </div>
     <div class="miniflow">
       <p class="blocktitle"><span data-i18n="flow_b2">A dónde va tu dinero · ahorros:</span> <span id="f_sav_h">—</span></p>
+      <div class="split-bar hidden" id="savBar" aria-hidden="true"></div>
+      <div class="split-legend hidden" id="savLegend"></div>
       <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_down2">Entrada del piso</span></span><span class="v neg" id="f_down2">—</span></div>
       <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_itp">Impuesto de compra</span> <span class="pct" id="f_itp_pct"></span></span><span class="v neg" id="f_itp">—</span></div>
       <div class="row"><span class="l"><span class="tag minus">−</span> <span data-i18n="flow_otros">Otros gastos</span> <span class="pct" id="f_otros_pct"></span></span><span class="v neg" id="f_otros">—</span></div>
@@ -602,8 +619,16 @@
 
   </div><!-- /results -->
 
+  <!-- AVISO LEGAL: se revela con Calcular o desde el enlace del gancho -->
+  <div id="legalWrap" style="display:none">
   <div class="disclaimer" data-i18n="disclaimer">AstroHome es una herramienta orientativa para entender cómo funciona la compra de una vivienda. No es asesoramiento financiero ni fiscal: las condiciones reales dependen de cada banco, de tu comunidad autónoma y de tu situación. Tus datos se calculan en tu navegador y no se guardan; usamos Umami Analytics (sin cookies ni datos personales) solo para contar visitas.</div>
-</div>
+  </div><!-- /#legalWrap -->
+
+  <!-- FEEDBACK: solo tras el primer cálculo -->
+  <div id="feedbackWrap" style="display:none">
+    <astro-feedback></astro-feedback>
+  </div>
+</div><!-- /#page-calc -->
 
 <!-- ================= HOW IT WORKS ================= -->
 <div class="page" id="page-how">
@@ -657,8 +682,6 @@
   </div>
 </div>
 
-<astro-feedback></astro-feedback>
-
 <script>
 (function(){
   "use strict";
@@ -670,6 +693,7 @@
       calc_title:'¿A qué casa puedes aspirar?',
       calc_subtitle:'Con tu sueldo y tus ahorros te explicamos, en lenguaje claro, qué piso puedes comprar.',
       card_data:'Tus datos', btn_calc:'Calcular',
+      notice_link:'⚠️ Aviso: es una herramienta orientativa',
       lbl_salary:'Tu sueldo neto al año', hint_salary:'Lo que cobras limpio al año, todas las pagas incluidas',
       salary_link:'¿No sabes tu sueldo neto? Calcúlalo en AstroPayroll',
       tip_salary:'Lo que cobras limpio en un año, después de impuestos y Seguridad Social, sumando todas las pagas.',
@@ -724,10 +748,11 @@
       sumShort:function(f){return 'Es lo que alcanzan tus ahorros con una hipoteca del '+f+'%; tu sueldo daría para más.';},
       saldoLabKeep:'Te queda para la reforma', saldoLabAfter:'Te queda tras la reforma',
       okTitle:'Vas bien de ahorros',
-      okText:function(H,price,f,minimum,rest,reformOn){return 'Con tu sueldo, el banco te presta hasta '+H+' (el '+f+'% de un piso de '+price+'). Poniendo solo la entrada mínima ('+minimum+') te quedan '+rest+(reformOn?' después de la reforma.':' para la reforma u otros gastos.');},
+      bar_down:'Entrada', bar_costs:'Impuestos y gastos', bar_left:'Te queda', bar_lbl:'Piso de hasta', bar_lbl_known:'Necesitas ahorrado',
+      okText:function(H,price,f,minimum,rest,reformOn){return 'Con tu sueldo, el banco te presta hasta '+H+' (el '+f+'% de un piso de '+price+'). Poniendo solo lo mínimo (entrada + impuestos y gastos: '+minimum+') te quedan '+rest+(reformOn?' después de la reforma.':' para la reforma u otros gastos.');},
       okExpl:'Si prefieres pagar menos cada mes, mira la opción de la derecha: aportando más ahorros, baja tu hipoteca y tu cuota.',
       reformTitle:'La reforma no cabe en lo que te sobra',
-      reformText:function(left,R,gap){return 'Poniendo la entrada mínima te quedan '+left+' para reformar, pero has puesto una reforma de '+R+'. Te faltarían '+gap+': tendrías que aportar más ahorros (y rebajar la hipoteca) o elegir un piso algo más barato.';},
+      reformText:function(left,R,gap){return 'Poniendo solo lo mínimo te quedan '+left+' para reformar, pero has puesto una reforma de '+R+'. Te faltarían '+gap+': tendrías que aportar más ahorros (y rebajar la hipoteca) o elegir un piso algo más barato.';},
       reformExpl:'El número de arriba en rojo es lo que te falta para cubrir esa reforma.',
       shortTitle:'Tu sueldo daría para más, pero te faltan ahorros',
       shortText:function(H,priceSal,minimum,S,price,f,faltan,reformOn){return 'Por sueldo, el banco te prestaría hasta '+H+' (un piso de '+priceSal+'). Pero para eso necesitarías '+minimum+' de entrada y gastos, y tienes '+S+'. Con tus ahorros de ahora puedes aspirar a un piso de '+price+' manteniendo el '+f+'%'+(reformOn?' (ya descontada la reforma).':'.')+' Te faltarían unos '+faltan+' para llegar al máximo de tu sueldo.';},
@@ -795,6 +820,7 @@
       calc_title:'A quin pis pots aspirar?',
       calc_subtitle:'Amb el teu sou i els teus estalvis t’expliquem, en llenguatge clar, quin pis pots comprar.',
       card_data:'Les teves dades', btn_calc:'Calcular',
+      notice_link:'⚠️ Avís: és una eina orientativa',
       lbl_salary:'El teu sou net a l’any', hint_salary:'El que cobres net a l’any, totes les pagues incloses',
       salary_link:'No saps el teu sou net? Calcula’l a AstroPayroll',
       tip_salary:'El que cobres net en un any, després d’impostos i Seguretat Social, sumant totes les pagues.',
@@ -848,10 +874,11 @@
       sumShort:function(f){return 'És el que arriben a cobrir els estalvis amb una hipoteca del '+f+'%; el teu sou donaria per a més.';},
       saldoLabKeep:'Et queda per a la reforma', saldoLabAfter:'Et queda després de la reforma',
       okTitle:'Vas bé d’estalvis',
-      okText:function(H,price,f,minimum,rest,reformOn){return 'Amb el teu sou, el banc et presta fins a '+H+' (el '+f+'% d’un pis de '+price+'). Posant només l’entrada mínima ('+minimum+') et queden '+rest+(reformOn?' després de la reforma.':' per a la reforma o altres despeses.');},
+      bar_down:'Entrada', bar_costs:'Impostos i despeses', bar_left:'Et queda', bar_lbl:'Pis de fins a', bar_lbl_known:'Necessites estalviat',
+      okText:function(H,price,f,minimum,rest,reformOn){return 'Amb el teu sou, el banc et presta fins a '+H+' (el '+f+'% d’un pis de '+price+'). Posant només el mínim (entrada + impostos i despeses: '+minimum+') et queden '+rest+(reformOn?' després de la reforma.':' per a la reforma o altres despeses.');},
       okExpl:'Si prefereixes pagar menys cada mes, mira l’opció de la dreta: aportant més estalvis, baixa la teva hipoteca i la quota.',
       reformTitle:'La reforma no cap en el que et sobra',
-      reformText:function(left,R,gap){return 'Posant l’entrada mínima et queden '+left+' per reformar, però has posat una reforma de '+R+'. Et faltarien '+gap+': hauries d’aportar més estalvis (i rebaixar la hipoteca) o triar un pis una mica més barat.';},
+      reformText:function(left,R,gap){return 'Posant només el mínim et queden '+left+' per reformar, però has posat una reforma de '+R+'. Et faltarien '+gap+': hauries d’aportar més estalvis (i rebaixar la hipoteca) o triar un pis una mica més barat.';},
       reformExpl:'El número de dalt en vermell és el que et falta per cobrir aquesta reforma.',
       shortTitle:'El teu sou donaria per a més, però et falten estalvis',
       shortText:function(H,priceSal,minimum,S,price,f,faltan,reformOn){return 'Per sou, el banc et prestaria fins a '+H+' (un pis de '+priceSal+'). Però per a això necessitaries '+minimum+' d’entrada i despeses, i tens '+S+'. Amb els estalvis d’ara pots aspirar a un pis de '+price+' mantenint el '+f+'%'+(reformOn?' (ja descomptada la reforma).':'.')+' Et faltarien uns '+faltan+' per arribar al màxim del teu sou.';},
@@ -919,6 +946,7 @@
       calc_title:'What home can you afford?',
       calc_subtitle:'With your salary and savings, we explain in plain language which home you can buy.',
       card_data:'Your details', btn_calc:'Calculate',
+      notice_link:'⚠️ Note: this is a guidance tool',
       lbl_salary:'Your net salary per year', hint_salary:'Your take-home pay over a year',
       salary_link:'Don’t know your net salary? Work it out in AstroPayroll',
       tip_salary:'What you earn after tax and social security over a full year.',
@@ -972,10 +1000,11 @@
       sumShort:function(f){return 'This is what your savings reach with an '+f+'% mortgage; your salary would allow more.';},
       saldoLabKeep:'Left for the renovation', saldoLabAfter:'Left after the renovation',
       okTitle:'You’re in good shape on savings',
-      okText:function(H,price,f,minimum,rest,reformOn){return 'With your salary, the bank lends up to '+H+' (the '+f+'% of a '+price+' home). Putting in only the minimum deposit ('+minimum+') you have '+rest+(reformOn?' left after the renovation.':' left for the renovation or other costs.');},
+      bar_down:'Deposit', bar_costs:'Taxes and costs', bar_left:'Left over', bar_lbl:'Home up to', bar_lbl_known:'You need saved',
+      okText:function(H,price,f,minimum,rest,reformOn){return 'With your salary, the bank lends up to '+H+' (the '+f+'% of a '+price+' home). Putting in only the minimum (deposit + taxes and costs: '+minimum+') you have '+rest+(reformOn?' left after the renovation.':' left for the renovation or other costs.');},
       okExpl:'If you’d rather pay less each month, see the option on the right: putting in more savings lowers your mortgage and payment.',
       reformTitle:'The renovation doesn’t fit in what’s left',
-      reformText:function(left,R,gap){return 'Putting in the minimum deposit you have '+left+' for the renovation, but you set a renovation of '+R+'. You’d be short '+gap+': you’d need more savings (and a smaller mortgage) or a slightly cheaper home.';},
+      reformText:function(left,R,gap){return 'Putting in only the minimum you have '+left+' for the renovation, but you set a renovation of '+R+'. You’d be short '+gap+': you’d need more savings (and a smaller mortgage) or a slightly cheaper home.';},
       reformExpl:'The red number above is what you’re short to cover that renovation.',
       shortTitle:'Your salary would allow more, but you’re short on savings',
       shortText:function(H,priceSal,minimum,S,price,f,faltan,reformOn){return 'By salary, the bank would lend up to '+H+' (a '+priceSal+' home). But for that you’d need '+minimum+' in deposit and costs, and you have '+S+'. With your current savings you can afford a '+price+' home keeping the '+f+'%'+(reformOn?' (renovation already deducted).':'.')+' You’d be about '+faltan+' short to reach your salary’s maximum.';},
@@ -1049,6 +1078,10 @@
   function round1k(x){ if(x>=100000)return Math.round(x/1000)*1000; if(x>=10000)return Math.round(x/100)*100; return Math.round(x); }
   function e0(x){ return eur0().format(round1k(Math.max(0,x))); }
   function e2(x){ return eur2().format(Math.max(0,x)); }
+  // Importe ya redondeado (o cuota): euros enteros, sin volver a redondear a miles
+  function eurR(x){ return eur0().format(Math.round(Math.max(0,x))); }
+  // Redondeo de pantalla para las cifras que tienen que sumar: miles desde 100.000, centenas desde 1.000
+  function rd(x){ x=Math.max(0,x); return x>=100000?Math.round(x/1000)*1000 : x>=1000?Math.round(x/100)*100 : Math.round(x); }
 
   function parseNum(str){
     if(str==null) return 0;
@@ -1080,7 +1113,7 @@
      Hasta que no hay modo elegido no se muestra nada más.                        */
   var mode=null;          // null = todavía no ha elegido
   var calculated=false;   // true tras el primer Calcular → recálculo en vivo
-  window.setMode=function(m){
+  window.setMode=function(m,quiet){
     var first = (mode===null);
     mode=m;
     $('mode-explore').classList.toggle('active',m==='explore');
@@ -1092,7 +1125,15 @@
     updateMonthly();
     // Si ya había resultados, se recalculan para el modo nuevo sin perderlos.
     if(calculated) calc();
-    if(first) $('stepData').scrollIntoView({behavior:'smooth',block:'start'});
+    if(first && !quiet) $('stepData').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  /* El aviso legal y el feedback viven al final y solo aparecen tras calcular.
+     El enlace "Aviso" del gancho revela el aviso (no el feedback) y baja a él. */
+  function showLegal(){ $('legalWrap').style.display=''; }
+  window.showNotice=function(){
+    showLegal();
+    $('legalWrap').scrollIntoView({behavior:'smooth',block:'center'});
   };
 
   /* Botón Calcular: revela los resultados y activa el recálculo en vivo. */
@@ -1100,6 +1141,7 @@
     if(!mode) return;
     calculated=true;
     $('results').classList.remove('hidden');
+    showLegal(); $('feedbackWrap').style.display='';
     calc();
     $('results').scrollIntoView({behavior:'smooth',block:'start'});
     try{ if(window.umami) window.umami.track('calculate',{mode:mode}); }catch(e){}
@@ -1191,47 +1233,63 @@
     var saldo=S-downMin-itpAmt-otrosAmt-R;
     var bankPct=Math.round(mortgage/price*100);
 
+    // Cifras de pantalla redondeadas UNA vez y derivadas entre sí, para que siempre cuadren
+    // (antes se redondeaba cada una por su lado: 288.000 − 57.600 no daba los 230.000 del banco).
+    var pD=rd(price), dD=rd(downMin), mD=Math.max(0,pD-dD);
+    var iD=rd(itpAmt), oD=rd(otrosAmt), sD=Math.round(S);
+    // Si los ahorros son el límite, se gastan enteros: el redondeo lo absorben "otros gastos".
+    if(!salaryLimited) oD=Math.max(0,sD-R-dD-iD);
+    var minD=dD+iD+oD, saldoD=salaryLimited ? sD-minD-R : 0;
+
     // Resumen + KPIs
-    $('sumPrice').textContent=e0(price);
+    $('sumPrice').textContent=eurR(pD);
     $('sumText').textContent=salaryLimited?L().sumSalary(Math.round(f*100)):L().sumShort(Math.round(f*100));
-    $('kHip').textContent=e0(mortgage);
+    $('kHip').textContent=eurR(mD);
     $('kHipNote').textContent=L().bankNote(bankPct);
-    $('kCuota').textContent=e2(cuota);
+    $('kCuota').textContent=eurR(cuota);
     $('kCuotaNote').textContent=L().months(yrs);
 
     // Flujo A
-    $('f_price').textContent=e0(price);
-    $('f_bank').textContent='+ '+e0(mortgage);
-    $('f_down').textContent='+ '+e0(downMin);
+    $('f_price').textContent=eurR(pD);
+    $('f_bank').textContent='+ '+eurR(mD);
+    $('f_down').textContent='+ '+eurR(dD);
     $('f_bank_pct').textContent='('+bankPct+'%)';
     $('f_down_pct').textContent='('+Math.round(downMin/price*100)+'%)';
     // Flujo B
-    $('f_sav_h').textContent=e0(S);
-    $('f_down2').textContent='− '+e0(downMin);
-    $('f_itp').textContent='− '+e0(itpAmt);
-    $('f_otros').textContent='− '+e0(otrosAmt);
+    $('f_sav_h').textContent=eurR(sD);
+    $('f_down2').textContent='− '+eurR(dD);
+    $('f_itp').textContent='− '+eurR(iD);
+    $('f_otros').textContent='− '+eurR(oD);
     $('f_itp_pct').textContent='('+(Math.round(itpPct*1000)/10)+'%)';
     $('f_otros_pct').textContent='('+(Math.round(otrPct*1000)/10)+'%)';
     if(R>0){ $('f_reform_row').classList.remove('hidden'); $('f_reform').textContent='− '+e0(R); }
     else $('f_reform_row').classList.add('hidden');
     var saldoEl=$('f_saldo');
-    saldoEl.textContent=(saldo<-0.5?'− ':'')+e0(Math.abs(saldo));
-    saldoEl.className='v '+(saldo<-0.5?'neg':(saldo>0.5?'pos':''));
+    saldoEl.textContent=(saldoD<0?'− ':'')+eurR(Math.abs(saldoD));
+    saldoEl.className='v '+(saldoD<0?'neg':(saldoD>0?'pos':''));
     $('f_saldo_lab').textContent=R>0?L().saldoLabAfter:L().saldoLabKeep;
+    // Barra: a dónde van tus ahorros (solo si llegan)
+    var bar=$('savBar'), leg=$('savLegend');
+    if(sD>0 && saldoD>=0){
+      var segs=[[dD,'#1a2b5e',L().bar_down],[iD+oD,'#7aa1ff',L().bar_costs],[saldoD,'#f5c84b',L().bar_left]].filter(function(s){ return s[0]>0; });
+      bar.innerHTML=segs.map(function(s){ return '<span style="flex:'+s[0]+';background:'+s[1]+'"></span>'; }).join('');
+      leg.innerHTML=segs.map(function(s){ return '<span><i style="background:'+s[1]+'"></i>'+s[2]+' · '+eurR(s[0])+'</span>'; }).join('');
+      bar.classList.remove('hidden'); leg.classList.remove('hidden');
+    } else { bar.classList.add('hidden'); leg.classList.add('hidden'); }
 
     // Comparativa
     if(salaryLimited){
       $('compareCard').classList.remove('hidden');
-      $('oa_in').textContent=e0(minimum);
-      $('oa_hip').textContent=e0(H);
-      $('oa_cuota').textContent=e2(cuotaMax);
-      $('oa_foot').textContent=L().footMin(e0(leftover));
+      $('oa_in').textContent=eurR(minD);
+      $('oa_hip').textContent=eurR(mD);
+      $('oa_cuota').textContent=eurR(cuotaMax);
+      $('oa_foot').textContent=L().footMin(eurR(saldoD));
       var mortgageAll=Math.max(0,(price+itpAmt+otrosAmt)-S);
       var cuotaAll=cuotaFor(mortgageAll);
-      $('ob_in').textContent=e0(S);
+      $('ob_in').textContent=eurR(sD);
       $('ob_hip').textContent=e0(mortgageAll);
-      $('ob_cuota').textContent=e2(cuotaAll);
-      $('ob_foot').textContent=L().footAll(eur0().format(round1k(Math.max(0,cuotaMax-cuotaAll))));
+      $('ob_cuota').textContent=eurR(cuotaAll);
+      $('ob_foot').textContent=L().footAll(eurR(Math.max(0,Math.round(cuotaMax)-Math.round(cuotaAll))));
     } else $('compareCard').classList.add('hidden');
 
     // Aviso
@@ -1242,7 +1300,7 @@
         text=L().reformText(e0(leftover),e0(R),e0(R-leftover)); expl=L().reformExpl;
       } else {
         cls='ok'; ic='✅'; title=L().okTitle;
-        text=L().okText(e0(H),e0(price),Math.round(f*100),e0(minimum),e0(R>0?leftover-R:leftover),R>0); expl=L().okExpl;
+        text=L().okText(eurR(mD),eurR(pD),Math.round(f*100),eurR(minD),eurR(saldoD),R>0); expl=L().okExpl;
       }
     } else {
       cls='warn'; ic='⚠️'; title=L().shortTitle;
@@ -1252,6 +1310,7 @@
     $('notice').className='notice '+cls;
     $('noticeIc').textContent=ic; $('noticeTitle').textContent=title; $('noticeText').textContent=text; $('saldoExpl').textContent=expl;
 
+    publish(L().bar_lbl, eurR(pD), '#viewExplore .result-hero');
     computeMore(f,c,S,cuotaMax,H);
   }
 
@@ -1276,46 +1335,50 @@
     var total=entrada+itpAmt+otrosAmt+R;
     var cuota=cuotaFor(mortgage);
     var bankPct=Math.round(mortgage/P*100);
+    // Cifras de pantalla coherentes: el precio es el que has escrito; banco = precio − entrada.
+    var pD=Math.round(P), dD=rd(entrada), mD=Math.max(0,pD-dD), iD=rd(itpAmt), oD=rd(otrosAmt), rD=Math.round(R);
+    var totD=dD+iD+oD+rD, sD=Math.round(S);
 
     // Hero + KPIs
-    $('knTotal').textContent=e0(total);
-    $('knHeroText').textContent=L().kn_hero_t(e0(mortgage),Math.round(f*100));
-    $('knBank').textContent=e0(mortgage);
+    $('knTotal').textContent=eurR(totD);
+    $('knHeroText').textContent=L().kn_hero_t(eurR(mD),Math.round(f*100));
+    $('knBank').textContent=eurR(mD);
     $('knBankNote').textContent=L().bankNote(bankPct);
-    $('knCuota').textContent=e2(cuota);
+    $('knCuota').textContent=eurR(cuota);
     $('knCuotaNote').textContent=L().months(yrs);
 
     // Desglose
-    $('kf_price').textContent=e0(P);
-    $('kf_bank').textContent=e0(mortgage);
+    $('kf_price').textContent=eurR(pD);
+    $('kf_bank').textContent=eurR(mD);
     $('kf_bank_pct').textContent='('+bankPct+'%)';
-    $('kf_down').textContent=e0(entrada);
+    $('kf_down').textContent=eurR(dD);
     $('kf_down_pct').textContent='('+Math.round(entrada/P*100)+'%)';
-    $('kf_down2').textContent=e0(entrada);
-    $('kf_itp').textContent=e0(itpAmt);
+    $('kf_down2').textContent=eurR(dD);
+    $('kf_itp').textContent=eurR(iD);
     $('kf_itp_pct').textContent='('+(Math.round(itpPct*1000)/10)+'%)';
-    $('kf_otros').textContent=e0(otrosAmt);
+    $('kf_otros').textContent=eurR(oD);
     $('kf_otros_pct').textContent='('+(Math.round(otrPct*1000)/10)+'%)';
-    if(R>0){ $('kf_reform_row').classList.remove('hidden'); $('kf_reform').textContent=e0(R); }
+    if(R>0){ $('kf_reform_row').classList.remove('hidden'); $('kf_reform').textContent=eurR(rD); }
     else $('kf_reform_row').classList.add('hidden');
-    $('kf_total').textContent=e0(total);
+    $('kf_total').textContent=eurR(totD);
 
     // Aviso de viabilidad
     var cls,ic,title,text,expl='';
     if(S>0){
-      if(S+0.5>=total){ cls='ok'; ic='✅'; title=L().knOkTitle; text=L().knOkText(e0(total),e0(S),e0(S-total)); }
-      else { cls='warn'; ic='⚠️'; title=L().knShortTitle; text=L().knShortText(e0(total),e0(S),e0(total-S)); }
+      if(sD>=totD){ cls='ok'; ic='✅'; title=L().knOkTitle; text=L().knOkText(eurR(totD),eurR(sD),eurR(sD-totD)); }
+      else { cls='warn'; ic='⚠️'; title=L().knShortTitle; text=L().knShortText(eurR(totD),eurR(sD),eurR(totD-sD)); }
     } else {
-      cls='ok'; ic='💡'; title=L().knNoSavTitle; text=L().knNoSavText(e0(total));
+      cls='ok'; ic='💡'; title=L().knNoSavTitle; text=L().knNoSavText(eurR(totD));
     }
     if(sal>0){
       var cuotaMax=dtiPct*(sal/12);
-      if(cuota>cuotaMax+0.5){ expl=L().knDtiBad(e2(cuota),Math.round(dtiPct*100),e2(cuotaMax)); if(cls==='ok'){cls='warn';ic='⚠️';} }
-      else expl=L().knDtiOk(e2(cuota),Math.round(dtiPct*100));
+      if(cuota>cuotaMax+0.5){ expl=L().knDtiBad(eurR(cuota),Math.round(dtiPct*100),eurR(cuotaMax)); if(cls==='ok'){cls='warn';ic='⚠️';} }
+      else expl=L().knDtiOk(eurR(cuota),Math.round(dtiPct*100));
     }
     $('knNotice').className='notice '+cls;
     $('knNoticeIc').textContent=ic; $('knNoticeTitle').textContent=title; $('knNoticeText').textContent=text;
     $('knExpl').textContent=expl;
+    publish(L().bar_lbl_known, eurR(totD), '#viewKnown .result-hero');
   }
 
   function showEmptyKnown(){
@@ -1373,9 +1436,37 @@
     $('m1_out').className='lever-out muted'; $('m1_out').textContent=L().m1_fill; $('m3_out').textContent='';
     $('m5_out').className='lever-out muted'; $('m5_out').textContent=L().m5_fill;
   }
+  // Barra fija, 2 columnas en escritorio y "recordar en este móvil"
+  function casaState(){
+    var v={}; ids.forEach(function(id){ v[id]=$(id).value; });
+    return JSON.stringify({mode:mode, v:v, c:{couple:$('couple').checked, knownReformChk:$('knownReformChk').checked}});
+  }
+  function publish(label,value,heroSel){
+    AstroUX.showResult({ label:label, value:value, hero:document.querySelector(heroSel), state:casaState(),
+      summary:{ label:'Home · '+(mode==='known'?L().bar_lbl_known:L().bar_lbl), value:value } });
+  }
 
   applyStatic();
   updateMonthly();   // sin calcular: esperamos a que elija modo y pulse Calcular
+
+  AstroUX.init({ app:'casa' });
+  AstroUX.mountRemember($('calcBtn').parentNode);
+  (function(){
+    // Desde AstroPayroll: ?neto=24322 → sueldo neto ya puesto y modo "aún no sé qué piso"
+    var m=/[?&]neto=(\d+)/.exec(location.search);
+    if(m){ $('salary').value=groupThousands(m[1]); setMode('explore',true); updateMonthly(); return; }
+    var saved=AstroUX.restoreState(); if(!saved) return;
+    var st; try{ st=JSON.parse(saved); }catch(e){ return; }
+    if(!st || !st.mode || !st.v) return;
+    Object.keys(st.v).forEach(function(id){ if($(id)) $(id).value=st.v[id]; });
+    if(st.c){
+      $('couple').checked=!!st.c.couple; $('partnerWrap').classList.toggle('hidden',!st.c.couple);
+      $('knownReformChk').checked=!!st.c.knownReformChk; $('knownReformWrap').classList.toggle('hidden',!st.c.knownReformChk);
+    }
+    setMode(st.mode,true);
+    calculated=true; $('results').classList.remove('hidden'); showLegal(); $('feedbackWrap').style.display='';
+    calc();
+  })();
 })();
 </script>
 </body>

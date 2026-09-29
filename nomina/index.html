@@ -27,6 +27,9 @@
 <meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/nomina/og.jpg">
 
 <link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/nomina/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
   :root {
     --primary: #1a2b5e;
@@ -119,7 +122,11 @@
   /* TOOLTIP */
   .tooltip-wrap { display: inline-flex; align-items: center; gap: 4px; }
   .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: var(--text-muted); color: #fff; font-size: 0.65rem; font-weight: 700; cursor: help; flex-shrink: 0; position: relative; }
-  .info-icon:hover .tooltip-box { display: block; }
+  .info-icon:hover .tooltip-box, .info-icon.show .tooltip-box { display: block; }
+  /* Tabla mes a mes: neto justo tras el mes, cifras alineadas a la derecha */
+  .rtable-net th:not(:first-child), .rtable-net td:not(:first-child) { text-align: right; }
+  .rtable-net .net-col { font-weight: 700; }
+  .page-head { margin-bottom: 1.5rem; }
   .tooltip-box { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; font-size: 0.75rem; line-height: 1.4; padding: 8px 12px; border-radius: 8px; width: 220px; z-index: 200; margin-bottom: 6px; font-weight: 400; white-space: normal; pointer-events: none; box-shadow: var(--shadow-lg); }
   .tooltip-box::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--primary); }
 
@@ -188,6 +195,11 @@
 
   /* DISCLAIMER */
   .disclaimer { background: #fff8e7; border: 1px solid #f0d070; border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 2rem; font-size: 0.82rem; color: #6b5300; }
+  /* Enlace al aviso desde la pantalla de entrada (los avisos viven abajo) */
+  .notice-row { text-align: center; margin: .9rem 0 .2rem; }
+  .notice-link { background: none; border: none; padding: 0; font: inherit; font-size: .78rem; color: var(--text-muted);
+    text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  .notice-link:hover { color: var(--primary); }
   .disclaimer strong { color: #5a4400; }
   .llm-note { background: #eaf4fb; border: 1px solid #b3d7f0; border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 0.75rem; font-size: 0.82rem; color: #0d4a6e; }
   .privacy-note { background: #edfaf2; border: 1px solid #a7d8bd; border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 0.75rem; font-size: 0.82rem; color: #114b2a; }
@@ -352,6 +364,8 @@
     .otro-row .btn-remove { grid-area: remove; width: 100%; height: 32px; }
   }
 </style>
+<link rel="stylesheet" href="../shared/skin.css">
+<script src="../shared/ux.js"></script>
 <script src="../shared/brand.js"></script>
 <script src="../shared/header.js" defer></script>
 <script src="../shared/analytics.js" defer></script>
@@ -413,7 +427,7 @@
 </head>
 <body>
 <!-- ================= CABECERA (shared/header.js) ================= -->
-<astro-header app="nomina" version="v2.17">
+<astro-header app="nomina" version="v2.18">
   <button slot="tabs" class="nav-btn active" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
   <button slot="tabs" class="nav-btn" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
   <button slot="tabs" class="nav-btn" onclick="showPage('tramos')" data-i18n="nav_tramos">Tramos IRPF</button>
@@ -422,9 +436,9 @@
 
 <!-- CALCULATOR PAGE -->
 <div class="page active" id="page-calc">
-  <div style="margin-bottom:1.5rem; padding-top:0.5rem;">
-    <h1 style="font-size:1.4rem; font-weight:700; color:var(--primary); margin-bottom:4px;" data-i18n="calc_title">¿Cuánto me queda neto?</h1>
-    <p style="color:var(--text-muted); font-size:0.88rem;" data-i18n="calc_subtitle">Introduce tu salario y te calculamos el desglose real mes a mes.</p>
+  <div class="page-head">
+    <h1 data-i18n="calc_title">¿Cuánto me queda neto?</h1>
+    <p data-i18n="calc_subtitle">Introduce tu salario y te calculamos el desglose real mes a mes.</p>
   </div>
 
   <!-- BLOQUE 1: SALARIO -->
@@ -449,13 +463,23 @@
   </div>
 
   <!-- ACCIÓN PRINCIPAL (gancho): con solo el salario ya se puede calcular -->
-  <div class="btn-row" style="margin-bottom:.6rem;">
-    <button class="btn btn-primary btn-full" onclick="calculate()" data-i18n="btn_calc">Calcular mi neto</button>
+  <div class="btn-row" id="calcRow" style="margin-bottom:.2rem;">
+    <button type="button" class="btn-calc" onclick="calculate()" data-i18n="btn_calc">Calcular mi neto</button>
   </div>
-  <button type="button" class="more-toggle" id="moreToggle" onclick="toggleMore()">
-    <span data-i18n="more_add">Añadir complementos: subida, bonus, retribución flexible, plan de pensiones…</span>
-    <span class="mt-chev" aria-hidden="true">▾</span>
-  </button>
+  <!-- Complementos: cada chip abre su bloque (y lo activa si es un sí/no claro) -->
+  <span class="chip-lbl" data-i18n="more_q">¿Cobras algo más?</span>
+  <div class="chip-row" id="moreChips">
+    <button type="button" class="chip" onclick="openMore('hasBonus', true)" data-i18n="chip_bonus">+ Bonus</button>
+    <button type="button" class="chip" onclick="openMore('hasRaise', true)" data-i18n="chip_raise">+ Subida</button>
+    <button type="button" class="chip" onclick="openMore('hasTickets', false)" data-i18n="chip_flex">+ Retribución flexible</button>
+    <button type="button" class="chip" onclick="openMore('hasPension', true)" data-i18n="chip_pension">+ Plan de pensiones</button>
+    <button type="button" class="chip" id="moreToggle" onclick="toggleMore()" data-i18n="chip_all">Ver todos</button>
+  </div>
+
+  <!-- Aviso legal: siempre accesible desde el gancho, aunque el texto viva abajo -->
+  <div class="notice-row">
+    <button type="button" class="notice-link" onclick="showNotice()" data-i18n="notice_link">⚠️ Aviso: es una estimación orientativa</button>
+  </div>
 
   <!-- CAMPOS AVANZADOS (ocultos hasta que se piden) -->
   <div id="moreFields" style="display:none;">
@@ -834,24 +858,24 @@
   <!-- RESULTS -->
   <div id="results">
     <!-- Hero -->
-    <div class="result-hero">
-      <h2 data-i18n="res_title">Tu resumen anual estimado</h2>
-      <div class="hero-grid">
-        <div class="hero-stat"><div class="val" id="heroValuation">—</div><div class="lbl" data-i18n="hero_valuation">Valoración del salario + beneficios</div></div>
-        <div class="hero-stat"><div class="val" id="heroNet">—</div><div class="lbl" data-i18n="hero_net_take">Salario neto a recibir</div></div>
-        <div class="hero-stat"><div class="val" id="heroFlexSaving">—</div><div class="lbl" data-i18n="hero_flex_saving">Ahorro IRPF de retribución flexible</div></div>
+    <div class="result-hero" id="heroBox">
+      <div class="hero-ring">
+        <div class="hr-main">
+          <p class="hr-eyebrow" data-i18n="hero_month_eyebrow">Te quedan limpios al mes</p>
+          <p class="hr-big" id="heroMonth">—</p>
+          <p class="hr-sub" id="heroYear"></p>
+        </div>
+        <svg viewBox="0 0 96 96" aria-hidden="true" id="heroRing"></svg>
+      </div>
+      <div class="hero-chips" id="heroChips"></div>
+      <div class="hero-extra" id="heroExtra">
+        <div id="heroValuationRow"><span data-i18n="hero_valuation">Valoración del salario + beneficios</span><b id="heroValuation">—</b></div>
+        <div id="heroFlexRow"><span data-i18n="hero_flex_saving">Ahorro fiscal por retribución flexible</span><b id="heroFlexSaving">—</b></div>
       </div>
     </div>
 
-    <!-- Sinergia con la suite -->
-    <div class="card">
-      <div class="card-title"><div class="icon">🧭</div> <span data-i18n="suite_title">¿Y ahora qué?</span></div>
-      <a class="suite-link" href="../casa/"><span data-i18n="suite_home">¿A qué piso puedes aspirar con este sueldo? · AstroHome</span><span class="arr">→</span></a>
-      <a class="suite-link" href="../ahorro/"><span data-i18n="suite_savings">Haz que tus ahorros trabajen para ti · AstroSavings</span><span class="arr">→</span></a>
-    </div>
-
     <!-- VALORACIÓN DE BENEFICIOS -->
-    <div class="card">
+    <div class="card" id="valuationCard">
       <div class="card-title"><div class="icon">🎁</div> <span data-i18n="res_valuation">Valoración de salario y beneficios</span></div>
       <div id="valuationBreakdown"></div>
     </div>
@@ -893,6 +917,14 @@
       <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:10px;" data-i18n="flex_summary_exp">Cada concepto de retribución flexible aprovecha una exención y te ahorra IRPF al tipo marginal del resto de tu paquete. Si el concepto sale de tu salario base (aportado por el trabajador), además ahorras la cuota a la Seguridad Social.</p>
       <div class="monthly-wrap"><div id="flexSummaryBreakdown"></div></div>
     </div>
+
+    <!-- Sinergia con la suite (al final: primero tu resultado, luego el siguiente paso) -->
+    <div class="card">
+      <div class="card-title"><div class="icon">🧭</div> <span data-i18n="suite_title">¿Y ahora qué?</span></div>
+      <a class="suite-link" id="suiteHome" href="../casa/"><span data-i18n="suite_home">¿A qué piso puedes aspirar con este sueldo? · AstroHome</span><span class="arr">→</span></a>
+      <a class="suite-link" href="../forecast/"><span data-i18n="suite_forecast">¿Cuánto tendrías si ahorras cada mes? · AstroForecast</span><span class="arr">→</span></a>
+      <a class="suite-link" href="../ahorro/"><span data-i18n="suite_savings">Haz que tus ahorros trabajen para ti · AstroSavings</span><span class="arr">→</span></a>
+    </div>
   </div>
 
   <!-- ACCIONES POST-CÁLCULO (aparecen tras el primer cálculo) -->
@@ -902,7 +934,8 @@
     <span class="share-copied" id="shareCopied" data-i18n="share_ok">¡Copiado!</span>
   </div>
 
-  <!-- DISCLAIMER -->
+  <!-- AVISOS: se revelan con Calcular o desde el enlace del gancho -->
+  <div id="legalWrap" style="display:none">
   <div class="disclaimer">
     <strong data-i18n="disclaimer_title">⚠️ Estimación orientativa.</strong>
     <span data-i18n="disclaimer_body"> Esta calculadora proporciona una estimación basada en los tramos y reglas generales del IRPF en España. No tiene en cuenta situaciones personales como hijos, discapacidad o deducciones autonómicas. Para conocer tu retención exacta consulta con un asesor fiscal o con el equipo de Recursos Humanos de tu empresa.</span>
@@ -915,7 +948,13 @@
     <strong data-i18n="llm_title">💡 ¿Tienes dudas?</strong>
     <span data-i18n="llm_body"> Esta app está pensada para usarse junto a asistentes de IA como Claude o ChatGPT. Si algo no te queda claro, copia tu desglose y pregúntale directamente: ¿Por qué me retienen tanto en marzo? ¿Qué es el tipo marginal? ¿Me conviene aportar más al plan de pensiones? Son herramientas muy útiles para entender tu nómina.</span>
   </div>
-</div>
+  </div><!-- /#legalWrap -->
+
+  <!-- FEEDBACK: solo tras el primer cálculo -->
+  <div id="feedbackWrap" style="display:none">
+    <astro-feedback></astro-feedback>
+  </div>
+</div><!-- /#page-calc -->
 
 <!-- HOW IT WORKS PAGE -->
 <div class="page" id="page-how">
@@ -1102,10 +1141,8 @@
   </div>
 </div>
 
-<astro-feedback></astro-feedback>
-
 <script>
-const APP_VERSION = '2.17';
+const APP_VERSION = '2.18';
 // Escala IRPF 2025 — Cataluña (suma estatal + autonómico)
 // Fuente: https://taxdown.es/irpf/tabla-tramos
 const TRAMOS = [
@@ -1225,8 +1262,11 @@ const T = {
     lbl_pension_t1:'% tramo hasta el tope SS', tip_pension_t1:'La empresa aporta este % sobre la parte de tu salario base que está por debajo del tope máximo de cotización de la SS.',
     lbl_pension_t2:'% tramo por encima del tope SS', tip_pension_t2:'La empresa aporta este % sobre la parte de tu salario base que supera el tope de cotización.',
     lbl_ss_cap:'Tope máximo base cotización SS (€/año)', tip_ss_cap:'Límite anual sobre el que cotizas a la SS. Para 2026 es de 61.214,40 €.',
-    btn_calc:'Calcular mi neto', btn_reset:'Resetear', btn_share:'Copiar resultados', share_ok:'¡Copiado!',
+    btn_calc:'Calcular mi neto', notice_link:'⚠️ Aviso: es una estimación orientativa', btn_reset:'Resetear', btn_share:'Copiar resultados', share_ok:'¡Copiado!',
     more_add:'Añadir complementos: subida, bonus, retribución flexible, plan de pensiones…',
+    more_q:'¿Cobras algo más?', chip_bonus:'+ Bonus', chip_raise:'+ Subida de sueldo', chip_flex:'+ Retribución flexible', chip_pension:'+ Plan de pensiones', chip_all:'Ver todos',
+    hero_month_eyebrow:'Te quedan limpios al mes', hero_year_tpl:'{x} netos al año', hc_net:'Para ti', hc_irpf:'IRPF', hc_ss:'Seg. Social', hc_other:'Otros', hero_ring_lbl:'de cada 100 € brutos',
+    suite_forecast:'¿Cuánto tendrías si ahorras cada mes? · AstroForecast', err_salary:'Pon tu sueldo bruto anual para calcular.', bar_lbl:'Neto al mes', per_month_short:'/mes',
     blk_raise:'Subida de sueldo',
     help_old_salary:'Tu salario bruto anual antes de la subida. El de arriba es el de después.',
     res_title:'Tu resumen anual estimado', hero_gross:'Bruto anual', hero_net:'Neto anual', hero_net_month:'Neto mensual medio', hero_eff_rate:'Tipo efectivo IRPF',
@@ -1358,8 +1398,11 @@ const T = {
     lbl_pension_t1:'% tram fins al topall SS', tip_pension_t1:"L'empresa aporta aquest % sobre la part del salari per sota del topall de cotització.",
     lbl_pension_t2:'% tram per sobre del topall SS', tip_pension_t2:"L'empresa aporta aquest % sobre la part del salari que supera el topall.",
     lbl_ss_cap:'Topall màxim base cotització SS (€/any)', tip_ss_cap:'Límit anual sobre el qual cotitzes a la SS. Per al 2026 és de 61.214,40 €.',
-    btn_calc:'Calcular el meu net', btn_reset:'Reiniciar', btn_share:'Copiar resultats', share_ok:'Copiat!',
+    btn_calc:'Calcular el meu net', notice_link:'⚠️ Avís: és una estimació orientativa', btn_reset:'Reiniciar', btn_share:'Copiar resultats', share_ok:'Copiat!',
     more_add:'Afegir complements: pujada, bonus, retribució flexible, pla de pensions…',
+    more_q:'Cobres alguna cosa més?', chip_bonus:'+ Bonus', chip_raise:'+ Pujada de sou', chip_flex:'+ Retribució flexible', chip_pension:'+ Pla de pensions', chip_all:'Veure-ho tot',
+    hero_month_eyebrow:'Et queden nets cada mes', hero_year_tpl:'{x} nets l\x27any', hc_net:'Per a tu', hc_irpf:'IRPF', hc_ss:'Seg. Social', hc_other:'Altres', hero_ring_lbl:'de cada 100 € bruts',
+    suite_forecast:'Quant tindries si estalvies cada mes? · AstroForecast', err_salary:'Posa el teu sou brut anual per calcular.', bar_lbl:'Net al mes', per_month_short:'/mes',
     blk_raise:'Pujada de sou',
     help_old_salary:'El teu salari brut anual abans de la pujada. El de dalt és el de després.',
     res_title:'El teu resum anual estimat', hero_gross:'Brut anual', hero_net:'Net anual', hero_net_month:'Net mensual mitjà', hero_eff_rate:'Tipus efectiu IRPF',
@@ -1491,8 +1534,11 @@ const T = {
     lbl_pension_t1:'% tier up to SS cap', tip_pension_t1:'The company contributes this % on the portion of your base salary below the SS contribution cap.',
     lbl_pension_t2:'% tier above SS cap', tip_pension_t2:'The company contributes this % on the portion of your base salary that exceeds the cap.',
     lbl_ss_cap:'Max SS contribution base cap (€/year)', tip_ss_cap:'Annual limit on which you contribute to social security. For 2026 it is €61,214.40.',
-    btn_calc:'Calculate my take-home', btn_reset:'Reset', btn_share:'Copy results', share_ok:'Copied!',
+    btn_calc:'Calculate my take-home', notice_link:'⚠️ Note: this is a rough estimate', btn_reset:'Reset', btn_share:'Copy results', share_ok:'Copied!',
     more_add:'Add extras: raise, bonus, flexible benefits, pension plan…',
+    more_q:'Do you get anything else?', chip_bonus:'+ Bonus', chip_raise:'+ Pay rise', chip_flex:'+ Flexible benefits', chip_pension:'+ Pension plan', chip_all:'See all',
+    hero_month_eyebrow:'You take home each month', hero_year_tpl:'{x} net per year', hc_net:'For you', hc_irpf:'Income tax', hc_ss:'Social Security', hc_other:'Other', hero_ring_lbl:'of every €100 gross',
+    suite_forecast:'How much could you have if you save every month? · AstroForecast', err_salary:'Enter your gross annual salary to calculate.', bar_lbl:'Net per month', per_month_short:'/mo',
     blk_raise:'Pay raise',
     help_old_salary:'Your gross annual salary before the raise. The one above is after.',
     res_title:'Your estimated annual summary', hero_gross:'Annual gross', hero_net:'Annual net', hero_net_month:'Average monthly net', hero_eff_rate:'Effective tax rate',
@@ -1980,11 +2026,28 @@ function calcSolidarity(annualSalaryForSS, ssCap){
 
 /* ====== Patrón "gancho": revelar campos y recálculo en vivo ====== */
 var calcDone = false;
-function toggleMore(){
+/* Los avisos y el feedback viven al final y solo aparecen tras calcular.
+   El enlace "Aviso" del gancho revela los avisos (no el feedback) y baja a ellos. */
+function showLegal(){
+  var l = document.getElementById('legalWrap'); if(l) l.style.display = '';
+}
+function showNotice(){
+  showLegal();
+  var l = document.getElementById('legalWrap');
+  if(l) l.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function toggleMore(force){
   var mf = document.getElementById('moreFields');
-  var show = getComputedStyle(mf).display === 'none';
+  var show = (typeof force === 'boolean') ? force : getComputedStyle(mf).display === 'none';
   mf.style.display = show ? 'block' : 'none';
-  document.getElementById('moreToggle').classList.toggle('open', show);
+  document.getElementById('moreToggle').classList.toggle('on', show);
+}
+// Chip de complemento: abre el bloque, lo activa si es un sí/no claro y baja hasta él.
+function openMore(toggleId, activate){
+  toggleMore(true);
+  var cb = document.getElementById(toggleId); if(!cb) return;
+  if(activate && !cb.checked){ cb.checked = true; if(cb.onchange) cb.onchange(); }
+  var card = cb.closest('.card'); if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
 }
 // Tras el primer cálculo, cualquier cambio recalcula en vivo (sin analítica ni scroll).
 ['input','change'].forEach(function(ev){
@@ -1993,6 +2056,12 @@ function toggleMore(){
 });
 
 function calculate(live){
+  // Sin sueldo no hay cálculo: el gris del campo es solo un ejemplo, no un valor.
+  const salEl = document.getElementById('salaryBase');
+  if(!salEl.value.trim()){
+    if(!live) AstroUX.markMissing([salEl]);
+    return;
+  }
   const ticketsCalc = readMonthlyAnnual('ticketsMonthly','ticketsMonths');
   const ticketsAmt = ticketsCalc.annual;
   if(ticketsAmt > TICKETS_LIMIT){ recalcTicketsAnnual(); return; }
@@ -2382,7 +2451,16 @@ function calculate(live){
   renderResults(lastResult);
   document.getElementById('results').style.display = 'block';
   var _pa = document.getElementById('postActions'); if(_pa) _pa.style.display = 'flex';
+  showLegal();
+  var _fw = document.getElementById('feedbackWrap'); if(_fw) _fw.style.display = '';
   calcDone = true;
+  // Barra fija + escritorio a 2 columnas + "recordar en este móvil"
+  const _month = fmtRound(lastResult.totalNet/12);
+  AstroUX.showResult({
+    label: t('bar_lbl'), value: _month, hero: document.getElementById('heroBox'),
+    state: serializeForm(),
+    summary: { label: 'Payroll · ' + fmtRound(fieldAmount('salaryBase')), value: _month + t('per_month_short') }
+  });
 
   // Solo en el cálculo explícito (botón): scroll al resultado + analítica.
   // En los recálculos en vivo (al editar cualquier campo) no hacemos ninguna de las dos.
@@ -2400,10 +2478,38 @@ function calculate(live){
 function renderResults(r){
   const months = currentLang==='ca' ? MONTHS_CA : currentLang==='en' ? MONTHS_EN : MONTHS_ES;
 
-  // Hero (totales redondeados a 0 decimales para una lectura más clara)
+  // Hero: la cifra que se busca es el neto AL MES (redondeado); el resto, de apoyo.
+  document.getElementById('heroMonth').textContent = fmtRound(r.totalNet/12);
+  document.getElementById('heroYear').textContent = t('hero_year_tpl').replace('{x}', fmtRound(r.totalNet));
+  // Reparto de cada 100 € brutos: neto · IRPF · Seguridad Social (+ solidaridad) · otros (plan de pensiones, flexible)
+  const gross = r.totalNet + r.totalIRPF + r.totalSS + r.totalSol + r.totalPensionEmp + r.flexExemptTotal;
+  const parts = [
+    { k:'hc_net',   v:r.totalNet,                      c:'#f5c84b' },
+    { k:'hc_irpf',  v:r.totalIRPF,                     c:'#7aa1ff' },
+    { k:'hc_ss',    v:r.totalSS + r.totalSol,          c:'#c9d3ee' },
+    { k:'hc_other', v:r.totalPensionEmp + r.flexExemptTotal, c:'#8e7cc3' }
+  ].filter(p => p.v > 0.5);
+  const C = 2*Math.PI*38; let acc = 0, ring = '<circle cx="48" cy="48" r="38" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12"/><g transform="rotate(-90 48 48)">';
+  parts.forEach(p => {
+    const len = gross > 0 ? p.v/gross*C : 0, gap = parts.length > 1 ? Math.min(3, len/3) : 0;
+    ring += `<circle cx="48" cy="48" r="38" fill="none" stroke="${p.c}" stroke-width="12" stroke-dasharray="${Math.max(0,len-gap).toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}"/>`;
+    acc += len;
+  });
+  const netPct = gross > 0 ? Math.round(r.totalNet/gross*100) : 0;
+  ring += `</g><text x="48" y="53" text-anchor="middle" font-size="16" font-weight="800" fill="#fff" font-family="Plus Jakarta Sans,Segoe UI,sans-serif">${netPct} %</text>`;
+  document.getElementById('heroRing').innerHTML = ring;
+  const pctLbl = v => (gross > 0 ? (v/gross*100) : 0).toLocaleString(localeFor(), {maximumFractionDigits:1}) + ' %';
+  document.getElementById('heroChips').innerHTML = parts.map(p => `<span class="hero-chip"><i style="background:${p.c}"></i>${t(p.k)} ${pctLbl(p.v)}</span>`).join('');
+  // Valoración del paquete y ahorro fiscal: solo cuando aportan algo (hay beneficios / hay flexible)
+  const showVal = r.benefitTotal - r.benefitSalary > 0.5, showFlex = r.flexSavingTotal > 0.5;
   document.getElementById('heroValuation').textContent = fmtRound(r.benefitTotal);
-  document.getElementById('heroNet').textContent = fmtRound(r.totalNet);
-  document.getElementById('heroFlexSaving').textContent = (r.flexSavingTotal > 0 ? '+' : '') + fmtRound(r.flexSavingTotal);
+  document.getElementById('heroFlexSaving').textContent = '+' + fmtRound(r.flexSavingTotal);
+  document.getElementById('heroValuationRow').style.display = showVal ? '' : 'none';
+  document.getElementById('heroFlexRow').style.display = showFlex ? '' : 'none';
+  document.getElementById('heroExtra').style.display = (showVal || showFlex) ? '' : 'none';
+  document.getElementById('valuationCard').style.display = showVal ? '' : 'none';
+  // AstroHome recibe tu neto anual ya puesto
+  const sh = document.getElementById('suiteHome'); if(sh) sh.href = '../casa/?neto=' + Math.round(r.totalNet);
 
   // ── Valoración de salario y beneficios ──
   // Cuando la retribución flexible se aporta "por el trabajador", el importe sale del
@@ -2476,16 +2582,17 @@ function renderResults(r){
   // Monthly table
   const hasSolCol = r.totalSol > 0;
   const hasPenCol = r.hasPension;
-  let tbl = `<table class="rtable"><thead><tr><th>${t('col_mes')}</th><th>${t('col_bruto')}</th><th>${t('col_irpf')}</th><th>${t('col_ss')}</th>${hasPenCol?`<th>${t('col_pension_emp')}</th>`:''}<th>${t('col_neto')}</th></tr></thead><tbody>`;
+  // El neto va justo después del mes: es lo que se busca y en móvil no debe quedar cortado por el scroll.
+  let tbl = `<table class="rtable rtable-net"><thead><tr><th>${t('col_mes')}</th><th>${t('col_neto')}</th><th>${t('col_bruto')}</th><th>${t('col_irpf')}</th><th>${t('col_ss')}</th>${hasPenCol?`<th>${t('col_pension_emp')}</th>`:''}</tr></thead><tbody>`;
   let gS=0,iS=0,sS=0,solS=0,pS=0,nS=0;
   r.months.forEach(mo => {
     const cls = mo.isBonus ? 'highlight-row' : mo.isRaise ? 'subida-row' : '';
     const badge = mo.isBonus ? `<span class="month-badge badge-bonus">${t('month_bonus')}</span>` : mo.isRaise ? `<span class="month-badge badge-raise">${t('month_raise')}</span>` : '';
     const ssTotal = mo.ssM + mo.solM;
-    tbl += `<tr class="${cls}"><td>${months[mo.m-1]}${badge}</td><td>${fmt(mo.grossM)}</td><td class="amount-neg">−${fmt(mo.irpfM)}</td><td class="amount-neg">−${fmt(ssTotal)}</td>${hasPenCol?`<td class="amount-neg">−${fmt(mo.pensionEmpM)}</td>`:''}<td class="amount-pos">${fmt(mo.netM)}</td></tr>`;
+    tbl += `<tr class="${cls}"><td>${months[mo.m-1]}${badge}</td><td class="amount-pos net-col">${fmt(mo.netM)}</td><td>${fmt(mo.grossM)}</td><td class="amount-neg">−${fmt(mo.irpfM)}</td><td class="amount-neg">−${fmt(ssTotal)}</td>${hasPenCol?`<td class="amount-neg">−${fmt(mo.pensionEmpM)}</td>`:''}</tr>`;
     gS+=mo.grossM; iS+=mo.irpfM; sS+=mo.ssM; solS+=mo.solM; pS+=mo.pensionEmpM; nS+=mo.netM;
   });
-  tbl += `<tr class="total-row"><td>Total</td><td>${fmtRound(gS)}</td><td class="amount-neg">−${fmtRound(iS)}</td><td class="amount-neg">−${fmtRound(sS+solS)}</td>${hasPenCol?`<td class="amount-neg">−${fmtRound(pS)}</td>`:''}<td class="amount-pos">${fmtRound(nS)}</td></tr>`;
+  tbl += `<tr class="total-row"><td>Total</td><td class="amount-pos net-col">${fmtRound(nS)}</td><td>${fmtRound(gS)}</td><td class="amount-neg">−${fmtRound(iS)}</td><td class="amount-neg">−${fmtRound(sS+solS)}</td>${hasPenCol?`<td class="amount-neg">−${fmtRound(pS)}</td>`:''}</tr>`;
   tbl += '</tbody></table>';
   document.getElementById('monthlyTable').innerHTML = tbl;
 
@@ -2598,9 +2705,12 @@ function resetForm(){
   document.getElementById('results').style.display = 'none';
   // Volver al estado inicial de "gancho": ocultar complementos y acciones, recolapsar.
   calcDone = false;
+  AstroUX.clearResult();
   var mf = document.getElementById('moreFields'); if(mf) mf.style.display = 'none';
-  var mt = document.getElementById('moreToggle'); if(mt) mt.classList.remove('open');
+  var mt = document.getElementById('moreToggle'); if(mt) mt.classList.remove('on');
   var pa = document.getElementById('postActions'); if(pa) pa.style.display = 'none';
+  var lw = document.getElementById('legalWrap'); if(lw) lw.style.display = 'none';
+  var fw = document.getElementById('feedbackWrap'); if(fw) fw.style.display = 'none';
   document.getElementById('raisePct').textContent = '—';
   ['ticketsError','transError'].forEach(id => document.getElementById(id) && document.getElementById(id).classList.remove('show'));
   ['ticketsMonthly','transMonthly'].forEach(id => document.getElementById(id) && document.getElementById(id).classList.remove('error'));
@@ -2627,7 +2737,7 @@ function shareResult(){
     `${t('hero_net_month')}: ${fmt(r.totalNet/12)}`,
     r.hasPension ? `${t('pen_total')}: ${fmt(r.pensionTotal)}` : '',
     `\n${t('disclaimer_title')} ${t('disclaimer_body')}`,
-    `\n— AstroPayroll v${APP_VERSION} · una app de AstroCosas`
+    `\n— AstroPayroll v${APP_VERSION} · AstroTools`
   ].filter(Boolean).join('\n');
   navigator.clipboard.writeText(lines).then(() => {
     const el = document.getElementById('shareCopied');
@@ -2759,6 +2869,53 @@ reformatAllMoneyInputs();
 
 // Seed: una fila placeholder en "otros beneficios" (no se cuenta hasta que se rellene)
 addOtroRow(null, null, null, true);
+
+// Ayudas "i": también con un toque (en móvil no hay hover)
+document.querySelectorAll('.info-icon').forEach(function(ic){
+  ic.addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = ic.classList.contains('show');
+    document.querySelectorAll('.info-icon.show').forEach(function(o){ o.classList.remove('show'); });
+    if(!open) ic.classList.add('show');
+  });
+});
+document.addEventListener('click', function(){ document.querySelectorAll('.info-icon.show').forEach(function(o){ o.classList.remove('show'); }); });
+
+/* ── "Recordar en este móvil": guardamos los campos con id y los radios (no los "otros" dinámicos) ── */
+function serializeForm(){
+  const st = { v:{}, c:{}, r:{} };
+  document.querySelectorAll('#page-calc input[id]:not([id^="fld-"]), #page-calc select[id]:not([id^="fld-"])').forEach(el => {
+    if(el.type === 'checkbox') st.c[el.id] = el.checked;
+    else if(el.type !== 'radio') st.v[el.id] = el.value;
+  });
+  document.querySelectorAll('#page-calc input[type="radio"]:checked').forEach(el => { st.r[el.name] = el.value; });
+  return JSON.stringify(st);
+}
+function restoreForm(json){
+  let st; try { st = JSON.parse(json); } catch(e){ return false; }
+  if(!st || !st.v || !st.v.salaryBase) return false;
+  Object.keys(st.v).forEach(id => { const el = document.getElementById(id); if(el) el.value = st.v[id]; });
+  Object.keys(st.r || {}).forEach(n => {
+    const el = document.querySelector(`#page-calc input[type="radio"][name="${n}"][value="${st.r[n]}"]`);
+    if(el){ el.checked = true; el.dispatchEvent(new Event('change')); }
+  });
+  let anyExtra = false;
+  Object.keys(st.c || {}).forEach(id => {
+    const el = document.getElementById(id); if(!el || el.checked === st.c[id]) return;
+    el.checked = st.c[id]; if(el.onchange) el.onchange();
+    if(st.c[id] && id !== 'hasPensionExtra') anyExtra = true;
+  });
+  if(anyExtra) toggleMore(true);
+  reformatAllMoneyInputs(); calcRaisePct();
+  return true;
+}
+
+AstroUX.init({ app: 'nomina' });
+AstroUX.mountRemember(document.getElementById('calcRow'));
+(function(){
+  const saved = AstroUX.restoreState();
+  if(saved && restoreForm(saved)) calculate(true);
+})();
 </script>
 </body>
 </html>

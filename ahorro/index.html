@@ -27,6 +27,10 @@
 <meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/ahorro/og.jpg">
 
 <link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/ahorro/">
+<!-- Fuentes de la piel "sky" (antes se declaraban pero no se cargaban: caían a la del sistema) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -76,7 +80,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 .ms-line.done{background:var(--sky-mid)}
 
 /* ====== SCREENS ====== */
-.screen{display:none;position:absolute;inset:0;overflow:hidden;animation:fadeUp .3s ease forwards}
+.screen{display:none;position:absolute;inset:0 1rem;overflow:hidden;animation:fadeUp .3s ease forwards}
 .screen.active{display:flex;flex-direction:column}
 .screen.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(1rem + env(safe-area-inset-bottom, 0px))}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
@@ -290,7 +294,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#eef5fb;color:#1a2030
 <div id="app">
 
   <!-- ====== CABECERA (shared/header.js) ====== -->
-  <astro-header app="ahorro" version="v4.9" brand-action>
+  <astro-header app="ahorro" version="v4.10" brand-action>
     <button slot="action" class="back-btn hidden" id="back-btn" onclick="goBack()">← Volver</button>
   </astro-header>
   <script>

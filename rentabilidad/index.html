@@ -85,6 +85,10 @@
 }
 </script>
 
+<link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/rentabilidad/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
   :root{
     --primary:#1a2b5e;
@@ -228,6 +232,12 @@
 
   .disclaimer{font-size:.76rem;color:var(--text-muted);text-align:center;margin:1.4rem auto 0;max-width:560px;line-height:1.5}
 
+  /* Enlace al aviso desde la pantalla de entrada (el disclaimer vive abajo) */
+  .notice-row{text-align:center;margin:.9rem 0 .2rem}
+  .notice-link{background:none;border:none;padding:0;font:inherit;font-size:.78rem;color:var(--text-muted);
+    text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+  .notice-link:hover{color:var(--primary)}
+
   /* ---------- Página "Cómo funciona" ---------- */
   .edu{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.9rem;overflow:hidden;background:var(--surface)}
   .edu-q{width:100%;text-align:left;background:none;border:none;font:inherit;font-weight:700;color:var(--primary);font-size:.95rem;padding:1rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center}
@@ -237,11 +247,13 @@
   .edu.open .edu-a{display:block}
   .edu-a p{margin:.4rem 0}
 </style>
+<link rel="stylesheet" href="../shared/skin.css">
+<script src="../shared/ux.js"></script>
 </head>
 <body>
 
 <!-- ================= CABECERA (shared/header.js) ================= -->
-<astro-header app="rentabilidad" version="v1.0" brand-action>
+<astro-header app="rentabilidad" version="v1.1" brand-action>
   <button slot="tabs" class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
   <button slot="tabs" class="nav-btn" id="nav-how" onclick="showPage('how')" data-i18n="nav_how">¿Cómo funciona?</button>
 </astro-header>
@@ -342,6 +354,11 @@
     <button class="link-ex" id="exampleBtn" type="button" data-i18n="ex_btn">Ver un ejemplo</button>
   </div>
 
+  <!-- Aviso legal: siempre accesible desde el gancho, aunque el texto viva abajo -->
+  <div class="notice-row">
+    <button type="button" class="notice-link" onclick="showNotice()" data-i18n="notice_link">⚠️ Aviso: es una estimación orientativa</button>
+  </div>
+
   <!-- Avisos -->
   <div class="notice err" id="errBox" style="margin-top:1.25rem"></div>
   <div class="notice warn" id="warnBox"></div>
@@ -388,7 +405,16 @@
       <span class="copied" id="copied" data-i18n="copied">¡Enlace copiado!</span>
     </div>
 
+  </div><!-- /#results -->
+
+  <!-- AVISO LEGAL: se revela con Calcular o desde el enlace del gancho -->
+  <div id="legalWrap" style="display:none">
     <p class="disclaimer" data-i18n="disclaimer">Estimaciones, no es asesoramiento financiero. Las rentabilidades de las alternativas son supuestos. Rentabilidades pasadas no garantizan rentabilidades futuras.</p>
+  </div>
+
+  <!-- FEEDBACK: solo tras el primer cálculo -->
+  <div id="feedbackWrap" style="display:none">
+    <astro-feedback></astro-feedback>
   </div>
 </div>
 
@@ -436,8 +462,6 @@
   </div>
 </div>
 
-<!-- ================= FEEDBACK (shared/feedback.js) ================= -->
-<astro-feedback></astro-feedback>
 
 <script>
 (function(){
@@ -457,6 +481,7 @@
       div_empty:'¿Cobraste dividendos o rentas por el camino? Añádelos para afinar el cálculo. (Opcional)',
       div_add:'Añadir un cobro', div_amt:'Importe', div_date:'Fecha', div_del:'Eliminar',
       btn_calc:'Calcular rentabilidad', div_toggle:'Cobré dividendos o rentas por el camino',
+      notice_link:'⚠️ Aviso: es una estimación orientativa',
       adv_title:'Ajustes avanzados', adv_sub:'opcional · con qué te comparamos',
       adv_intro:'Para compararte, suponemos estas rentabilidades anuales de cada alternativa. Son estimaciones; puedes cambiarlas.',
       lbl_inf:'Inflación', tip_inf:'Cuánto suben los precios al año, de media. Es la línea de "no perder poder de compra".',
@@ -503,6 +528,7 @@
       div_empty:'Vas cobrar dividends o rendes pel camí? Afegeix-los per afinar el càlcul. (Opcional)',
       div_add:'Afegir un cobrament', div_amt:'Import', div_date:'Data', div_del:'Eliminar',
       btn_calc:'Calcular rendibilitat', div_toggle:'Vaig cobrar dividends o rendes pel camí',
+      notice_link:'⚠️ Avís: és una estimació orientativa',
       adv_title:'Ajustos avançats', adv_sub:'opcional · amb què et comparem',
       adv_intro:'Per comparar-te, suposem aquestes rendibilitats anuals de cada alternativa. Són estimacions; les pots canviar.',
       lbl_inf:'Inflació', tip_inf:'Quant pugen els preus a l\'any, de mitjana. És la línia de "no perdre poder de compra".',
@@ -547,6 +573,7 @@
       div_empty:'Did you receive any dividends or payouts along the way? Add them to fine-tune the result. (Optional)',
       div_add:'Add a payout', div_amt:'Amount', div_date:'Date', div_del:'Remove',
       btn_calc:'Calculate return', div_toggle:'I received dividends or payouts along the way',
+      notice_link:'⚠️ Note: this is a rough estimate',
       adv_title:'Advanced settings', adv_sub:'optional · what we compare you to',
       adv_intro:'To compare, we assume these yearly returns for each alternative. They are estimates; you can change them.',
       lbl_inf:'Inflation', tip_inf:'How much prices rise per year, on average. It is the "don\'t lose buying power" line.',
@@ -716,6 +743,14 @@
      los resultados no aparecen hasta pulsar Calcular; a partir de ahí, todo
      cambio recalcula en vivo.                                                */
   var calculated=false;
+  /* El aviso legal y el feedback viven al final y solo aparecen tras calcular.
+     El enlace "Aviso" del gancho revela el aviso (no el feedback) y baja a él. */
+  function showLegal(){ $('legalWrap').style.display=''; }
+  function showPostCalc(){ showLegal(); $('feedbackWrap').style.display=''; }
+  window.showNotice=function(){
+    showLegal();
+    $('legalWrap').scrollIntoView({behavior:'smooth',block:'center'});
+  };
   window.toggleDivs=function(){
     var w=$('divWrap'), show=w.classList.contains('hidden');
     w.classList.toggle('hidden',!show);
@@ -726,9 +761,13 @@
     calc();
     if(!$('results').classList.contains('show')){
       // Faltan datos: respondemos al clic en vez de dejarlo mudo.
-      if(!$('errBox').classList.contains('show')) showErr(errMsg('incomplete'));
+      if(!$('errBox').classList.contains('show')){
+        showErr(errMsg('incomplete'));
+        AstroUX.markMissing(['buyAmt','buyDate','sellAmt','sellDate'].map($).filter(function(el){ return !el.value.trim(); }));
+      }
       return;
     }
+    showPostCalc();
     $('results').scrollIntoView({behavior:'smooth',block:'start'});
     try{ if(window.umami) window.umami.track('calculate'); }catch(e){}
   };
@@ -816,6 +855,8 @@
 
     $('results').classList.add('show');
     last={inp:inp,rate:rate,years:years,totalIn:totalIn,moic:moic};
+    AstroUX.showResult({ label:L().hero_eyebrow, value:$('heroRate').textContent, hero:document.querySelector('#results .hero'),
+      state:shareQuery(), summary:{ label:'Return · '+L().hero_eyebrow, value:$('heroRate').textContent } });
 
     try{ if(window.umami) window.umami.track('calc_done',{rate:Math.round(rate*1000)/10,years:Math.round(years*10)/10,divs:inp.divs.length}); }catch(e){}
   }
@@ -906,8 +947,9 @@
     var base=location.href.split('?')[0].split('#')[0];
     return base+(q.length? '?'+q.join('&'):'');
   }
-  function loadFromURL(){
-    var qs=location.search.replace(/^\?/,''); if(!qs) return false;
+  function shareQuery(){ var u=buildShareURL(), i=u.indexOf('?'); return i<0?'':u.slice(i+1); }
+  function loadFromURL(qs){
+    if(qs==null) qs=location.search.replace(/^\?/,''); if(!qs) return false;
     var p={}; qs.split('&').forEach(function(kv){ var i=kv.indexOf('='); if(i<0) return; p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1)); });
     var any=false;
     if(p.bp){ $('buyAmt').value=groupThousands(p.bp); any=true; }
@@ -937,7 +979,7 @@
     // El ejemplo lleva dividendos: los mostramos y damos por calculado.
     $('divWrap').classList.remove('hidden'); $('divToggle').classList.add('open');
     calculated=true;
-    renderDivs(); calc(); $('results').scrollIntoView({behavior:'smooth',block:'start'});
+    renderDivs(); calc(); showPostCalc(); $('results').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
   /* ===================== UI: páginas, plegables, tooltips ===================== */
@@ -987,7 +1029,7 @@
     divs=[]; renderDivs();
     $('results').classList.remove('show'); showErr(''); showWarn('');
     // Volver al estado inicial de "gancho": dividendos recogidos, sin calcular.
-    calculated=false; last=null;
+    calculated=false; last=null; AstroUX.clearResult();
     $('divWrap').classList.add('hidden'); $('divToggle').classList.remove('open');
     try{ history.replaceState(null,'',location.href.split('?')[0]); }catch(e){}
     showPage('calc');
@@ -997,13 +1039,18 @@
   var lang0=(document.documentElement.lang||'es').slice(0,2).toLowerCase(); if(!T[lang0]) lang0='es';
   currentLang=lang0;
   applyStatic();
+  AstroUX.init({ app:'rentabilidad' });
+  AstroUX.mountRemember($('calcBtn').parentNode);
   var hadURL=loadFromURL();
+  // Sin enlace compartido: si pidió recordar sus datos, los recuperamos de este navegador
+  if(!hadURL){ var saved=AstroUX.restoreState(); if(saved) hadURL=loadFromURL(saved); }
   renderDivs();
   // Enlace compartido: nos saltamos el gancho y abrimos directamente en resultados.
   if(hadURL){
     calculated=true;
     if(divs.length){ $('divWrap').classList.remove('hidden'); $('divToggle').classList.add('open'); }
     calc();
+    showPostCalc();
   }
 })();
 </script>

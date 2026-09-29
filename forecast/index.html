@@ -28,6 +28,9 @@
 <meta name="twitter:image" content="https://alex-sq-uh.github.io/AstroTools/forecast/og.jpg">
 
 <link rel="canonical" href="https://alex-sq-uh.github.io/AstroTools/forecast/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
 <!-- Chart.js (única dependencia externa, ya usada por la suite) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -169,6 +172,17 @@
   .unit-toggle{flex-shrink:0;background:#eef4fc;border:1px solid #cfe0f5;color:var(--secondary);font:inherit;font-weight:700;font-size:.78rem;padding:0 .7rem;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap}
   .unit-toggle:hover{background:var(--secondary);color:#fff;border-color:var(--secondary)}
   .age-wrap input{padding-right:12px}
+  /* Flujos escritos como frase */
+  .flow-s{padding:.8rem .9rem}
+  .fs{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .55rem;font-size:.98rem;font-weight:600;color:var(--text)}
+  .fs-grp{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+  .fs input{min-height:44px!important;padding:8px 10px!important;text-align:center;border:1.5px solid var(--border);border-radius:12px;background:#fff;font:inherit;font-weight:800;color:var(--text);outline:none}
+  .fs input:focus{border-color:var(--secondary);box-shadow:0 0 0 4px rgba(74,109,209,.16)}
+  .fs .fs-amt{width:6.2rem}
+  .fs .fs-age{width:3.6rem}
+  .fs .unit-toggle{min-height:44px;border-radius:12px}
+  .fs .seg button{min-height:40px}
+  .fs .flow-del{margin-left:auto;width:40px;height:40px;border-radius:12px}
   .flow-empty{font-size:.82rem;color:var(--text-muted);margin:0}
   .add-flow{display:inline-flex;align-items:center;gap:7px;background:none;border:1.5px dashed var(--secondary);color:var(--secondary);font:inherit;font-weight:600;font-size:.85rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;margin-top:.9rem;transition:all .15s}
   .add-flow:hover{background:#eef4fc}
@@ -241,6 +255,12 @@
   .rate-desc strong{color:var(--primary)}
 
   .disclaimer{font-size:.76rem;color:var(--text-muted);text-align:center;margin:1.4rem auto 0;max-width:600px;line-height:1.5}
+
+  /* Enlace al aviso desde la pantalla de entrada (el disclaimer vive abajo) */
+  .notice-row{text-align:center;margin:.9rem 0 .2rem}
+  .notice-link{background:none;border:none;padding:0;font:inherit;font-size:.78rem;color:var(--text-muted);
+    text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+  .notice-link:hover{color:var(--primary)}
   .assump{font-size:.78rem;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem 1rem;margin-top:1rem;line-height:1.5}
   .assump b{color:var(--primary)}
 
@@ -256,11 +276,13 @@
   .cross{font-size:.86rem;color:var(--text-muted);text-align:center;margin:1.6rem auto 0;max-width:600px}
   .cross a{color:var(--secondary);font-weight:700}
 </style>
+<link rel="stylesheet" href="../shared/skin.css">
+<script src="../shared/ux.js"></script>
 </head>
 <body>
 
 <!-- ================= CABECERA (shared/header.js) ================= -->
-<astro-header app="forecast" version="v1.0" brand-action>
+<astro-header app="forecast" version="v1.1" brand-action>
   <button slot="tabs" class="nav-btn active" id="nav-calc" onclick="showPage('calc')" data-i18n="nav_calc">Calculadora</button>
   <button slot="tabs" class="nav-btn" id="nav-concepts" onclick="showPage('concepts')" data-i18n="nav_concepts">Conceptos</button>
 </astro-header>
@@ -295,6 +317,12 @@
   <!-- Flujos de caja -->
   <div class="card">
     <div class="card-title"><div class="icon">🔁</div> <span data-i18n="card_flows">Tus flujos de caja</span></div>
+    <span class="chip-lbl" data-i18n="tpl_lbl">Empieza con un ejemplo</span>
+    <div class="chip-row" style="margin-bottom:.9rem">
+      <button type="button" class="chip" onclick="useTemplate('retire')" data-i18n="tpl_retire">Ahorrar y jubilarme</button>
+      <button type="button" class="chip" onclick="useTemplate('save')" data-i18n="tpl_save">Solo ahorrar</button>
+      <button type="button" class="chip" onclick="useTemplate('clear')" data-i18n="tpl_clear">Vaciar</button>
+    </div>
     <p class="hint" id="flowsIntro" style="display:block;margin:-.4rem 0 1rem" data-i18n="flows_intro">Añade lo que <b>entra</b> (ahorras / ingresas) y lo que <b>sale</b> (gastas / retiras), y entre qué edades. Ejemplo: ahorro 500 €/mes de los 35 a los 64; gasto 1.500 €/mes de los 65 a los 100.</p>
     <div id="flowList"></div>
     <button class="add-flow" id="addFlow" type="button" data-tag="add-flow"><span>＋</span> <span data-i18n="flow_add">Añadir un flujo</span></button>
@@ -318,6 +346,11 @@
         <div class="input-wrap"><input id="wRate" type="text" inputmode="decimal" value="3"><span class="unit">%</span></div>
       </div>
     </div>
+  </div>
+
+  <!-- Aviso legal: siempre accesible desde el gancho, aunque el texto viva abajo -->
+  <div class="notice-row">
+    <button type="button" class="notice-link" onclick="showNotice()" data-i18n="notice_link">⚠️ Aviso: es una estimación orientativa</button>
   </div>
 
   <!-- Avisos -->
@@ -386,7 +419,16 @@
       <span class="copied" id="copied" data-i18n="copied">¡Enlace copiado!</span>
     </div>
 
+  </div><!-- /#results -->
+
+  <!-- AVISO LEGAL: se revela con Calcular o desde el enlace del gancho -->
+  <div id="legalWrap" style="display:none">
     <p class="disclaimer" data-i18n="disclaimer">Estimaciones en euros de hoy sin descontar inflación; no es asesoramiento financiero. Las rentabilidades son supuestos y rentabilidades pasadas no garantizan rentabilidades futuras.</p>
+  </div>
+
+  <!-- FEEDBACK: solo tras el primer cálculo -->
+  <div id="feedbackWrap" style="display:none">
+    <astro-feedback></astro-feedback>
   </div>
 </div>
 
@@ -463,8 +505,6 @@
   <p class="cross" data-i18n="cross">¿Quieres afinar una pieza? Mira <a href="../ahorro/" data-i18n="cross_a">cómo crecen tus ahorros invertidos</a> o <a href="../rentabilidad/" data-i18n="cross_b">qué rentabilidad ha tenido una inversión</a>.</p>
 </div>
 
-<!-- ================= FEEDBACK (shared/feedback.js) ================= -->
-<astro-feedback></astro-feedback>
 
 <script>
 (function(){
@@ -482,9 +522,12 @@
       card_flows:'Tus flujos de caja',
       flows_intro:'Añade lo que <b>entra</b> (ahorras / ingresas) y lo que <b>sale</b> (gastas / retiras), y entre qué edades. Ejemplo: ahorro 500 €/mes de los 35 a los 64; gasto 1.500 €/mes de los 65 a los 100.',
       flow_in:'Entra', flow_out:'Sale',
+      s_month:'al mes', s_year:'al año', s_from:'de los', s_to:'a los', s_years:'años',
+      tpl_lbl:'Empieza con un ejemplo', tpl_retire:'Ahorrar y jubilarme', tpl_save:'Solo ahorrar', tpl_clear:'Vaciar',
       fl_amount:'Importe', fl_from:'Desde (edad)', fl_to:'Hasta (edad)', fl_del:'Eliminar flujo',
       unit_year:'€/año', unit_month:'€/mes',
       flow_add:'Añadir un flujo', btn_calc:'Calcular',
+      notice_link:'⚠️ Aviso: es una estimación orientativa',
       adv_title:'Ajustes avanzados', adv_sub:'opcional · cuánto retiras',
       lbl_wrate:'Tasa de retirada anual', tip_wrate:'Qué parte de tu patrimonio sacarías cada año para vivir. El 3% es conservador y prudente para planes largos (la conocida "regla del 4%" es algo más agresiva).',
       ms_10:'Dentro de 10 años', ms_20:'Dentro de 20 años', ms_30:'Dentro de 30 años', ms_sub:'a los {age} años',
@@ -558,9 +601,12 @@
       card_flows:'Els teus fluxos de caixa',
       flows_intro:'Afegeix el que <b>entra</b> (estalvies / ingresses) i el que <b>surt</b> (gastes / retires), i entre quines edats. Exemple: estalvi 500 €/mes dels 35 als 64; despesa 1.500 €/mes dels 65 als 100.',
       flow_in:'Entra', flow_out:'Surt',
+      s_month:'al mes', s_year:'l\x27any', s_from:'dels', s_to:'als', s_years:'anys',
+      tpl_lbl:'Comença amb un exemple', tpl_retire:'Estalviar i jubilar-me', tpl_save:'Només estalviar', tpl_clear:'Buidar',
       fl_amount:'Import', fl_from:'Des de (edat)', fl_to:'Fins a (edat)', fl_del:'Eliminar flux',
       unit_year:'€/any', unit_month:'€/mes',
       flow_add:'Afegir un flux', btn_calc:'Calcular',
+      notice_link:'⚠️ Avís: és una estimació orientativa',
       adv_title:'Ajustos avançats', adv_sub:'opcional · quant retires',
       lbl_wrate:'Taxa de retirada anual', tip_wrate:'Quina part del teu patrimoni trauries cada any per viure. El 3% és conservador i prudent per a plans llargs (la coneguda "regla del 4%" és una mica més agressiva).',
       ms_10:'D\'aquí a 10 anys', ms_20:'D\'aquí a 20 anys', ms_30:'D\'aquí a 30 anys', ms_sub:'als {age} anys',
@@ -634,9 +680,12 @@
       card_flows:'Your cash flows',
       flows_intro:'Add what comes <b>in</b> (you save / earn) and what goes <b>out</b> (you spend / withdraw), and between which ages. Example: save €500/mo from 35 to 64; spend €1,500/mo from 65 to 100.',
       flow_in:'In', flow_out:'Out',
+      s_month:'a month', s_year:'a year', s_from:'from age', s_to:'to', s_years:'',
+      tpl_lbl:'Start from an example', tpl_retire:'Save, then retire', tpl_save:'Just save', tpl_clear:'Clear',
       fl_amount:'Amount', fl_from:'From (age)', fl_to:'To (age)', fl_del:'Remove flow',
       unit_year:'€/yr', unit_month:'€/mo',
       flow_add:'Add a flow', btn_calc:'Calculate',
+      notice_link:'⚠️ Note: this is a rough estimate',
       adv_title:'Advanced settings', adv_sub:'optional · how much you withdraw',
       lbl_wrate:'Yearly withdrawal rate', tip_wrate:'How much of your wealth you would take each year to live on. 3% is conservative and prudent for long plans (the well-known "4% rule" is a bit more aggressive).',
       ms_10:'In 10 years', ms_20:'In 20 years', ms_30:'In 30 years', ms_sub:'at age {age}',
@@ -743,26 +792,21 @@
   var flows=[]; // {type:'in'|'out', amt:'', unit:'year'|'month', from:'', to:''}
   function renderFlows(){
     var list=$('flowList'); list.innerHTML='';
+    // Cada flujo se lee como una frase: "Entra [500] € [al mes] de los [35] a los [64] años"
     flows.forEach(function(f,idx){
-      var unitLbl = f.unit==='month'? L().unit_month : L().unit_year;
-      var row=document.createElement('div'); row.className='flow';
+      var unitLbl = f.unit==='month'? L().s_month : L().s_year;
+      var row=document.createElement('div'); row.className='flow flow-s';
       row.innerHTML=
-        '<div class="flow-head">'+
-          '<div class="seg" data-i="'+idx+'">'+
-            '<button type="button" data-t="in" class="'+(f.type==='in'?'on':'')+'">▲ '+L().flow_in+'</button>'+
-            '<button type="button" data-t="out" class="'+(f.type==='out'?'on':'')+'">▼ '+L().flow_out+'</button>'+
+        '<div class="fs">'+
+          '<div class="seg" data-i="'+idx+'" role="group" aria-label="'+L().fl_amount+'">'+
+            '<button type="button" data-t="in" aria-pressed="'+(f.type==='in')+'" class="'+(f.type==='in'?'on':'')+'">▲ '+L().flow_in+'</button>'+
+            '<button type="button" data-t="out" aria-pressed="'+(f.type==='out')+'" class="'+(f.type==='out'?'on':'')+'">▼ '+L().flow_out+'</button>'+
           '</div>'+
+          '<span class="fs-grp"><input type="text" inputmode="decimal" class="fAmt fs-amt" data-i="'+idx+'" placeholder="500" aria-label="'+L().fl_amount+'" value="'+(f.amt||'')+'"> €</span>'+
+          '<button type="button" class="unit-toggle fUnit" data-i="'+idx+'">'+unitLbl+'</button>'+
+          '<span class="fs-grp">'+L().s_from+' <input type="text" inputmode="numeric" class="fFrom fs-age" data-i="'+idx+'" placeholder="35" aria-label="'+L().fl_from+'" value="'+(f.from||'')+'"></span>'+
+          '<span class="fs-grp">'+L().s_to+' <input type="text" inputmode="numeric" class="fTo fs-age" data-i="'+idx+'" placeholder="64" aria-label="'+L().fl_to+'" value="'+(f.to||'')+'"> '+L().s_years+'</span>'+
           '<button class="flow-del" type="button" title="'+L().fl_del+'" aria-label="'+L().fl_del+'" data-i="'+idx+'">×</button>'+
-        '</div>'+
-        '<div class="flow-body">'+
-          '<div class="field amt-field"><label>'+L().fl_amount+'</label>'+
-            '<div class="amt-wrap">'+
-              '<div class="input-wrap"><input type="text" inputmode="decimal" class="fAmt" data-i="'+idx+'" placeholder="500" value="'+(f.amt||'')+'"><span class="unit">€</span></div>'+
-              '<button type="button" class="unit-toggle fUnit" data-i="'+idx+'">'+unitLbl+'</button>'+
-            '</div>'+
-          '</div>'+
-          '<div class="field age-wrap"><label>'+L().fl_from+'</label><div class="input-wrap"><input type="text" inputmode="numeric" class="fFrom" data-i="'+idx+'" placeholder="35" value="'+(f.from||'')+'"></div></div>'+
-          '<div class="field age-wrap"><label>'+L().fl_to+'</label><div class="input-wrap"><input type="text" inputmode="numeric" class="fTo" data-i="'+idx+'" placeholder="65" value="'+(f.to||'')+'"></div></div>'+
         '</div>';
       list.appendChild(row);
     });
@@ -771,7 +815,7 @@
       b.addEventListener('click',function(){ var i=+b.parentElement.dataset.i; flows[i].type=b.dataset.t; renderFlows(); onEdit(); });
     });
     list.querySelectorAll('.fUnit').forEach(function(b){
-      b.addEventListener('click',function(){ var i=+b.dataset.i; flows[i].unit=(flows[i].unit==='month'?'year':'month'); b.textContent=(flows[i].unit==='month'?L().unit_month:L().unit_year); onEdit(); });
+      b.addEventListener('click',function(){ var i=+b.dataset.i; flows[i].unit=(flows[i].unit==='month'?'year':'month'); b.textContent=(flows[i].unit==='month'?L().s_month:L().s_year); onEdit(); });
     });
     list.querySelectorAll('.fAmt').forEach(function(el){
       el.addEventListener('input',function(){ flows[+el.dataset.i].amt=el.value; onEdit(); });
@@ -781,7 +825,18 @@
     list.querySelectorAll('.fTo').forEach(function(el){ el.addEventListener('input',function(){ flows[+el.dataset.i].to=el.value; onEdit(); }); });
     list.querySelectorAll('.flow-del').forEach(function(el){ el.addEventListener('click',function(){ flows.splice(+el.dataset.i,1); renderFlows(); onEdit(); }); });
   }
-  $('addFlow').addEventListener('click',function(){ flows.push({type:'in',amt:'',unit:'year',from:'',to:''}); renderFlows(); });
+  $('addFlow').addEventListener('click',function(){ flows.push({type:'in',amt:'',unit:'month',from:'',to:''}); renderFlows(); });
+
+  /* Plantillas: rellenan el plan con un ejemplo que se puede retocar */
+  window.useTemplate=function(k){
+    var sa=Math.round(parseNum($('startAge').value));
+    if(!(sa>0 && sa<100)){ sa=35; $('startAge').value='35'; }
+    var retire=Math.max(sa+1,65);
+    if(k==='retire') flows=[{type:'in',amt:'500',unit:'month',from:''+sa,to:''+(retire-1)},{type:'out',amt:'1.500',unit:'month',from:''+retire,to:'100'}];
+    else if(k==='save') flows=[{type:'in',amt:'300',unit:'month',from:''+sa,to:''+(retire-1)}];
+    else { flows=[{type:'in',amt:'',unit:'month',from:'',to:''}]; $('startAge').value=''; $('initial').value=''; }
+    renderFlows(); onEdit();
+  };
 
   /* ===================== Charts ===================== */
   var wealthChart=null, flowChart=null;
@@ -853,14 +908,34 @@
      Los resultados no aparecen hasta pulsar Calcular; a partir de ahí,
      cualquier cambio (plan, flujos, tasa de retirada) recalcula en vivo.   */
   var calculated=false;
+  /* El aviso legal y el feedback viven al final y solo aparecen tras calcular.
+     El enlace "Aviso" del gancho revela el aviso (no el feedback) y baja a él. */
+  function showLegal(){ $('legalWrap').style.display=''; }
+  function showPostCalc(){ showLegal(); $('feedbackWrap').style.display=''; }
+  window.showNotice=function(){
+    showLegal();
+    $('legalWrap').scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  var trackNext=false; // la analítica solo cuenta el clic en Calcular, no los recálculos en vivo
   window.doCalculate=function(){
-    calculated=true;
+    calculated=true; trackNext=true;
     calcAll();
     if(!last){
-      // Faltan datos: calcAll() sale en silencio, así que respondemos al clic.
-      if(!$('errBox').classList.contains('show')) showErr(errMsg('incomplete'));
+      // Faltan datos: calcAll() sale en silencio, así que respondemos al clic y marcamos qué falta.
+      if(!$('errBox').classList.contains('show')){
+        showErr(errMsg('incomplete'));
+        var miss=[];
+        if(!$('startAge').value.trim()) miss.push($('startAge'));
+        if(!parseNum($('initial').value)){
+          var fr=document.querySelector('#flowList .flow');
+          if(fr) ['.fAmt','.fFrom','.fTo'].forEach(function(s){ var el=fr.querySelector(s); if(el && !el.value.trim()) miss.push(el); });
+        }
+        AstroUX.markMissing(miss);
+      }
+      trackNext=false;
       return;
     }
+    showPostCalc();
     $('results').scrollIntoView({behavior:'smooth',block:'start'});
   };
   // Antes del primer Calcular no se recalcula nada; después, en vivo.
@@ -913,7 +988,7 @@
     last={ages:ages,inflow:inflow,outflow:outflow,initial:inp.initial,sa:sa,ea:ea,wRate:wRate};
     renderResults();
     $('results').classList.add('show');
-    try{ if(window.umami) window.umami.track('forecast_done',{years:ea-sa,flows:inp.flows.length}); }catch(e){}
+    if(trackNext){ trackNext=false; try{ if(window.umami) window.umami.track('forecast_done',{years:ea-sa,flows:inp.flows.length}); }catch(e){} }
   }
 
   function renderResults(){
@@ -938,6 +1013,13 @@
       }
     });
 
+    // Barra fija: el hito más lejano disponible (30, 20 o 10 años)
+    var msK=[30,20,10].filter(function(y){ return last.sa+y<=last.ea; })[0];
+    if(msK){
+      var mv=$('ms'+msK).querySelector('.val').textContent;
+      AstroUX.showResult({ label:L()['ms_'+msK], value:mv, hero:$('milestones'), state:shareQuery(),
+        summary:{ label:'Forecast · '+tpl(L().ms_sub,{age:last.sa+msK}), value:mv } });
+    }
     buildWealthChart(r,w);
     buildFlowChart(ages,last.inflow,last.outflow);
     renderTable();
@@ -1053,8 +1135,9 @@
     var base=location.href.split('?')[0].split('#')[0];
     return base+(q.length?'?'+q.join('&'):'');
   }
-  function loadFromURL(){
-    var qs=location.search.replace(/^\?/,''); if(!qs) return false;
+  function shareQuery(){ var u=buildShareURL(), i=u.indexOf('?'); return i<0?'':u.slice(i+1); }
+  function loadFromURL(qs){
+    if(qs==null) qs=location.search.replace(/^\?/,''); if(!qs) return false;
     var p={}; qs.split('&').forEach(function(kv){ var i=kv.indexOf('='); if(i<0) return; p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1)); });
     var any=false;
     if(p.sa){ $('startAge').value=Math.round(parseNum(p.sa)); any=true; }
@@ -1142,10 +1225,12 @@
   /* ===================== Reiniciar (logo) ===================== */
   window.restartApp=function(){
     $('startAge').value=''; $('initial').value=''; $('wRate').value='3';
-    flows=[{type:'in',amt:'',unit:'year',from:'',to:''}];
+    flows=[{type:'in',amt:'',unit:'month',from:'',to:''}];
     renderFlows();
     $('results').classList.remove('show'); showErr(''); showWarn(''); last=null;
     calculated=false;   // vuelve al estado de "gancho"
+    AstroUX.clearResult();
+    $('legalWrap').style.display='none'; $('feedbackWrap').style.display='none';
     tableDens='5'; sliderRate=6;
     var sl=$('rateSlider'); if(sl){ sl.value=6; $('rateVal').textContent=6; }
     updateRateDesc();
@@ -1158,12 +1243,16 @@
   var lang0=(document.documentElement.lang||'es').slice(0,2).toLowerCase(); if(!T[lang0]) lang0='es';
   currentLang=lang0;
   applyStatic();
+  AstroUX.init({ app:'forecast' });
+  AstroUX.mountRemember($('calcBtn').parentNode);
   var hadURL=loadFromURL();
+  // Sin enlace compartido: si pidió recordar su plan, lo recuperamos de este navegador
+  if(!hadURL){ var saved=AstroUX.restoreState(); if(saved) hadURL=loadFromURL(saved); }
   if(hadURL) updateRateDesc(); // re-render desc if URL changed sliderRate
-  if(!hadURL) flows=[{type:'in',amt:'',unit:'year',from:'',to:''}];
+  if(!hadURL) flows=[{type:'in',amt:'',unit:'month',from:'',to:''}];
   renderFlows();
   // Enlace compartido: nos saltamos el gancho y abrimos directamente en resultados.
-  if(hadURL){ calculated=true; calcAll(); }
+  if(hadURL){ calculated=true; calcAll(); showPostCalc(); }
 })();
 </script>
 </body>
