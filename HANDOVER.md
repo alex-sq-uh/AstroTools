@@ -10,8 +10,8 @@ Reglas de oro (no negociables salvo que el dueño diga lo contrario):
 
 1. **No hagas `git push` sin confirmación explícita del dueño.**
 2. **Sin build tools y sin dependencias nuevas.** Es un sitio estático de HTML + CSS +
-   JS vanilla. La única librería externa es Chart.js por CDN (solo en `ahorro` y
-   `rentabilidad`).
+   JS vanilla. Externas: Chart.js por CDN (`ahorro`, `rentabilidad`, `forecast`) y la fuente
+   Plus Jakarta Sans (+ Fraunces en `ahorro`) de Google Fonts.
 3. **No toques la lógica de cálculo** de una app salvo que se pida; son el núcleo.
 4. **Mantén el design system** (§4). Cualquier pantalla nueva usa los mismos tokens,
    la misma cabecera/feedback, el mismo planeta y el mismo tono de copy.
@@ -71,7 +71,10 @@ AstroTools/
 │   ├── header.js           ← <astro-header> (cabecera única de la suite)
 │   ├── feedback.js         ← <astro-feedback> (valoración + comentario + compartir)
 │   ├── analytics.js        ← Umami (analítica anónima, sin cookies)
+│   ├── skin.css            ← piel "Evolución" de las 4 calculadoras (§4.2)
+│   ├── ux.js               ← AstroUX: barra fija, 2 columnas, recordar en el móvil, a11y (§5)
 │   └── savings-skin.css    ← piel azul específica de AstroSavings
+├── design/                 ← documentos de trabajo (pitch visual + wireframes), noindex
 ├── BACKLOG.md              ← ideas futuras (no es compromiso)
 └── HANDOVER.md             ← este documento
 ```
@@ -89,22 +92,32 @@ inventes colores):
 --bg:#f4f6fb        --surface:#ffffff        --surface2:#f8fafd     --border:#dde3ea
 --text:#1a2733      --text-muted:#5a6a7a
 --danger:#e74c3c    --success:#27ae60        --warning:#e67e22
---radius:10px       --radius-lg:14px
---shadow:0 2px 12px rgba(26,60,94,.08)        --shadow-lg:0 4px 24px rgba(26,60,94,.13)
+--radius:14px       --radius-lg:20px
+--shadow:0 1px 2px rgba(26,43,94,.05),0 6px 18px rgba(26,43,94,.06)   --shadow-lg:0 10px 30px rgba(26,43,94,.12)
 --topbar-gradient:linear-gradient(120deg,#0f1d44 0%,#1a2b5e 55%,#2a3f80 100%)
---font:'Segoe UI',system-ui,sans-serif
+--font:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif
 ```
 
-- **Fuente**: `Segoe UI` / system-ui en todo, **excepto AstroSavings** que usa
-  `'Plus Jakarta Sans'`.
+- **Fuente**: **Plus Jakarta Sans** en toda la suite (Google Fonts, `<link>` en el `<head>` de
+  cada página; Segoe UI / system-ui de respaldo). AstroSavings además usa Fraunces para
+  titulares. Desde 2026-09 las cuatro calculadoras y el hub llevan la piel **"Evolución"**
+  (§4.2).
+
 - **Cabecera (header)**: fondo navy con el gradiente `--topbar-gradient`. Texto blanco,
   acentos en dorado.
 - **Acento dorado `#f5c84b`**: es la firma de la marca (la palabra final del nombre, el
   punto de "AstroTools.", el planeta, el halo al hover de las tarjetas).
 
 ### 4.2 Skins
-- **Navy por defecto** (hub, casa, nomina, rentabilidad): fondo `--bg` claro, navy +
-  dorado.
+- **"Evolución" (por defecto: hub, casa, nomina, rentabilidad, forecast)** — el navy + dorado
+  de siempre, pulido. Vive en **`shared/skin.css`**, que cada calculadora carga DESPUÉS de su
+  `<style>` (sobrescribe lo común sin tocar la lógica). Piezas: franja navy con el título de
+  la pantalla de entrada y la primera tarjeta montada encima (`#page-calc > .page-head`),
+  radios 14/20 px, campos de 50 px con anillo de foco azul, **botón `.btn-calc` dorado =
+  único botón sólido** (compartir/copiar/resetear son de borde), chips (`.chip`) para
+  complementos y plantillas, resultado principal en tarjeta navy (`.result-hero`, con anillo
+  en Payroll), barra de resultado fija en móvil y dos columnas en escritorio (§5, `ux.js`).
+  Placeholders en cursiva gris: son ejemplos, nunca valores.
 - **AstroSavings ("sky" skin)**: paleta azul cielo propia (`--sky:#4a9fd4`, etc.) +
   `savings-skin.css` + Plus Jakarta Sans. Es una variación deliberada, más cálida, para
   una experiencia tipo "guía paso a paso". Si tocas ahorro, respeta su piel; si creas
@@ -133,11 +146,13 @@ Snippet canónico en `shared/header.js` (ids `ahHdr…`) y en el hub `index.html
 `ICONS`, ids por app: `cOrbit/cPlanet/cBack/cFront`, etc.). Reutiliza esos snippets; no
 redibujes a ojo.
 
-### 4.4 Tarjetas y botones (base.css)
-- **Tarjeta**: `--surface`, borde `--border`, `--radius-lg`, `--shadow`; al hover sube
-  2–6px, borde dorado/secundario, halo dorado radial. Ver `.app-card` en el hub.
-- **Botón primario**: fondo `--primary`, texto blanco, `--radius`; hover `--primary-deep`.
-  Acento: `.btn-accent` dorado con texto navy.
+### 4.4 Tarjetas y botones (skin.css / base.css)
+- **Tarjeta**: `--surface`, borde `#e3e8f1`, radio 20 px, sombra suave. En el hub, cada sección
+  es una tarjeta con **filas por pregunta** (`.app-row`: planeta + pregunta en llano + marca).
+- **Botón Calcular** (`.btn-calc`): dorado `#f5c84b`, texto navy, radio 14 px, 54 px de alto. Es
+  el **único botón sólido** de cada pantalla. Todo lo demás es de borde o un enlace.
+- **Números**: cifras destacadas sin decimales (`2.027 €`, `875 €`); tablas de detalle con 2
+  decimales; las cifras que deben sumar se redondean una vez y se derivan (ver AstroHome `rd()`).
 
 ### 4.5 Tono de copy (igual de importante que el visual)
 - **Español de "tú"**, cercano, **sin tecnicismos**; cuando hace falta un término
@@ -180,7 +195,22 @@ posiciones y colores idénticos.
   con 1 clic), botón **💬 Dejar un comentario** (modal) y botón **📤 Compartir**
   (Web Share API en móvil → WhatsApp/etc.; en escritorio copia el enlace al portapapeles).
   Se autolocaliza ES/CA/EN y detecta la app por la URL. Envía por Formsubmit (AJAX).
-- **`analytics.js`** → Umami, analítica anónima sin cookies.
+- **`analytics.js`** → Umami, analítica anónima sin cookies (etiqueta por app, Forecast incluida).
+- **`skin.css`** → piel "Evolución" (§4.2). Se enlaza tras el `<style>` de cada calculadora.
+- **`ux.js`** → `window.AstroUX`, comportamiento común de las calculadoras (no calcula nada):
+  - `init({app})`: envuelve `#page-calc` en `.calc-form` / `.calc-out` (todo lo anterior a
+    `#results` / `#results` y lo que sigue) para las **dos columnas en escritorio (≥1024 px)**;
+    enlaza cada `<label>` de un `.field` con su campo; hace las ayudas `.info-icon` enfocables
+    y usables con teclado; con *reduced motion* los `scrollIntoView` dejan de animarse.
+  - `showResult({label, value, hero, state, summary})`: tras calcular, activa `body.has-results`
+    (2 columnas), la **barra fija móvil** (aparece cuando el resultado principal sale de
+    pantalla: «Cambiar datos» / «Ver resultado») y, si la persona marcó **«Recordar mis datos
+    en este móvil»**, guarda `state` y el resumen para el hub. `clearResult()` lo deshace.
+  - `mountRemember(el)` pinta la casilla; `restoreState()` devuelve lo guardado.
+    localStorage: `astro:rem:<app>`, `astro:state:<app>`, `astro:last`. Nada sale del navegador.
+  - `markMissing([inputs])`: borde rojo + foco en lo que falta al pulsar Calcular.
+  - Estado guardado por app: Payroll = campos con id (JSON); Home = modo + campos (JSON);
+    Return y Forecast = la misma query que su enlace de compartir.
 - **`tokens.css` / `base.css` / `savings-skin.css`** → ver §4.
 
 **Cómo cablear una página** (orden en el `<head>`/final de body):
@@ -245,7 +275,10 @@ posiciones y colores idénticos.
 2. Añadir la app a `shared/brand.js` (`{id,name,href,tagline}`).
 3. Añadir su icono-planeta al objeto `ICONS` del hub `index.html` y al `ICONS`/regex de
    `shared/header.js` (con su símbolo en navy).
-4. Cablear `<astro-header app="…">` y `<astro-feedback>` (§5).
+4. Cablear `<astro-header app="…">` y `<astro-feedback>` (§5). Si es calculadora: fuente
+   Plus Jakarta Sans, `../shared/skin.css` tras su `<style>`, `../shared/ux.js`, título en
+   `.page-head`, botón `.btn-calc`, `#results` como hijo directo de `#page-calc`, y llamar a
+   `AstroUX.init` / `mountRemember` / `showResult` (mira cualquiera de las cuatro).
 5. Copy trilingüe (§6) y tono "en cristiano" (§4.5).
 6. SEO completo (§7) + generar su `og.jpg` (§4.6) + añadirla a `sitemap.xml`.
 7. Enlazarla desde/hacia las apps relacionadas (como hacen casa↔nomina↔ahorro).
@@ -253,7 +286,7 @@ posiciones y colores idénticos.
 
 ---
 
-## 11. Estado actual (a 2026-06-22)
+## 11. Estado actual (a 2026-09-29)
 
 **En producción (pushed, commit `5317b01`):**
 - Las 4 apps + hub con SEO técnico completo (§7), 5 `og.jpg`, `sitemap.xml`, `robots.txt`.
@@ -285,8 +318,8 @@ repiten scroll ni analítica. `restartApp()`/`resetForm()` devuelven el flag a `
 Hecho:
 - **Cabecera fusionada** (`shared/header.js`, afecta a las 5 apps): las dos filas pasan a una
   barra de 46px → `🪐 AstroTools · Forecast`. Recupera ~48px. Usa el **sufijo corto** de marca
-  (Payroll, Home, Return, Forecast, Savings) en oro. *Pendiente de confirmar si se prefiere en
-  español (Nómina, Casa…), lo que obligaría a traducir por idioma.*
+  (Payroll, Home, Return, Forecast, Savings) en oro. **Decidido (2026-09-29): se queda en inglés y
+  la versión (`v2.18`…) sigue visible en la cabecera** (sugerencias 14 y 15 de la revisión, descartadas).
 - **AstroPayroll ✅** (`nomina/index.html`): salario → `[Calcular mi neto]` → toggle
   `＋ Añadir complementos` → `#moreFields` (oculto) → `#results` → `#postActions`
   (reset/compartir, ocultos hasta el 1er cálculo). `calculate(live)` + flag `calcDone`,
@@ -315,20 +348,80 @@ Hecho:
   `errMsg('incomplete')`. Init aplica la regla 5. Claves i18n nuevas: `btn_calc`,
   `errMsg.incomplete`.
 
-⚠️ **Sin verificar en navegador** (ver aviso más abajo): las cuatro apps están pendientes de que
-el dueño las valide en su Live Server.
+✅ Verificado en navegador (2026-09-29, con `serve.ps1` en el puerto 3000).
 
-⏳ Siguiente decisión abierta: la **dirección visual** (ver más abajo). El dueño la aparcó
-deliberadamente para cerrar antes toda la estructura.
+**✅ Avisos legales y feedback movidos a la zona post-cálculo · las 4 calculadoras (2026-07-26)**
 
-⚠️ **Sin verificar en navegador**: en la máquina del dueño no hay node ni python y el navegador
-integrado no abre `file://`. La validación visual la hace él en su Live Server.
+Tras validar el gancho en el navegador, el dueño pidió que el bloque "¿Te ha sido útil?"
+(`<astro-feedback>`) y los avisos legales dejaran de ocupar la pantalla de entrada. Patrón
+común a las cuatro:
 
-**Dirección visual — decisión pendiente.** El dueño no está satisfecho con el look actual. Hay un
-pitch con 5 direcciones; la favorita es **"A2 · Medianoche angular"**: navy muy profundo
-(`#070C22`/`#0E1738`), oro `#F5C84B`, **cero border-radius**, CTA con esquina en bisel, input con
-esquinas de visor doradas, etiquetas/pestañas en monoespaciada. Disciplina: bisel **solo** en el
-CTA, visores **solo** en el campo activo. **Aún no aplicada a ninguna app.**
+- `#legalWrap` (los `.disclaimer` — en `nomina` también `.privacy-note` y `.llm-note`) y
+  `#feedbackWrap` (con `<astro-feedback>` dentro) viven **al final de `#page-calc`**, ambos con
+  `style="display:none"`.
+- Al calcular se revelan los dos (`showPostCalc()` en rentabilidad/forecast; en `casa` y `nomina`
+  van en línea dentro de `doCalculate()`/`calculate()`).
+- La pantalla de entrada conserva un enlace discreto — **no un botón**, regla 3 — que llama a
+  `showNotice()`: revela **solo** `#legalWrap` (nunca el feedback) y hace scroll suave hasta él.
+  Clave i18n nueva `notice_link` en ES/CA/EN. CSS nuevo: `.notice-row` / `.notice-link`.
+- `resetForm()` (nomina) y `restartApp()` (forecast) vuelven a ocultar ambos bloques.
+- La regla 5 (URL con parámetros) también revela la zona post-cálculo, igual que un Calcular.
+
+⚠️ **Ojo al efecto secundario deseado**: `<astro-feedback>` estaba **fuera** de las páginas, así
+que se veía en todas las pestañas. Ahora vive dentro de `#page-calc`, así que **ya no aparece en
+"¿Cómo funciona?" / "Conceptos" / "Tramos"**. `ahorro` (AstroSavings) **no se ha tocado**: es
+guía, no calculadora, y su feedback vive dentro de un paso.
+
+✅ Verificado en navegador (2026-09-29).
+
+ℹ️ Para previsualizar: no hay node ni python; el `launch.json` de `Documents/.claude/` arranca
+`serve.ps1` (PowerShell) en `http://localhost:3000/`.
+
+**✅ Dirección visual decidida y aplicada: "Evolución" (2026-09-29).** La A2 «Medianoche
+angular» se llegó a maquetar en alta fidelidad, pero al dueño **no le gustaron los biseles, las
+esquinas de visor ni los adornos**; entre tres alternativas (Cuaderno, Evolución, Bloques) eligió
+**Evolución**: el navy + dorado de siempre, pulido (§4.2). No reintroducir biseles/visores.
+
+📁 **El pitch y los wireframes están guardados en local** (2026-07-26), por si los enlaces de
+claude.ai caducan: ver [`design/README.md`](design/README.md) →
+`design/direcciones-visuales.html` (las 5 direcciones, sección **A2**) y
+`design/wireframes-pantalla-entrada.html`. Son documentos de trabajo con `noindex`, no están
+enlazados desde el sitio ni en `sitemap.xml`.
+
+**✅ Revisión UX/UI aplicada + piel Evolución (2026-09-29).** De las 20 sugerencias de
+[`BACKLOG.md`](BACKLOG.md) § "Revisión UX/UI" se aplicaron 1–13 y 16–19; la 14 y la 15 se
+descartaron; la 20 (Lighthouse) sigue pendiente. Diseños: wireframes v2
+https://claude.ai/artifact/GCQE1YnaYSRPsWotEyM3w7 y alta fidelidad (A2 + alternativas; la elegida
+es la página «Alternativas» → Evolución) https://claude.ai/artifact/UFv3qYj7GhFJhZTGTXSQF3
+(copias en `design/`). Lo que cambió, por app:
+- **Todas las calculadoras**: `shared/skin.css` + `shared/ux.js` (§4.2, §5); franja navy de
+  entrada; Calcular dorado único; campos que faltan en rojo con foco; «Recordar mis datos en este
+  móvil»; barra fija móvil; dos columnas en escritorio; etiquetas enlazadas; ayudas «i» con
+  toque y teclado; `:focus-visible` y *reduced motion*.
+- **AstroPayroll v2.18**: cifra principal = **neto al mes** con anillo «de cada 100 €» y chips
+  IRPF / SS (/ otros); valoración del paquete y ahorro fiscal solo si aplican (la tarjeta de
+  valoración se oculta sin beneficios); complementos como chips (`openMore()` abre y activa el
+  bloque); el salario vacío ya **no** calcula con el ejemplo 50.000 (el resto de placeholders
+  siguen siendo valores por defecto); tabla mes a mes con **Neto justo tras el mes**; «¿Y ahora
+  qué?» al final y enlaza a AstroHome con **`?neto=`**; fuera el resto de «AstroCosas».
+- **AstroHome v1.5**: cifras de pantalla redondeadas una vez y derivadas (`rd()`, `eurR()`):
+  banco = precio − entrada, ahorros = entrada + impuestos + gastos + te queda; cuotas sin
+  decimales; barra «a dónde van tus ahorros»; «entrada mínima» → «lo mínimo (entrada + impuestos
+  y gastos)»; acepta `?neto=` (rellena el sueldo y abre «Aún no sé qué piso»).
+- **AstroReturn v1.1**: faltaba `<link rel="canonical">` (añadido); estado recordado = query de
+  compartir; «Compartir» pasa a botón de borde.
+- **AstroForecast v1.1**: flujos escritos como frase («Entra [500] € al mes de los [35] a los
+  [64] años»), nuevos flujos en €/mes por defecto; plantillas «Ahorrar y jubilarme» / «Solo
+  ahorrar» / «Vaciar»; la analítica `forecast_done` ya solo cuenta el clic en Calcular (antes
+  saltaba en cada recálculo en vivo, contra la regla 2); `analytics.js` ya etiqueta Forecast.
+- **AstroSavings v4.10**: márgenes laterales en móvil (`.screen` `inset:0 1rem`), carga real de
+  Plus Jakarta Sans + Fraunces, fuera la cadena huérfana de «AstroCosas» en `i18n.js`.
+- **Hub**: franja navy «¿Qué quieres saber hoy?», filas por pregunta y «Continúa donde lo
+  dejaste» (lee `astro:last`, solo existe si se marcó «Recordar»).
+
+⚠️ Dependencia externa nueva: **Google Fonts** (Plus Jakarta Sans; Fraunces en ahorro). No usa
+cookies, pero el navegador pide las fuentes a Google. Si se quiere evitar, se pueden alojar los
+`.woff2` en `shared/fonts/` y cambiar los `<link>` por `@font-face`.
 
 ---
 

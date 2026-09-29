@@ -8,7 +8,7 @@ Suite que unifica tres calculadoras bajo una marca, un Umami y una navegación c
 | **AstroPayroll** | `/nomina` | v2.17 | Nómina e IRPF en España |
 | **AstroSavings** | `/ahorro` | v4.9 | Guía de inversión |
 
-Identidad visual: navy `#1a2b5e` + dorado `#f5c84b`, tipografía Segoe UI.
+Identidad visual: navy `#1a2b5e` + dorado `#f5c84b`, tipografía Plus Jakarta Sans (piel «Evolución»).
 **AstroTools** es el producto; **AstroCosas** queda solo como crédito en el footer.
 
 ## En producción
@@ -24,7 +24,7 @@ cd C:\Users\alexe\Documents\AstroTools
 
 ## Estructura
 - `index.html` — hub/landing (trilingüe ES/CA/EN).
-- `casa/`, `nomina/`, `ahorro/` — las apps (1 `index.html` c/u).
+- `casa/`, `nomina/`, `ahorro/`, `rentabilidad/`, `forecast/` — las apps (1 `index.html` c/u).
 - `ahorro/i18n.js` — motor de traducción específico de AstroSavings.
 - `shared/`
   - `brand.js` — **única fuente del nombre** y lista de apps. Renombrar la suite = 1 línea aquí.
@@ -32,6 +32,8 @@ cd C:\Users\alexe\Documents\AstroTools
   - `feedback.js` — `<astro-feedback>`: widget de feedback compartido (estrellas con 1 clic + pop-up).
   - `analytics.js` — Umami con `data-tag` por app.
   - `tokens.css` / `base.css` — design system de la suite (hub).
+  - `skin.css` — piel «Evolución» de las calculadoras (se carga tras el `<style>` de cada una).
+  - `ux.js` — `window.AstroUX`: barra de resultado fija, escritorio a 2 columnas, «Recordar en este móvil», accesibilidad.
   - `savings-skin.css` — reskin de AstroSavings al navy/gold (reversible).
 
 Originales pre-suite archivados en `..\_archivo_originales\`.
