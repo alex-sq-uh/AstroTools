@@ -20,6 +20,7 @@
           : /\/nomina\//.test(p)       ? "AstroPayroll"
           : /\/ahorro\//.test(p)       ? "AstroSavings"
           : /\/rentabilidad\//.test(p) ? "AstroReturn"
+          : /\/forecast\//.test(p)     ? "AstroForecast"
           : "Hub";
 
   var s = document.createElement("script");

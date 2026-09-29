@@ -56,9 +56,9 @@
   function track(name, data) { try { if (window.umami) window.umami.track(name, data); } catch (e) {} }
 
   var CSS =
-    ":host{display:block;font-family:'Segoe UI',system-ui,sans-serif;color:#1a2733}" +
+    ":host{display:block;font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;color:#1a2733}" +
     ".wrap{max-width:680px;margin:2rem auto 0;padding:1.1rem 1.2rem;background:#fff;border:1px solid #dde3ea;" +
-      "border-radius:14px;box-shadow:0 2px 12px rgba(26,60,94,.08);text-align:center}" +
+      "border-radius:20px;box-shadow:0 1px 2px rgba(26,43,94,.05),0 6px 18px rgba(26,43,94,.06);text-align:center}" +
     ".q{font-weight:700;color:#1a2b5e;font-size:.98rem;margin:0 0 .6rem}" +
     ".stars{display:flex;gap:.25rem;justify-content:center;margin-bottom:.7rem}" +
     ".star{background:none;border:none;font-size:1.9rem;line-height:1;color:#e0e6ee;cursor:pointer;" +

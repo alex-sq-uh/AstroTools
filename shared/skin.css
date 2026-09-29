@@ -1,0 +1,152 @@
+/* ============================================================
+   AstroTools · piel "Evolución" (navy + dorado, pulida)
+   ------------------------------------------------------------
+   Se carga DESPUÉS del <style> de cada calculadora (casa, nomina,
+   rentabilidad, forecast) y sobrescribe lo común: tipografía,
+   radios, tarjetas, campos, botón Calcular, cabecera de la
+   pantalla de entrada (franja navy con la tarjeta montada encima),
+   barra de resultado fija, escritorio a dos columnas y accesibilidad.
+   La lógica de cada app no depende de nada de aquí.
+   Fuente: Plus Jakarta Sans (Google Fonts, <link> en cada página).
+   ============================================================ */
+:root{
+  --radius:14px;
+  --radius-lg:20px;
+  --shadow:0 1px 2px rgba(26,43,94,.05),0 6px 18px rgba(26,43,94,.06);
+  --shadow-lg:0 10px 30px rgba(26,43,94,.12);
+  --font:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
+  --navy-gradient:linear-gradient(120deg,#0f1d44 0%,#1a2b5e 55%,#2a3f80 100%);
+  --ring:0 0 0 4px rgba(74,109,209,.16);
+}
+body{font-family:var(--font);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+
+/* ---------- Página ---------- */
+.page{padding:1.5rem 1rem 5rem}
+@media(min-width:700px){.page{padding:2rem 1.5rem 5rem}}
+
+/* ---------- Pestañas (slot "tabs" de <astro-header>) ---------- */
+.nav-btn{border-radius:18px!important;padding:7px 14px!important;font-weight:600;font-size:.84rem!important;color:#c9d3ee!important;background:none!important;min-height:36px;white-space:nowrap;flex:0 0 auto!important}
+.nav-btn:hover{background:rgba(255,255,255,.12)!important;color:#fff!important}
+.nav-btn.active{background:#fff!important;color:#1a2b5e!important;font-weight:700}
+
+/* ---------- Entrada: franja navy + tarjeta montada ---------- */
+#page-calc > .page-head{
+  background:var(--navy-gradient);color:#fff;
+  margin:-1.5rem -1rem 0;padding:1.6rem 1.25rem 4.4rem;border-radius:0 0 28px 28px;
+}
+@media(min-width:700px){
+  #page-calc > .page-head{margin:0 0 0;padding:2rem 2rem 4.6rem;border-radius:24px}
+}
+#page-calc > .page-head h1{color:#fff!important;font-size:1.75rem!important;font-weight:800!important;letter-spacing:-.02em;line-height:1.15;margin:0 0 .45rem!important}
+#page-calc > .page-head p{color:#c9d3ee!important;font-size:.95rem!important;line-height:1.5;margin:0}
+#page-calc > .page-head + *,
+.calc-form > .page-head + *{margin-top:-3.1rem!important;position:relative;z-index:1}
+
+/* ---------- Tarjetas ---------- */
+.card,.kpi,.mode-btn{border-radius:var(--radius-lg);border-color:#e3e8f1;box-shadow:var(--shadow)}
+.card{padding:1.3rem 1.25rem}
+@media(min-width:700px){.card{padding:1.5rem 1.5rem}}
+.card-title{font-weight:800}
+.card-title .icon,.mode-btn .mic,.block-h .bic,.lever-ic{border-radius:10px;background:#eef2fb}
+.block,.lever,.opt,.flow{border-radius:16px}
+
+/* ---------- Campos ---------- */
+.page input[type=text],.page input[type=number],.page input[type=date],.page select{
+  min-height:50px;border-radius:14px;border-width:1.5px;border-color:#dde3ea;
+  font-size:16px;font-weight:700;padding-top:11px;padding-bottom:11px;transition:border-color .15s,box-shadow .15s;
+}
+.page input[type=text]:focus,.page input[type=number]:focus,.page input[type=date]:focus,.page select:focus{
+  border-color:#4a6dd1;box-shadow:var(--ring);outline:none;
+}
+.page input::placeholder{color:#8a97a6;font-style:italic;font-weight:500;opacity:1}
+.page input.is-missing{border-color:#e74c3c!important;box-shadow:0 0 0 4px rgba(231,76,60,.14)!important}
+.field label{font-weight:700}
+
+/* ---------- Botón Calcular: el único sólido de la pantalla ---------- */
+.btn-calc{
+  display:block;width:100%;min-height:54px;background:#f5c84b!important;color:#1a2b5e!important;
+  border:none;border-radius:14px!important;padding:.9rem 1.2rem;font-family:inherit;font-weight:800;font-size:1.02rem;
+  cursor:pointer;box-shadow:none!important;transition:background .15s,transform .1s;
+}
+.btn-calc:hover{background:#ecbc35!important}
+.btn-calc:active{transform:scale(.99)}
+/* El resto de acciones son de borde (compartir, copiar, resetear…) */
+#results .btn-accent,.btn-secondary{
+  background:#fff!important;color:#1a2b5e!important;border:1.5px solid #cfd9e6!important;border-radius:12px!important;
+  min-height:44px;font-weight:700;box-shadow:none!important;
+}
+#results .btn-accent:hover,.btn-secondary:hover{background:#f4f6fb!important}
+
+/* ---------- Chips (complementos, plantillas) ---------- */
+.chip-row{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1.25rem}
+.chip-lbl{display:block;font-size:.8rem;font-weight:700;color:var(--text-muted);margin:0 0 .5rem .2rem}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:20px;border:1.5px solid #dde3ea;
+  background:#fff;color:#1a2b5e;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s}
+.chip:hover{border-color:#4a6dd1;background:#f4f7fe}
+.chip.on{background:#1a2b5e;border-color:#1a2b5e;color:#fff}
+.more-toggle{border-radius:14px}
+
+/* ---------- Recordar en este móvil ---------- */
+.remember{display:flex;align-items:center;gap:10px;min-height:44px;font-size:.88rem;color:var(--text-muted);margin:.35rem 0 .4rem;cursor:pointer;user-select:none}
+.remember input{width:18px;height:18px;margin:0;accent-color:#1a2b5e;flex-shrink:0;cursor:pointer}
+
+/* ---------- Resultado principal ---------- */
+.result-hero,.hero{background:var(--navy-gradient)!important;border-radius:22px!important;box-shadow:var(--shadow-lg)!important}
+.hero-ring{display:flex;align-items:center;gap:1rem}
+.hero-ring .hr-main{flex:1;min-width:0}
+.hero-ring .hr-eyebrow{font-size:.9rem;font-weight:600;color:#c9d3ee;margin:0}
+.hero-ring .hr-big{font-size:2.9rem;font-weight:800;letter-spacing:-.03em;line-height:1.05;color:#f5c84b;margin:.15rem 0 .2rem;font-variant-numeric:tabular-nums}
+.hero-ring .hr-sub{font-size:.86rem;color:#c9d3ee;margin:0}
+.hero-ring svg{width:104px;height:104px;flex-shrink:0}
+.hero-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1rem}
+.hero-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600;color:#fff}
+.hero-chip i{width:8px;height:8px;border-radius:4px;display:inline-block;flex-shrink:0}
+.hero-extra{margin-top:.9rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.14);display:flex;flex-direction:column;gap:.3rem}
+.hero-extra div{display:flex;justify-content:space-between;gap:1rem;font-size:.86rem;color:#c9d3ee}
+.hero-extra b{color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:380px){.hero-ring .hr-big{font-size:2.4rem}.hero-ring svg{width:84px;height:84px}}
+
+/* Barra de reparto (100 € / ahorros) */
+.split-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:3px;margin:.2rem 0 .75rem}
+.split-bar span{display:block;height:100%;min-width:3px}
+.split-legend{display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-size:.8rem;color:var(--text-muted);margin-bottom:.9rem}
+.split-legend i{display:inline-block;width:10px;height:10px;border-radius:5px;margin-right:6px;vertical-align:-1px}
+
+/* ---------- Barra de resultado fija (móvil, tras calcular) ---------- */
+.result-bar{
+  position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:90;
+  display:flex;align-items:center;gap:12px;min-height:62px;padding:8px 8px 8px 18px;
+  background:#1a2b5e;color:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(15,29,68,.32);
+  transform:translateY(140%);opacity:0;transition:transform .25s,opacity .25s;pointer-events:none;
+}
+.result-bar.show{transform:none;opacity:1;pointer-events:auto}
+.result-bar .rb-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.result-bar .rb-lbl{font-size:.75rem;font-weight:600;color:#c9d3ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-bar .rb-val{font-size:1.3rem;font-weight:800;color:#f5c84b;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-bar button{min-height:44px;padding:0 16px;border-radius:12px;border:0;background:rgba(255,255,255,.14);color:#fff;font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;flex-shrink:0}
+.result-bar button:hover{background:rgba(255,255,255,.22)}
+@media(min-width:1024px){.result-bar{display:none}}
+
+/* ---------- Escritorio: formulario | resultados ---------- */
+@media(min-width:1024px){
+  body.has-results #page-calc.active{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);column-gap:2rem;max-width:1240px;align-items:start}
+  body.has-results #page-calc > .page-head{grid-column:1/-1;margin-bottom:0}
+  body.has-results #page-calc > .calc-form{grid-column:1;position:sticky;top:72px;max-height:calc(100vh - 88px);overflow:auto;padding:0 .35rem 1rem;margin:0 -.35rem;scrollbar-width:thin}
+  body.has-results #page-calc > .calc-out{grid-column:2;min-width:0;padding-top:0}
+  body.has-results #page-calc > .page-head + .calc-form{margin-top:-3.1rem!important}
+  body.has-results #page-calc > .page-head + .calc-form + .calc-out{margin-top:1.5rem}
+  body.has-results .calc-form .grid2,body.has-results .calc-form .modes{grid-template-columns:1fr}
+}
+
+/* ---------- Ayudas "i": se tocan, no solo se sobrevuelan ---------- */
+.info-icon{cursor:pointer}
+.info-icon::before{content:"";position:absolute;inset:-14px}
+.info-icon:focus-visible{outline:3px solid #f5c84b;outline-offset:2px}
+
+/* ---------- Accesibilidad ---------- */
+:focus-visible{outline:3px solid #f5c84b;outline-offset:2px;border-radius:6px}
+.page input:focus-visible,.page select:focus-visible{outline:none}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
